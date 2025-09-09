@@ -4,7 +4,7 @@ on:
     workflow_dispatch:
     push:
         branches:
-            - dev
+            - dev-fvp
         paths:
             - '**'
             - '!simple_live_tv_app/**'
@@ -215,43 +215,3 @@ jobs:
               shell: pwsh
               run: |
                   Write-Output "🍏 Windows build status: $($env:JOB_STATUS)"
-
-    release-dev:
-        needs: [build, build-windows]
-        runs-on: ubuntu-latest
-        permissions:
-            contents: write
-        steps:
-            - name: Download artifacts
-              uses: actions/download-artifact@v4
-              with:
-                  path: artifacts
-                  merge-multiple: true
-
-            - name: Generate release timestamp
-              id: datetime
-              run: |
-                  echo "value=$(date +'%Y-%m-%d %H:%M')" >> "$GITHUB_OUTPUT"
-
-            - name: Install GitHub CLI
-              run: |
-                  sudo apt-get update
-                  sudo apt-get install -y gh
-
-            - name: Upload release assets
-              run: |
-                  if gh release view dev --repo ${{ github.repository }}; then
-                    echo "Release exists, uploading assets..."
-                  else
-                    echo "Release not found, creating release..."
-                    gh release create dev \
-                      --prerelease \
-                      --repo ${{ github.repository }}
-                  fi
-                  find artifacts -type f | xargs gh release upload dev --clobber --repo ${{ github.repository }}
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-            - name: Release created
-              run: |
-                  echo "🎉 Pre-release dev updated."

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:media_kit_video/media_kit_video.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:simple_live_app/app/app_style.dart';
 import 'package:simple_live_app/app/controller/app_settings_controller.dart';
@@ -21,7 +20,7 @@ import 'dart:async';
 import 'package:simple_live_core/simple_live_core.dart';
 
 Widget playerControls(
-  VideoState videoState,
+  BuildContext context,
   LiveRoomController controller,
 ) {
   return Stack(
@@ -29,17 +28,16 @@ Widget playerControls(
       Obx(() {
         if (controller.fullScreenState.value) {
           return buildFullControls(
-            videoState,
+            context,
             controller,
           );
         }
         return buildControls(
-          videoState.context.orientation == Orientation.portrait,
-          videoState,
+          context,
           controller,
         );
       }),
-      buildDanmuView(videoState, controller),
+      buildDanmuView(context, controller),
       Positioned(
         left: 24,
         bottom: 24,
@@ -50,29 +48,16 @@ Widget playerControls(
 }
 
 Widget buildFullControls(
-  VideoState videoState,
+  BuildContext context,
   LiveRoomController controller,
 ) {
-  var padding = MediaQuery.of(videoState.context).padding;
-  GlobalKey volumeButtonkey = GlobalKey();
+  var padding = MediaQuery.of(context).padding;
+  GlobalKey volumeButtonKey = GlobalKey();
   return DragToMoveArea(
     child: Stack(
       children: [
         Container(),
 
-        Center(
-          child: // 中间
-              StreamBuilder(
-            stream: videoState.widget.controller.player.stream.buffering,
-            initialData: videoState.widget.controller.player.state.buffering,
-            builder: (_, s) => Visibility(
-              visible: s.data ?? false,
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
-          ),
-        ),
         Positioned.fill(
           child: GestureDetector(
             onTap: controller.onTap,
@@ -88,7 +73,7 @@ Widget buildFullControls(
             onVerticalDragEnd: controller.onVerticalDragEnd,
             child: MouseRegion(
               onHover: (PointerHoverEvent event) {
-                controller.onHover(event, videoState.context);
+                controller.onHover(event, context);
               },
               cursor: controller.showCursorState.value
                   ? SystemMouseCursors.basic
@@ -303,10 +288,10 @@ Widget buildFullControls(
                   Visibility(
                     visible: !Platform.isAndroid && !Platform.isIOS,
                     child: IconButton(
-                      key: volumeButtonkey,
+                      key: volumeButtonKey,
                       onPressed: () {
                         controller
-                            .showVolumeSlider(volumeButtonkey.currentContext!);
+                            .showVolumeSlider(volumeButtonKey.currentContext!);
                       },
                       icon: SvgPicture.asset(
                         'assets/icons/icon_volume.svg',
@@ -431,28 +416,13 @@ Widget buildLockButton(LiveRoomController controller) {
 }
 
 Widget buildControls(
-  bool isPortrait,
-  VideoState videoState,
+  BuildContext context,
   LiveRoomController controller,
 ) {
-  GlobalKey volumeButtonkey = GlobalKey();
+  GlobalKey volumeButtonKey = GlobalKey();
   return Stack(
     children: [
       Container(),
-
-      // 中间
-      Center(
-        child: StreamBuilder(
-          stream: videoState.widget.controller.player.stream.buffering,
-          initialData: videoState.widget.controller.player.state.buffering,
-          builder: (_, s) => Visibility(
-            visible: s.data ?? false,
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          ),
-        ),
-      ),
       Positioned.fill(
         child: GestureDetector(
           onTap: controller.onTap,
@@ -551,10 +521,10 @@ Widget buildControls(
                 Visibility(
                   visible: !Platform.isAndroid && !Platform.isIOS,
                   child: IconButton(
-                    key: volumeButtonkey,
+                    key: volumeButtonKey,
                     onPressed: () {
                       controller.showVolumeSlider(
-                        volumeButtonkey.currentContext!,
+                        volumeButtonKey.currentContext!,
                       );
                     },
                     icon: SvgPicture.asset(
@@ -565,7 +535,7 @@ Widget buildControls(
                   ),
                 ),
                 Offstage(
-                  offstage: isPortrait,
+                  offstage: controller.isVertical.value,
                   child: TextButton(
                     onPressed: () {
                       controller.showQualitySheet();
@@ -580,7 +550,7 @@ Widget buildControls(
                   ),
                 ),
                 Offstage(
-                  offstage: isPortrait,
+                  offstage: controller.isVertical.value,
                   child: TextButton(
                     onPressed: () {
                       controller.showPlayUrlsSheet();
@@ -641,8 +611,8 @@ Widget buildControls(
   );
 }
 
-Widget buildDanmuView(VideoState videoState, LiveRoomController controller) {
-  var padding = MediaQuery.of(videoState.context).padding;
+Widget buildDanmuView(BuildContext context, LiveRoomController controller) {
+  var padding = MediaQuery.of(context).padding;
   controller.danmakuView ??= DanmakuScreen(
     key: controller.globalDanmuKey,
     createdController: controller.initDanmakuController,
@@ -655,6 +625,7 @@ Widget buildDanmuView(VideoState videoState, LiveRoomController controller) {
       fontWeight: AppSettingsController.instance.danmuFontWeight.value,
     ),
   );
+
   return Positioned.fill(
     top: padding.top,
     bottom: padding.bottom,
@@ -807,7 +778,6 @@ void showPlayerSettings(LiveRoomController controller) {
             groupValue: AppSettingsController.instance.scaleMode.value,
             onChanged: (e) {
               AppSettingsController.instance.setScaleMode(e ?? 0);
-              controller.updateScaleMode();
             },
           ),
           RadioListTile(
@@ -818,7 +788,6 @@ void showPlayerSettings(LiveRoomController controller) {
             groupValue: AppSettingsController.instance.scaleMode.value,
             onChanged: (e) {
               AppSettingsController.instance.setScaleMode(e ?? 1);
-              controller.updateScaleMode();
             },
           ),
           RadioListTile(
@@ -829,7 +798,6 @@ void showPlayerSettings(LiveRoomController controller) {
             groupValue: AppSettingsController.instance.scaleMode.value,
             onChanged: (e) {
               AppSettingsController.instance.setScaleMode(e ?? 2);
-              controller.updateScaleMode();
             },
           ),
           RadioListTile(
@@ -840,7 +808,6 @@ void showPlayerSettings(LiveRoomController controller) {
             groupValue: AppSettingsController.instance.scaleMode.value,
             onChanged: (e) {
               AppSettingsController.instance.setScaleMode(e ?? 3);
-              controller.updateScaleMode();
             },
           ),
           RadioListTile(
@@ -851,7 +818,6 @@ void showPlayerSettings(LiveRoomController controller) {
             groupValue: AppSettingsController.instance.scaleMode.value,
             onChanged: (e) {
               AppSettingsController.instance.setScaleMode(e ?? 4);
-              controller.updateScaleMode();
             },
           ),
         ],

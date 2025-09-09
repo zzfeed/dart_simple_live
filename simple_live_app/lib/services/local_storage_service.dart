@@ -90,9 +90,6 @@ class LocalStorageService extends GetxService {
   /// 需要一个不同的 key，因为用户在房间内设置的倒计时和全局的可能不同。
   static const String kRoomAutoExitDuration = "RoomAutoExitDuration";
 
-  /// 播放器兼容模式
-  static const String kPlayerCompatMode = "PlayerCompatMode";
-
   /// 播放器后台自动暂停
   static const String kPlayerAutoPause = "PlayerAutoPause";
 
@@ -129,17 +126,14 @@ class LocalStorageService extends GetxService {
   /// 日志记录
   static const String kLogEnable = "LogEnable";
 
-  /// 开启自定义播放器视频输出
-  static const String kCustomPlayerOutput = "CustomPlayerOutput";
+  /// 开启自定义播放器解码器
+  static const String kCustomPlayerDecoder = "CustomPlayerDecoder";
 
-  /// 视频输出驱动
-  static const String kVideoOutputDriver = "VideoOutputDriver";
+  /// 视频解码器
+  static const String kVideoDecoder = "VideoDecoder";
 
-  /// 视频硬件解码器
-  static const String kVideoHardwareDecoder = "VideoHardwareDecoder";
-
-  /// 音频输出驱动
-  static const String kAudioOutputDriver = "AudioOutputDriver";
+  /// 音频解码器
+  static const String kAudioDecoder = "AudioDecoder";
 
   /// 开启自动更新关注
   static const String kAutoUpdateFollowEnable = "AutoUpdateFollowEnable";

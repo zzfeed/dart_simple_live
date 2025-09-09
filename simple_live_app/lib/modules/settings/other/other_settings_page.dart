@@ -71,10 +71,10 @@ class OtherSettingsPage extends GetView<OtherSettingsController> {
                     child: GestureDetector(
                       onTap: () {
                         launchUrlString(
-                            "https://mpv.io/manual/stable/#video-output-drivers");
+                            "https://github.com/wang-bin/mdk-sdk/wiki/Decoders");
                       },
                       child: const Text(
-                        "MPV的文档",
+                        "mdk-sdk/wiki",
                         style: TextStyle(
                           color: Colors.blue,
                           fontSize: 12,
@@ -93,47 +93,33 @@ class OtherSettingsPage extends GetView<OtherSettingsController> {
               children: [
                 Obx(
                   () => SettingsSwitch(
-                    value:
-                        AppSettingsController.instance.customPlayerOutput.value,
-                    title: "自定义输出驱动与硬件加速",
-                    onChanged: (e) {
-                      AppSettingsController.instance.setCustomPlayerOutput(e);
-                    },
-                  ),
-                ),
-                AppStyle.divider,
-                Obx(
-                  () => SettingsMenu(
-                    title: "视频输出驱动(--vo)",
-                    value:
-                        AppSettingsController.instance.videoOutputDriver.value,
-                    valueMap: controller.videoOutputDrivers,
-                    onChanged: (e) {
-                      AppSettingsController.instance.setVideoOutputDriver(e);
-                    },
-                  ),
-                ),
-                AppStyle.divider,
-                Obx(
-                  () => SettingsMenu(
-                    title: "音频输出驱动(--ao)",
-                    value:
-                        AppSettingsController.instance.audioOutputDriver.value,
-                    valueMap: controller.audioOutputDrivers,
-                    onChanged: (e) {
-                      AppSettingsController.instance.setAudioOutputDriver(e);
-                    },
-                  ),
-                ),
-                AppStyle.divider,
-                Obx(
-                  () => SettingsMenu(
-                    title: "硬件解码器(--hwdec)",
                     value: AppSettingsController
-                        .instance.videoHardwareDecoder.value,
-                    valueMap: controller.hardwareDecoder,
+                        .instance.customPlayerDecoder.value,
+                    title: "自定义解码器",
                     onChanged: (e) {
-                      AppSettingsController.instance.setVideoHardwareDecoder(e);
+                      AppSettingsController.instance.setCustomPlayerDecoder(e);
+                    },
+                  ),
+                ),
+                AppStyle.divider,
+                Obx(
+                  () => SettingsMenu(
+                    title: "视频解码器",
+                    value: AppSettingsController.instance.videoDecoder.value,
+                    valueMap: controller.videoDecoders,
+                    onChanged: (e) {
+                      AppSettingsController.instance.setVideoDecoder(e);
+                    },
+                  ),
+                ),
+                AppStyle.divider,
+                Obx(
+                  () => SettingsMenu(
+                    title: "音频解码器",
+                    value: AppSettingsController.instance.audioDecoder.value,
+                    valueMap: controller.audioDecoders,
+                    onChanged: (e) {
+                      AppSettingsController.instance.setAudioDecoder(e);
                     },
                   ),
                 ),

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:simple_live_app/app/constant.dart';
 import 'package:simple_live_app/app/log.dart';
 import 'package:simple_live_app/app/sites.dart';
@@ -13,7 +11,7 @@ class AppSettingsController extends GetxController {
       Get.find<AppSettingsController>();
 
   /// 缩放模式
-  var scaleMode = 0.obs;
+  RxInt scaleMode = 0.obs;
 
   var themeMode = 0.obs;
 
@@ -46,8 +44,6 @@ class AppSettingsController extends GetxController {
     danmuFontWeight.value = LocalStorageService.instance.getValue(
         LocalStorageService.kDanmuFontWeight, FontWeight.normal.index);
 
-    hardwareDecode.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kHardwareDecode, true);
     chatTextSize.value = LocalStorageService.instance
         .getValue(LocalStorageService.kChatTextSize, 14.0);
 
@@ -72,9 +68,6 @@ class AppSettingsController extends GetxController {
 
     roomAutoExitDuration.value = LocalStorageService.instance
         .getValue(LocalStorageService.kRoomAutoExitDuration, 60);
-
-    playerCompatMode.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kPlayerCompatMode, false);
 
     playerAutoPause.value = LocalStorageService.instance
         .getValue(LocalStorageService.kPlayerAutoPause, false);
@@ -118,32 +111,17 @@ class AppSettingsController extends GetxController {
       Log.initWriter();
     }
 
-    customPlayerOutput.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kCustomPlayerOutput, false);
+    customPlayerDecoder.value = LocalStorageService.instance
+        .getValue(LocalStorageService.kCustomPlayerDecoder, false);
 
-    videoOutputDriver.value = LocalStorageService.instance.getValue(
-      LocalStorageService.kVideoOutputDriver,
-      Platform.isAndroid ? "mediacodec_embed" : "libmpv",
+    videoDecoder.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kVideoDecoder,
+      "FFmpeg",
     );
 
-    audioOutputDriver.value = LocalStorageService.instance.getValue(
-      LocalStorageService.kAudioOutputDriver,
-      Platform.isAndroid
-          ? "audiotrack"
-          : Platform.isLinux
-              ? "pulse"
-              : Platform.isWindows
-                  ? "wasapi"
-                  : Platform.isIOS
-                      ? "audiounit"
-                      : Platform.isMacOS
-                          ? "coreaudio"
-                          : "sdl",
-    );
-
-    videoHardwareDecoder.value = LocalStorageService.instance.getValue(
-      LocalStorageService.kVideoHardwareDecoder,
-      Platform.isAndroid ? "mediacodec" : "auto",
+    audioDecoder.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kAudioDecoder,
+      "FFmpeg",
     );
 
     autoUpdateFollowEnable.value = LocalStorageService.instance
@@ -252,13 +230,6 @@ class AppSettingsController extends GetxController {
     Get.changeThemeMode(mode);
   }
 
-  var hardwareDecode = true.obs;
-  void setHardwareDecode(bool e) {
-    hardwareDecode.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kHardwareDecode, e);
-  }
-
   var chatTextSize = 14.0.obs;
   void setChatTextSize(double e) {
     chatTextSize.value = e;
@@ -355,13 +326,6 @@ class AppSettingsController extends GetxController {
     roomAutoExitDuration.value = e;
     LocalStorageService.instance
         .setValue(LocalStorageService.kRoomAutoExitDuration, e);
-  }
-
-  var playerCompatMode = false.obs;
-  void setPlayerCompatMode(bool e) {
-    playerCompatMode.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kPlayerCompatMode, e);
   }
 
   var playerBufferSize = 32.obs;
@@ -481,32 +445,23 @@ class AppSettingsController extends GetxController {
     LocalStorageService.instance.setValue(LocalStorageService.kLogEnable, e);
   }
 
-  var customPlayerOutput = false.obs;
-  void setCustomPlayerOutput(bool e) {
-    customPlayerOutput.value = e;
+  var customPlayerDecoder = false.obs;
+  void setCustomPlayerDecoder(bool e) {
+    customPlayerDecoder.value = e;
     LocalStorageService.instance
-        .setValue(LocalStorageService.kCustomPlayerOutput, e);
+        .setValue(LocalStorageService.kCustomPlayerDecoder, e);
   }
 
-  var videoOutputDriver = "".obs;
-  void setVideoOutputDriver(String e) {
-    videoOutputDriver.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kVideoOutputDriver, e);
+  var videoDecoder = "".obs;
+  void setVideoDecoder(String e) {
+    videoDecoder.value = e;
+    LocalStorageService.instance.setValue(LocalStorageService.kVideoDecoder, e);
   }
 
-  var audioOutputDriver = "".obs;
-  void setAudioOutputDriver(String e) {
-    audioOutputDriver.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kAudioOutputDriver, e);
-  }
-
-  var videoHardwareDecoder = "".obs;
-  void setVideoHardwareDecoder(String e) {
-    videoHardwareDecoder.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kVideoHardwareDecoder, e);
+  var audioDecoder = "".obs;
+  void setAudioDecoder(String e) {
+    audioDecoder.value = e;
+    LocalStorageService.instance.setValue(LocalStorageService.kAudioDecoder, e);
   }
 
   var autoUpdateFollowEnable = false.obs;

@@ -4,7 +4,6 @@ import 'package:floating/floating.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:media_kit_video/media_kit_video.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:simple_live_app/app/app_style.dart';
 import 'package:simple_live_app/app/constant.dart';
@@ -93,7 +92,7 @@ class LiveRoomPage extends GetView<LiveRoomController> {
               if (didPop) return;
             },
             child: Scaffold(
-              body: buildMediaPlayer(),
+              body: buildMediaPlayer(context),
             ),
           );
         } else {
@@ -107,7 +106,7 @@ class LiveRoomPage extends GetView<LiveRoomController> {
     return PiPSwitcher(
       floating: controller.pip,
       childWhenDisabled: page,
-      childWhenEnabled: buildMediaPlayer(),
+      childWhenEnabled: buildMediaPlayer(context),
     );
   }
 
@@ -134,7 +133,7 @@ class LiveRoomPage extends GetView<LiveRoomController> {
       children: [
         AspectRatio(
           aspectRatio: 16 / 9,
-          child: buildMediaPlayer(),
+          child: buildMediaPlayer(context),
         ),
         buildUserProfile(context),
         buildMessageArea(),
@@ -150,7 +149,7 @@ class LiveRoomPage extends GetView<LiveRoomController> {
           child: Row(
             children: [
               Expanded(
-                child: buildMediaPlayer(),
+                child: buildMediaPlayer(context),
               ),
               SizedBox(
                 width: 300,
@@ -252,51 +251,124 @@ class LiveRoomPage extends GetView<LiveRoomController> {
     );
   }
 
-  Widget buildMediaPlayer() {
-    var boxFit = BoxFit.contain;
-    double? aspectRatio;
-    if (AppSettingsController.instance.scaleMode.value == 0) {
-      boxFit = BoxFit.contain;
-    } else if (AppSettingsController.instance.scaleMode.value == 1) {
-      boxFit = BoxFit.fill;
-    } else if (AppSettingsController.instance.scaleMode.value == 2) {
-      boxFit = BoxFit.cover;
-    } else if (AppSettingsController.instance.scaleMode.value == 3) {
-      boxFit = BoxFit.contain;
-      aspectRatio = 16 / 9;
-    } else if (AppSettingsController.instance.scaleMode.value == 4) {
-      boxFit = BoxFit.contain;
-      aspectRatio = 4 / 3;
-    }
-    return Stack(
-      children: [
-        Video(
-          key: controller.globalPlayerKey,
-          controller: controller.videoController,
-          pauseUponEnteringBackgroundMode:
-              AppSettingsController.instance.playerAutoPause.value,
-          resumeUponEnteringForegroundMode:
-              AppSettingsController.instance.playerAutoPause.value,
-          controls: (state) {
-            return playerControls(state, controller);
-          },
-          aspectRatio: aspectRatio,
-          fit: boxFit,
-          // 自己实现
-          wakelock: false,
-        ),
-        Obx(
-          () => Visibility(
-            visible: !controller.liveStatus.value,
-            child: const Center(
-              child: Text(
-                "未开播",
-                style: TextStyle(fontSize: 16, color: Colors.white),
+  Widget buildMediaPlayer(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth;
+        final maxHeight = constraints.maxHeight;
+
+        return Obx(() {
+          final scaleMode = AppSettingsController.instance.scaleMode.value;
+
+          final videoW = (controller.width.value > 0)
+              ? controller.width.value.toDouble()
+              : 16.0;
+          final videoH = (controller.height.value > 0)
+              ? controller.height.value.toDouble()
+              : 9.0;
+
+          final parentAspect = maxWidth / maxHeight;
+          final videoAspect = videoW / videoH;
+
+          double displayWidth = maxWidth;
+          double displayHeight = maxHeight;
+          BoxFit boxFit = BoxFit.contain;
+
+          switch (scaleMode) {
+            case 0: // 适应
+              boxFit = BoxFit.contain;
+              break;
+            case 1: // 拉伸
+              boxFit = BoxFit.fill;
+              break;
+            case 2: // 铺满
+              boxFit = BoxFit.contain;
+              double scale = parentAspect > videoAspect
+                  ? maxWidth / videoW
+                  : maxHeight / videoH;
+              displayWidth = (videoW * scale).clamp(0, maxWidth);
+              displayHeight = (videoH * scale).clamp(0, maxHeight);
+              break;
+            case 3: // 16:9
+              boxFit = BoxFit.none;
+              final targetAspect = 16 / 9;
+              if (parentAspect > targetAspect) {
+                displayHeight = maxHeight;
+                displayWidth = displayHeight * targetAspect;
+              } else {
+                displayWidth = maxWidth;
+                displayHeight = displayWidth / targetAspect;
+              }
+              break;
+            case 4: // 4:3
+              boxFit = BoxFit.none;
+              final targetAspect = 4 / 3;
+              if (parentAspect > targetAspect) {
+                displayHeight = maxHeight;
+                displayWidth = displayHeight * targetAspect;
+              } else {
+                displayWidth = maxWidth;
+                displayHeight = displayWidth / targetAspect;
+              }
+              break;
+          }
+          Widget buildVideo(int id) {
+            if (scaleMode == 3 || scaleMode == 4) {
+              return SizedBox(
+                width: displayWidth,
+                height: displayHeight,
+                child: Texture(
+                  textureId: id,
+                  filterQuality: FilterQuality.medium,
+                ),
+              );
+            } else {
+              return SizedBox(
+                width: displayWidth,
+                height: displayHeight,
+                child: FittedBox(
+                  fit: boxFit,
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: videoW,
+                    height: videoH,
+                    child: Texture(
+                      textureId: id,
+                      filterQuality: FilterQuality.medium,
+                    ),
+                  ),
+                ),
+              );
+            }
+          }
+
+          return Stack(
+            children: [
+              Container(color: Colors.black),
+              Center(
+                child: ValueListenableBuilder<int?>(
+                  valueListenable: controller.player.textureId,
+                  builder: (_, id, __) => id == null
+                      ? const CircularProgressIndicator()
+                      : buildVideo(id),
+                ),
               ),
-            ),
-          ),
-        ),
-      ],
+              playerControls(context, controller),
+              Obx(
+                () => Visibility(
+                  visible: !controller.liveStatus.value,
+                  child: const Center(
+                    child: Text(
+                      "未开播",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        });
+      },
     );
   }
 
