@@ -11,7 +11,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:fvp/fvp.dart' as fvp;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:simple_live_app/app/app_style.dart';
@@ -35,14 +35,19 @@ import 'package:simple_live_app/services/local_storage_service.dart';
 import 'package:simple_live_app/services/migration_service.dart';
 import 'package:simple_live_app/services/sync_service.dart';
 import 'package:simple_live_app/services/window_service.dart';
-import 'package:simple_live_app/widgets/status/app_loadding_widget.dart';
+import 'package:simple_live_app/widgets/status/app_loading_widget.dart';
 import 'package:simple_live_core/simple_live_core.dart';
-import 'package:window_manager/window_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await MigrationService.migrateData();
-  MediaKit.ensureInitialized();
+  fvp.registerWith(options: {
+    'platforms': ['windows', 'macos', 'linux', 'android', 'ios'],
+    'lowLatency': 1,
+    'global': {
+      'log': 'off', // off, error, warning, info, debug, all(default)
+    }
+  });
   await Hive.initFlutter(
     (!Platform.isAndroid && !Platform.isIOS)
         ? (await getApplicationSupportDirectory()).path

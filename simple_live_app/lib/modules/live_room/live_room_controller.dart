@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:fvp/mdk.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:simple_live_app/app/app_style.dart';
 import 'package:simple_live_app/app/constant.dart';
@@ -420,6 +420,13 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   }
 
   void setPlayer() async {
+    // 初始化播放器
+    await initializePlayer();
+
+    if (player.state == PlaybackState.playing) {
+      player.state = PlaybackState.stopped;
+      player.waitFor(PlaybackState.stopped);
+    }
     currentLineInfo.value = "线路${currentLineIndex + 1}";
     errorMsg.value = "";
 
@@ -428,15 +435,19 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
       playurl = playurl.replaceAll("http://", "https://");
     }
 
-    // 初始化播放器并设置 ao 参数
-    await initializePlayer();
+    if (playHeaders != null && playHeaders!.isNotEmpty) {
+      final headers =
+          playHeaders!.entries.map((e) => "${e.key}: ${e.value}").join("\r\n");
+      player.setProperty("avio.headers", headers);
+    }
 
-    await player.open(
-      Media(
-        playurl,
-        httpHeaders: playHeaders,
-      ),
-    );
+    player.media = playurl;
+    player.prepare();
+    player.state = PlaybackState.playing;
+    if (player.textureId.value == null) {
+      player.updateTexture();
+    }
+
     Log.d("播放链接\r\n：$playurl");
   }
 
@@ -650,7 +661,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
                 max: 100,
                 value: AppSettingsController.instance.playerVolume.value,
                 onChanged: (newValue) {
-                  player.setVolume(newValue);
+                  player.volume = newValue / 100;
                   AppSettingsController.instance.setPlayerVolume(newValue);
                 },
               ),
@@ -722,7 +733,6 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
               groupValue: AppSettingsController.instance.scaleMode.value,
               onChanged: (e) {
                 AppSettingsController.instance.setScaleMode(e ?? 0);
-                updateScaleMode();
               },
             ),
             RadioListTile(
@@ -732,7 +742,6 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
               groupValue: AppSettingsController.instance.scaleMode.value,
               onChanged: (e) {
                 AppSettingsController.instance.setScaleMode(e ?? 1);
-                updateScaleMode();
               },
             ),
             RadioListTile(
@@ -742,7 +751,6 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
               groupValue: AppSettingsController.instance.scaleMode.value,
               onChanged: (e) {
                 AppSettingsController.instance.setScaleMode(e ?? 2);
-                updateScaleMode();
               },
             ),
             RadioListTile(
@@ -752,7 +760,6 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
               groupValue: AppSettingsController.instance.scaleMode.value,
               onChanged: (e) {
                 AppSettingsController.instance.setScaleMode(e ?? 3);
-                updateScaleMode();
               },
             ),
             RadioListTile(
@@ -762,7 +769,6 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
               groupValue: AppSettingsController.instance.scaleMode.value,
               onChanged: (e) {
                 AppSettingsController.instance.setScaleMode(e ?? 4);
-                updateScaleMode();
               },
             ),
           ],
@@ -1028,7 +1034,8 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
     liveDanmaku = site.liveSite.getDanmaku();
 
     // 停止播放
-    await player.stop();
+    player.state = PlaybackState.stopped;
+    player.waitFor(PlaybackState.stopped);
 
     // 刷新信息
     loadData();
