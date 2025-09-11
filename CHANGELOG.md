@@ -1,6 +1,24 @@
 # Changelog
 
 <details>
+<summary>v1.8.0911</summary>
+
+### 功能
+
+-   重构播放器，从 media_kit 迁移到 fvp
+-   播放器支持全屏模式自动隐藏鼠标指针
+-   支持刷新当前关注用户信息 by [@SlotSun](https://github.com/SlotSun)
+-   记忆窗口大小功能 by [@SlotSun](https://github.com/SlotSun)
+-   支持设置播放器中 SC 显示隐藏 by [@xiaoyaocz](https://github.com/xiaoyaocz)
+
+### 修复
+
+-   修复部分标签功能的问题 by [@SlotSun](https://github.com/SlotSun)
+-   修复抖音解析 & abogus 算法
+
+</details>
+
+<details>
 <summary>v1.8.0822</summary>
 
 ### 修复
