@@ -59,6 +59,21 @@ Widget buildFullControls(
     child: Stack(
       children: [
         Container(),
+        buildDanmuView(videoState, controller),
+
+        // 左下角SC显示
+        Obx(
+          () => Visibility(
+            visible: AppSettingsController.instance.playershowSuperChat.value &&
+                ((!Platform.isAndroid && !Platform.isIOS) ||
+                    controller.fullScreenState.value),
+            child: Positioned(
+              left: 24,
+              bottom: 24,
+              child: PlayerSuperChatOverlay(controller: controller),
+            ),
+          ),
+        ),
 
         Center(
           child: // 中间
@@ -436,6 +451,21 @@ Widget buildControls(
   return Stack(
     children: [
       Container(),
+      buildDanmuView(videoState, controller),
+
+      // 左下角SC显示
+      Obx(
+        () => Visibility(
+          visible: AppSettingsController.instance.playershowSuperChat.value &&
+              ((!Platform.isAndroid && !Platform.isIOS) ||
+                  controller.fullScreenState.value),
+          child: Positioned(
+            left: 24,
+            bottom: 24,
+            child: PlayerSuperChatOverlay(controller: controller),
+          ),
+        ),
+      ),
 
       // 中间
       Center(

@@ -385,6 +385,13 @@ class AppSettingsController extends GetxController {
         .setValue(LocalStorageService.kAutoFullScreen, e);
   }
 
+  var playershowSuperChat = true.obs;
+  void setPlayerShowSuperChat(bool e) {
+    playershowSuperChat.value = e;
+    LocalStorageService.instance
+        .setValue(LocalStorageService.kPlayerShowSuperChat, e);
+  }
+
   RxSet<String> shieldList = <String>{}.obs;
   void addShieldList(String e) {
     shieldList.add(e);

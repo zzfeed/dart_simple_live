@@ -121,8 +121,6 @@ class FollowUserController extends BasePageController<FollowUser> {
     filterData();
   }
 
-  void removeIdFromTag() {}
-
   Future removeTag(FollowUserTag tag) async {
     // 将tag下的所有follow设置为全部
     for (var i in tag.userId) {

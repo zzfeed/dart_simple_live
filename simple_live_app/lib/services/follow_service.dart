@@ -85,7 +85,8 @@ class FollowService extends GetxService {
     followTagList.add(item);
   }
 
-  Future delFollowUserTag(FollowUserTag tag) async {
+  // 删除标签
+  Future<void> delFollowUserTag(FollowUserTag tag) async {
     followTagList.remove(tag);
     await DBService.instance.deleteFollowTag(tag.id);
   }
