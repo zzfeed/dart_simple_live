@@ -105,13 +105,28 @@ class OtherSettingsPage extends GetView<OtherSettingsController> {
                 Obx(
                   () => SettingsMenu(
                     title: "视频解码器",
-                    value: AppSettingsController.instance.videoDecoder.value,
+                    value: controller.displayVideoDecoder.value,
                     valueMap: controller.videoDecoders,
                     onChanged: (e) {
-                      AppSettingsController.instance.setVideoDecoder(e);
+                      controller.handleVideoDecoderSelection(e);
                     },
                   ),
                 ),
+                Obx(() => controller.displayVideoDecoder.value ==
+                        OtherSettingsController.customDecoderKey
+                    ? Column(
+                        children: [
+                          AppStyle.divider,
+                          ListTile(
+                            title: const Text("编辑自定义解码器"),
+                            subtitle: Text(controller.customVideoDecoder.value),
+                            dense: true,
+                            trailing: const Icon(Icons.edit, size: 18),
+                            onTap: () => controller.editCustomDecoder(),
+                          ),
+                        ],
+                      )
+                    : const SizedBox.shrink()),
                 AppStyle.divider,
                 Obx(
                   () => SettingsMenu(

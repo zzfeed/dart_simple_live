@@ -174,6 +174,7 @@ mixin PlayerStateMixin on PlayerMixin {
     );
   }
 }
+
 mixin PlayerDanmakuMixin on PlayerStateMixin {
   /// 弹幕控制器
   late DanmakuController? danmakuController;
@@ -728,8 +729,7 @@ class PlayerController extends BaseController
             Log.d("解码器已打开: ${event.category}, name=${event.detail}");
             if (event.category == "decoder.video") {
               videoDecoderName = event.detail;
-            }
-            if (event.category == "decoder.audio") {
+            } else {
               audioDecoderName = event.detail;
             }
           }
@@ -740,8 +740,8 @@ class PlayerController extends BaseController
             Log.d("视频帧大小变化");
 
             final info = player.mediaInfo;
-            if (info.video != null && info.video!.isNotEmpty) {
-              final vc = info.video![0].codec;
+            if (info.video?.isNotEmpty ?? false) {
+              final vc = info.video!.first.codec;
               width.value = vc.width;
               height.value = vc.height;
               Log.d("视频宽: ${vc.width}, 高: ${vc.height}, 帧率: ${vc.frameRate}");
@@ -761,11 +761,7 @@ class PlayerController extends BaseController
           break;
 
         case "snapshot":
-          if (event.error == 0) {
-            Log.d("截图成功: ${event.detail}");
-          } else {
-            Log.d("截图失败: ${event.detail}");
-          }
+          Log.d("${event.error == 0 ? "截图成功" : "截图失败"}: ${event.detail}");
           break;
 
         case "metadata":
@@ -778,11 +774,9 @@ class PlayerController extends BaseController
           );
           break;
       }
-
-      return;
     });
-    _escSubscription =
-        EventBus.instance.listen(EventBus.kEscapePressed, (event) {
+
+    _escSubscription = EventBus.instance.listen(EventBus.kEscapePressed, (_) {
       exitFull();
     });
   }

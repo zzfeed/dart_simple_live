@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
@@ -17,41 +18,45 @@ import 'package:simple_live_app/services/local_storage_service.dart';
 class OtherSettingsController extends BaseController {
   RxList<LogFileModel> logFiles = <LogFileModel>[].obs;
 
-  var audioDecoders = <String, String>{
-    "FFmpeg": "FFmpeg",
-    "MFT": "MFT",
-    "AMediaCodec": "AMediaCodec",
-  }.obs;
+  static const String customDecoderKey = "Custom";
 
-  var videoDecoders = <String, String>{
-    "FFmpeg": "FFmpeg",
-  }.obs;
+  RxString customVideoDecoder = "".obs;
+  RxString displayVideoDecoder = "".obs;
+
+  var videoDecoders = <String, String>{}.obs;
+  var audioDecoders = <String, String>{}.obs;
 
   @override
   void onInit() {
     loadLogFiles();
-    initDecodersAndOptions();
+    initDecoders();
     super.onInit();
   }
 
-  void initDecodersAndOptions() {
+  void initDecoders() {
+    videoDecoders.value = {
+      "FFmpeg": "FFmpeg (通用软件解码器)",
+      customDecoderKey: "自定义解码器..."
+    };
+
     if (Platform.isWindows) {
       videoDecoders.addAll({
-        "MFT": "MFT",
-        "CUDA": "CUDA",
+        "MFT:d3d=11": "D3D11 (MFT D3D11)",
+        "MFT:d3d=12": "D3D12 (MFT D3D12)",
+        "D3D11": "D3D11 (FFmpeg D3D11)",
+        "D3D12": "D3D12 (FFmpeg D3D12)",
+        "DXVA": "DXVA (旧版支持)",
+        "QSV": "QSV (Intel QuickSync)",
+        "CUDA": "CUDA (NVIDIA GPU)",
+        "NVDEC": "NVDEC (NVIDIA专用)",
         "VAAPI": "VAAPI",
         "hap": "hap",
-        "D3D12": "D3D12",
-        "D3D11": "D3D11",
-        "DXVA": "DXVA",
-        "QSV": "QSV",
-        "NVDEC": "NVDEC",
       });
     } else if (Platform.isMacOS || Platform.isIOS) {
       videoDecoders.addAll({
         "VT": "VT",
-        "hap": "hap (Macos Only)",
         "VideoToolbox": "VideoToolbox",
+        "hap": "hap (MacOS Only)",
       });
     } else if (Platform.isAndroid) {
       videoDecoders.addAll({
@@ -60,13 +65,96 @@ class OtherSettingsController extends BaseController {
       });
     } else if (Platform.isLinux) {
       videoDecoders.addAll({
-        "CUDA": "CUDA",
-        "VAAPI": "VAAPI",
-        "VDPAU": "VDPAU",
+        "CUDA": "CUDA (NVIDIA GPU)",
+        "VAAPI": "VAAPI (Intel/AMD GPU)",
+        "VDPAU": "VDPAU (NVIDIA)",
+        "NVDEC": "NVDEC (NVIDIA专用)",
+        "rkmpp": "rkmpp (RockChip)",
+        "V4L2M2M": "V4L2M2M (视频硬件解码API)",
         "hap": "hap",
-        "NVDEC": "NVDEC",
       });
     }
+
+    audioDecoders.value = {
+      "FFmpeg": "FFmpeg (通用音频解码器)",
+      "MFT": Platform.isWindows ? "Windows MFT解码器" : "",
+      "AMediaCodec": Platform.isAndroid ? "Android AMediaCodec" : "",
+    }..removeWhere((key, value) => value.isEmpty);
+
+    String savedDecoder = AppSettingsController.instance.videoDecoder.value;
+    if (videoDecoders.containsKey(savedDecoder) &&
+        savedDecoder != customDecoderKey) {
+      displayVideoDecoder.value = savedDecoder;
+    } else if (savedDecoder.isNotEmpty) {
+      customVideoDecoder.value = savedDecoder;
+      displayVideoDecoder.value = customDecoderKey;
+      videoDecoders[customDecoderKey] = "自定义解码器 (${customVideoDecoder.value})";
+    } else {
+      String defaultDecoder = "FFmpeg";
+      displayVideoDecoder.value = defaultDecoder;
+      AppSettingsController.instance.setVideoDecoder(defaultDecoder);
+    }
+  }
+
+  void handleVideoDecoderSelection(String selection) {
+    if (selection == customDecoderKey) {
+      showCustomDecoderDialog();
+    } else {
+      displayVideoDecoder.value = selection;
+      AppSettingsController.instance.setVideoDecoder(selection);
+    }
+  }
+
+  void editCustomDecoder() {
+    showCustomDecoderDialog();
+  }
+
+  void showCustomDecoderDialog() {
+    TextEditingController textController =
+        TextEditingController(text: customVideoDecoder.value);
+
+    Get.dialog(
+      AlertDialog(
+        title: const Text("输入自定义解码器"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: textController,
+              decoration: const InputDecoration(
+                labelText: "解码器字符串",
+                hintText: "例如: FFmpeg:hwaccel=cuda:hwcontext=cuda",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              "格式: DecoderName:key1=value1:key2=value2",
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text("取消")),
+          TextButton(
+            onPressed: () {
+              String input = textController.text.trim();
+              if (input.isNotEmpty) {
+                customVideoDecoder.value = input;
+                videoDecoders[customDecoderKey] =
+                    "自定义解码器 (${customVideoDecoder.value})";
+                displayVideoDecoder.value = customDecoderKey;
+                AppSettingsController.instance.setVideoDecoder(input);
+                Get.back();
+              } else {
+                SmartDialog.showToast("请输入有效的解码器字符串");
+              }
+            },
+            child: const Text("确定"),
+          ),
+        ],
+      ),
+    );
   }
 
   void setLogEnable(dynamic e) {
