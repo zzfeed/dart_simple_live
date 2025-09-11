@@ -203,20 +203,14 @@ jobs:
             - name: Install fastforge
               run: dart pub global activate fastforge
 
-            - name: Read version
-              id: get_version
-              run: |
-                  $content = Get-Content simple_live_app\pubspec.yaml
-                  $versionLine = $content | Where-Object { $_ -match '^\s*version\s*:' }
-                  $version = ($versionLine -replace '^\s*version\s*:\s*', '') -split '\+' | Select-Object -First 1
-                  Write-Output "version=$version" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8
-
             - name: Build Windows
               run: cd simple_live_app && fastforge package --platform windows --targets msix,zip --skip-clean
 
             - name: Rename
               run: |
-                  $version = (Get-Content $Env:GITHUB_OUTPUT | Select-String 'version=(.*)' | ForEach-Object { $_.Matches[0].Groups[1].Value })
+                  $content = Get-Content simple_live_app\pubspec.yaml
+                  $versionLine = $content | Where-Object { $_ -match '^\s*version\s*:' } | Select-Object -First 1
+                  $version = ($versionLine -replace '^\s*version\s*:\s*', '') -split '\+' | Select-Object -First 1
                   $artifactDir = "artifacts\windows"
                   New-Item -ItemType Directory -Force -Path $artifactDir
                   Get-ChildItem simple_live_app\build\dist\**\*.* | ForEach-Object {

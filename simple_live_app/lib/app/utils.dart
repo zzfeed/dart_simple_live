@@ -369,7 +369,9 @@ class Utils {
     try {
       int currentVer = Utils.parseVersion(packageInfo.version);
       CommonRequest request = CommonRequest();
+      Log.logPrint("检查更新 - 当前版本: $currentVer");
       var versionInfo = await request.checkUpdate();
+      Log.logPrint("检查更新 - 远程版本: ${versionInfo.versionNum}");
       if (versionInfo.versionNum > currentVer) {
         Get.dialog(
           AlertDialog(
@@ -379,7 +381,7 @@ class Utils {
               style: const TextStyle(fontSize: 18),
             ),
             content: Text(
-              versionInfo.versionDesc,
+              versionInfo.versionDesc ?? "新版本已发布，建议更新",
               style: const TextStyle(fontSize: 14, height: 1.4),
             ),
             actionsPadding: AppStyle.edgeInsetsH12,
@@ -430,11 +432,10 @@ class Utils {
 
   static int parseVersion(String version) {
     var sp = version.split('.');
-    var num = "";
-    for (var item in sp) {
-      num = num + item.padLeft(2, '0');
-    }
-    return int.parse(num);
+    final major = int.parse(sp[0]);
+    final minor = int.parse(sp[1]);
+    final patch = int.parse(sp[2]);
+    return major * 100000 + minor * 10000 + patch;
   }
 
   static String onlineToString(int num) {
