@@ -94,8 +94,6 @@
 
 [TarsCloud/Tars](https://github.com/TarsCloud/Tars)
 
-[YunzhiYike/douyin-live](https://github.com/YunzhiYike/douyin-live)
-
 [5ime/Tiktok_Signature](https://github.com/5ime/Tiktok_Signature)
 
 [biliup](https://github.com/biliup/biliup)

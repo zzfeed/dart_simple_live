@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:simple_live_core/simple_live_core.dart';
 import 'package:simple_live_core/src/common/convert_helper.dart';
 import 'package:simple_live_core/src/common/douyin/douyin_utils.dart';
+import 'package:simple_live_core/src/common/douyin/douyin_utils.dart';
 import 'package:simple_live_core/src/common/http_client.dart';
 
 mixin DouyinRequestParams {
@@ -36,7 +37,8 @@ class DouyinSite implements LiveSite {
 
   Future<Map<String, dynamic>> getRequestHeaders() async {
     try {
-      if (headers.containsKey("cookie")) {
+      final existCookies = headers['cookie'] ?? '';
+      if (existCookies.contains('ttwid')) {
         return headers;
       }
       var head = await HttpClient.instance
@@ -44,7 +46,8 @@ class DouyinSite implements LiveSite {
       head.headers["set-cookie"]?.forEach((element) {
         var cookie = element.split(";")[0];
         if (cookie.contains("ttwid")) {
-          headers["cookie"] = cookie;
+          final newCookie = '$cookie; $existCookies';
+          headers['cookie'] = newCookie;
         }
       });
       return headers;
