@@ -776,6 +776,17 @@ class PlayerController extends BaseController
       }
     });
 
+    player.onStateChanged((oldState, newState) {
+      Log.d("播放状态变化: $oldState => $newState");
+      switch (newState) {
+        case PlaybackState.playing:
+          WakelockPlus.enable();
+          break;
+        default:
+          break;
+      }
+    });
+
     _escSubscription = EventBus.instance.listen(EventBus.kEscapePressed, (_) {
       exitFull();
     });

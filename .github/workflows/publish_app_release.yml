@@ -117,7 +117,7 @@ jobs:
                       ;;
                     ios)
                       cd simple_live_app
-                      flutter build ios --release --no-codesign --no-simulator && \
+                      flutter build ios --release --no-codesign && \
                       mkdir -p build/ios/iphoneos/Payload && \
                       cp -R build/ios/iphoneos/Runner.app build/ios/iphoneos/Payload/Runner.app && \
                       cd build/ios/iphoneos && \
