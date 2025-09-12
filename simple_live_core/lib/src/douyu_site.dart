@@ -197,24 +197,6 @@ class DouyuSite implements LiveSite {
         });
     var crptext = json.decode(jsEncResult)["data"]["room$roomId"].toString();
 
-    if (showTime != null && showTime.isNotEmpty) {
-      try {
-        int startTimeStamp = int.parse(showTime);
-        int currentTimeStamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-        int durationInSeconds = currentTimeStamp - startTimeStamp;
-
-        int hours = durationInSeconds ~/ 3600;
-        int minutes = (durationInSeconds % 3600) ~/ 60;
-        int seconds = durationInSeconds % 60;
-
-        String formattedDuration =
-            '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-        print('斗鱼直播间 $roomId 开播时长: $formattedDuration');
-      } catch (e) {
-        print('计算开播时长出错: $e');
-      }
-    }
-
     return LiveRoomDetail(
       cover: roomInfo["room_pic"].toString(),
       online: int.tryParse(roomInfo["room_biz_all"]["hot"].toString()) ?? 0,

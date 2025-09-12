@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   dynamic_color
+  flutter_qjs
   fvp
   screen_retriever_linux
   url_launcher_linux
@@ -12,7 +13,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
-  jsf
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)
