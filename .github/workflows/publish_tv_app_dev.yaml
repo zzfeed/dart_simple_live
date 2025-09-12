@@ -94,12 +94,12 @@ jobs:
                   ARTIFACT_DIR=artifacts/$PLATFORM
                   mkdir -p $ARTIFACT_DIR
 
-                  if [ "$PLATFORM" = "android" ]; then
-                    for f in simple_live_app/build/app/outputs/flutter-apk/*.apk; do
+                  if [ "$PLATFORM" = "androidtv" ]; then
+                    for f in simple_live_tv_app/build/app/outputs/flutter-apk/*.apk; do
                       [ -e "$f" ] || continue
                       EXT="${f##*.}"
                       ARCH=$(basename "$f" | sed -E 's/^app-(.*)-release\.apk$/\1/')
-                      mv "$f" "$ARTIFACT_DIR/simple_live_app-$PLATFORM-$ARCH.$EXT"
+                      mv "$f" "$ARTIFACT_DIR/simple_live_tv-$PLATFORM-$ARCH.$EXT"
                     done
                   elif [ "$PLATFORM" = "ios" ]; then
                     mv simple_live_app/build/ios/iphoneos/ios_no_sign.ipa \
