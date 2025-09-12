@@ -9,106 +9,161 @@ on:
             - 'simple_live_tv_app/**'
 
 jobs:
-    # AndroidTV
-    build-android-tv:
-        runs-on: macos-latest
-        permissions:
-            contents: write
-        env:
-            TV_KEYSTORE_BASE64: ${{ secrets.TV_KEYSTORE_BASE64 }}
-            TV_STORE_PASSWORD: ${{ secrets.TV_STORE_PASSWORD }}
-            TV_KEY_PASSWORD: ${{ secrets.TV_KEY_PASSWORD }}
-            TV_KEY_ALIAS: ${{ secrets.TV_KEY_ALIAS }}
+    build:
+        strategy:
+            matrix:
+                platform: [androidtv]
+            fail-fast: false
+        runs-on: ${{ matrix.platform == 'linux' && 'ubuntu-22.04' || 'macos-latest' }}
+        continue-on-error: true
+
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+            - uses: actions/checkout@v4
               with:
                   ref: dev
 
-            # Android TV 签名
-            - name: Decode Android TV keystore
-              if: env.TV_KEYSTORE_BASE64 != ''
+            # Keystore 配置
+            - name: Setup keystore
+              if: matrix.platform == 'androidtv'
+              id: keystore
               uses: timheuer/base64-to-file@v1.2
-              id: android_tv_keystore
               with:
-                  fileName: keystore_tv.jks
-                  encodedString: ${{ env.TV_KEYSTORE_BASE64 }}
-            - name: Create Android TV key.properties
-              if: env.TV_KEYSTORE_BASE64 != ''
+                  fileName: keystore-${{ matrix.platform }}.jks
+                  encodedString: ${{ secrets.TV_KEYSTORE_BASE64 }}
+
+            - name: Create key.properties
+              if: matrix.platform == 'androidtv'
               run: |
-                  echo "storeFile=${{ steps.android_tv_keystore.outputs.filePath }}" > simple_live_tv_app/android/key.properties
-                  echo "storePassword=${{ env.TV_STORE_PASSWORD }}" >> simple_live_tv_app/android/key.properties
-                  echo "keyPassword=${{ env.TV_KEY_PASSWORD }}" >> simple_live_tv_app/android/key.properties
-                  echo "keyAlias=${{ env.TV_KEY_ALIAS }}" >> simple_live_tv_app/android/key.properties
+                  if [ "${{ matrix.platform }}" = "android" ]; then
+                    APP_DIR=simple_live_app
+                    STORE_PASSWORD=${{ secrets.STORE_PASSWORD }}
+                    KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
+                    KEY_ALIAS=${{ secrets.KEY_ALIAS }}
+                  else
+                    APP_DIR=simple_live_tv_app
+                    STORE_PASSWORD=${{ secrets.TV_STORE_PASSWORD }}
+                    KEY_PASSWORD=${{ secrets.TV_KEY_PASSWORD }}
+                    KEY_ALIAS=${{ secrets.TV_KEY_ALIAS }}
+                  fi
 
-            - name: Setup Java environment
-              uses: actions/setup-java@v4
+                  echo "storeFile=${{ steps.keystore.outputs.filePath }}" > $APP_DIR/android/key.properties
+                  echo "storePassword=$STORE_PASSWORD" >> $APP_DIR/android/key.properties
+                  echo "keyPassword=$KEY_PASSWORD" >> $APP_DIR/android/key.properties
+                  echo "keyAlias=$KEY_ALIAS" >> $APP_DIR/android/key.properties
+
+            - uses: actions/setup-java@v4
+              if: matrix.platform == 'androidtv'
               with:
-                  distribution: zulu
+                  distribution: 'zulu'
                   java-version: '17'
-                  cache: gradle
+                  cache: 'gradle'
 
-            - name: Setup Flutter environment
+            - name: Setup Flutter
               uses: subosito/flutter-action@v2
               with:
                   flutter-version: '3.32.0'
                   cache: true
 
-            - name: Get Flutter dependencies
-              run: cd simple_live_tv_app && flutter pub get
-
-            - name: Install fast-forge
-              run: |
-                  git clone https://github.com/fastforgedev/fastforge.git
-                  cd fastforge
-                  dart pub global activate melos
-                  melos run activate
-
-            - name: Build Android TV APK
+            - name: Restore packages
               run: |
                   cd simple_live_tv_app
-                  flutter build apk --release --split-per-abi
-                  cd build/app/outputs/flutter-apk
-                  for file in app-*-release.apk; do
-                    abi=$(echo "$file" | sed -E 's/app-(.*)-release\.apk/\1/')
-                    mv "$file" "app-tv-${abi}-release.apk"
-                  done
+                  flutter pub get
 
-            - name: Upload Android TV APK artifacts
+            - name: Install fastforge
+              run: dart pub global activate fastforge
+
+            - name: Read version
+              id: get_version
+              run: |
+                  VERSION=$(grep '^version:' simple_live_tv_app/pubspec.yaml | awk '{print $2}' | cut -d+ -f1)
+                  echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+            - name: Build
+              run: |
+                  case "${{ matrix.platform }}" in
+                    androidtv)
+                      cd simple_live_tv_app
+                      fastforge package --platform=android --targets=apk --skip-clean --flutter-build-args=split-per-abi
+                      ;;
+                  esac
+
+            - name: Rename
+              run: |
+                  PLATFORM=${{ matrix.platform }}
+                  VERSION=${{ steps.get_version.outputs.version }}
+                  ARTIFACT_DIR=artifacts/$PLATFORM
+                  mkdir -p $ARTIFACT_DIR
+
+                  if [ "$PLATFORM" = "android" ]; then
+                    for f in simple_live_app/build/app/outputs/flutter-apk/*.apk; do
+                      [ -e "$f" ] || continue
+                      EXT="${f##*.}"
+                      ARCH=$(basename "$f" | sed -E 's/^app-(.*)-release\.apk$/\1/')
+                      mv "$f" "$ARTIFACT_DIR/simple_live_app-$PLATFORM-$ARCH.$EXT"
+                    done
+                  elif [ "$PLATFORM" = "ios" ]; then
+                    mv simple_live_app/build/ios/iphoneos/ios_no_sign.ipa \
+                      "$ARTIFACT_DIR/simple_live_app-$PLATFORM.ipa"
+                  elif [ "$PLATFORM" = "linux" ]; then
+                    for f in simple_live_app/build/dist/*/*.{deb,zip}; do
+                      [ -e "$f" ] || continue
+                      EXT="${f##*.}"
+                      mv "$f" "$ARTIFACT_DIR/simple_live_app-$PLATFORM.$EXT"
+                    done
+                  elif [ "$PLATFORM" = "macos" ]; then
+                    for f in simple_live_app/build/dist/*/*.{dmg,zip}; do
+                      [ -e "$f" ] || continue
+                      EXT="${f##*.}"
+                      mv "$f" "$ARTIFACT_DIR/simple_live_app-$PLATFORM.$EXT"
+                    done
+                  fi
+
+            - name: Upload artifacts
               uses: actions/upload-artifact@v4
               with:
-                  name: android_tv
-                  path: simple_live_tv_app/build/app/outputs/flutter-apk/app-tv-*-release.apk
+                  name: ${{ matrix.platform }}
+                  path: artifacts/${{ matrix.platform }}/*
 
-            - name: AndroidTV build done
-              run: echo "🍏 AndroidTV build done."
+            - name: Show build status
+              run: |
+                  echo "🍏 ${{ matrix.platform }} build status: ${{ job.status }}"
 
     release-dev:
-        needs: [build-android-tv]
+        needs: [build]
         runs-on: ubuntu-latest
         permissions:
             contents: write
         steps:
-            - uses: actions/download-artifact@v4
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Download artifacts
+              uses: actions/download-artifact@v4
               with:
                   path: artifacts
                   merge-multiple: true
 
-            - name: Generate release timestamp
-              id: datetime
-              run: echo "value=$(date +'%Y-%m-%d %H:%M')" >> "$GITHUB_OUTPUT"
-
             - name: Install GitHub CLI
               run: sudo apt-get update && sudo apt-get install -y gh
 
-            - name: Upload TV release assets
+            - name: Create or update GitHub Release
               run: |
-                  gh release create dev ./artifacts/* \
-                    --notes "Automated dev build at ${{ steps.datetime.outputs.value }}" \
-                    --prerelease --title "dev ${{ steps.datetime.outputs.value }}" --repo ${{ github.repository }} || true
-                  gh release upload dev artifacts/* --clobber --repo ${{ github.repository }}
+                  TAG=dev
+                  echo "Publishing release for $TAG"
+
+                  if gh release view "$TAG" --repo ${{ github.repository }} >/dev/null 2>&1; then
+                    echo "Release $TAG already exists, updating notes..."
+                    gh release edit "$TAG" \
+                      --repo ${{ github.repository }}
+                  else
+                    gh release create "$TAG" \
+                      --title "$TAG" \
+                      --repo ${{ github.repository }}
+                  fi
+
+                  find artifacts -type f | xargs gh release upload "$TAG" --clobber --repo ${{ github.repository }}
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Release updated
-              run: echo "🎉 TV APK added to dev pre-release."
+            - name: Release created
+              run: echo "🎉 Pre-release dev updated."
