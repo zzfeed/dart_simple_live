@@ -478,8 +478,8 @@ class Utils {
         return true;
       }
       Permission permission = Permission.storage;
-      var androidIndo = await deviceInfo.androidInfo;
-      if (androidIndo.version.sdkInt >= 33) {
+      var androidInfo = await deviceInfo.androidInfo;
+      if (androidInfo.version.sdkInt >= 33) {
         permission = Permission.manageExternalStorage;
       }
 

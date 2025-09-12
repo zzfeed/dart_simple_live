@@ -118,7 +118,7 @@ class LiveRoomPage extends GetView<LiveRoomController> {
             title: Obx(
               () => Text(controller.detail.value?.title ?? "直播间"),
             ),
-            actions: buildAppbarActions(context),
+            actions: buildAppBarActions(context),
           ),
           body: orientation == Orientation.portrait
               ? buildPhoneUI(context)
@@ -905,7 +905,7 @@ class LiveRoomPage extends GetView<LiveRoomController> {
     );
   }
 
-  List<Widget> buildAppbarActions(BuildContext context) {
+  List<Widget> buildAppBarActions(BuildContext context) {
     return [
       IconButton(
         onPressed: () {

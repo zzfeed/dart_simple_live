@@ -17,8 +17,7 @@ class MigrationService {
     }
     var hiveFileList = [
       "followuser",
-      //旧版本写错成hostiry了
-      "hostiry",
+      "history",
       "followusertag",
       "localstorage",
       "danmushield",
@@ -35,9 +34,6 @@ class MigrationService {
         var oldFile = File(p.join(oldDir.path, "$element.hive"));
         if (await oldFile.exists()) {
           var fileName = "$element.hive";
-          if (element == "hostiry") {
-            fileName = "history.hive";
-          }
           await oldFile.copy(p.join(newDir.path, fileName));
           await oldFile.delete();
         }
