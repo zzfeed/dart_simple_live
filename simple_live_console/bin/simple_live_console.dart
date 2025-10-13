@@ -82,17 +82,15 @@ Future printDanmaku(String url) async {
   print("房间标题：${detail.title}");
   print("直播用户：${detail.userName}");
   print("状态：${(detail.status ? "直播中" : "未开播")}");
-  var danmaku = site.getDanmaku();
-  danmaku.onMessage = (LiveMessage e) {
-    if (e.type == LiveMessageType.online) {
-      print("-----人气值：${e.data}-----");
-    } else if (e.type == LiveMessageType.chat) {
-      print("${e.userName}：${e.message}");
+  var danmaku = site.getDanmaku()
+    ..onMessage = (LiveMessage e) {
+      if (e.type == LiveMessageType.online) {
+        print("-----人气值：${e.data}-----");
+      } else if (e.type == LiveMessageType.chat) {
+        print("${e.userName}：${e.message}");
+      }
     }
-  };
-  danmaku.onClose = (String e) {
-    print(e);
-  };
+    ..onClose = print;
 
   print("【开始获取弹幕】");
   await danmaku.start(detail.danmakuData);

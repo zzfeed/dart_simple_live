@@ -37,12 +37,14 @@ class SearchAnchorController extends BasePageController<LiveAnchorItemExt> {
     var result = await site.liveSite.searchAnchors(keyword, page: page);
 
     return result.items
-        .map((e) => LiveAnchorItemExt(
-              roomId: e.roomId,
-              avatar: e.avatar,
-              liveStatus: e.liveStatus,
-              userName: e.userName,
-            ))
+        .map(
+          (e) => LiveAnchorItemExt(
+            roomId: e.roomId,
+            avatar: e.avatar,
+            liveStatus: e.liveStatus,
+            userName: e.userName,
+          ),
+        )
         .toList();
   }
 

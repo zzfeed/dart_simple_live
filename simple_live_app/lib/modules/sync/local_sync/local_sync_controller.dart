@@ -35,7 +35,7 @@ class LocalSyncController extends BaseController {
   TextEditingController addressController = TextEditingController();
   SyncClientRequest request = SyncClientRequest();
 
-  void connect() async {
+  Future<void> connect() async {
     var address = addressController.text;
     if (address.isEmpty) {
       SmartDialog.showToast("请输入地址");
@@ -61,7 +61,7 @@ class LocalSyncController extends BaseController {
     connectClient(client);
   }
 
-  void connectClient(SyncClient client) async {
+  Future<void> connectClient(SyncClient client) async {
     try {
       SmartDialog.showLoading(msg: "连接中...");
       var info = await request.getClientInfo(client);
@@ -73,7 +73,7 @@ class LocalSyncController extends BaseController {
     }
   }
 
-  void toScanQr() async {
+  Future<void> toScanQr() async {
     var result = await Get.toNamed(RoutePath.kSyncScan);
     if (result == null || result.isEmpty) {
       return;
@@ -116,9 +116,7 @@ class LocalSyncController extends BaseController {
           Visibility(
             visible: SyncService.instance.httpRunning.value,
             child: GestureDetector(
-              onTap: () {
-                Get.back();
-              },
+              onTap: Get.back,
               child: QrImageView(
                 data: SyncService.instance.ipAddress.value,
                 version: QrVersions.auto,

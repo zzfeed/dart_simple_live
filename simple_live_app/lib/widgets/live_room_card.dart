@@ -105,9 +105,12 @@ class LiveRoomCard extends StatelessWidget {
               item.userName,
               maxLines: 1,
               style: const TextStyle(
-                  height: 1.4, fontSize: 12, color: Colors.grey),
+                height: 1.4,
+                fontSize: 12,
+                color: Colors.grey,
+              ),
             ),
-          )
+          ),
         ],
       ),
     );

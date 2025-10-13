@@ -17,15 +17,16 @@ class DAVClient {
       user: webDAVUser,
       password: webDAVPassword,
     );
-    client.setHeaders(
-      {
-        'accept-charset': 'utf-8',
-        'Content-Type': 'text/xml',
-      },
-    );
-    client.setConnectTimeout(8000);
-    client.setSendTimeout(8000);
-    client.setReceiveTimeout(8000);
+    client
+      ..setHeaders(
+        {
+          'accept-charset': 'utf-8',
+          'Content-Type': 'text/xml',
+        },
+      )
+      ..setConnectTimeout(8000)
+      ..setSendTimeout(8000)
+      ..setReceiveTimeout(8000);
     pingCompleter.complete(_ping());
   }
 

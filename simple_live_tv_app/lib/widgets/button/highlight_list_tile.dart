@@ -73,8 +73,9 @@ class HighlightListTile extends StatelessWidget {
                   Icon(
                     Icons.chevron_right,
                     size: 40.w,
-                    color:
-                        focusNode.isFocused.value ? Colors.black : Colors.white,
+                    color: focusNode.isFocused.value
+                        ? Colors.black
+                        : Colors.white,
                   ),
                 if (trailing != null) trailing!,
               ],

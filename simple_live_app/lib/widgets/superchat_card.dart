@@ -55,7 +55,7 @@ class _SuperChatCardState extends State<SuperChatCard> {
     final displayCountdown = widget.customCountdown ?? countdown;
     return ClipRRect(
       borderRadius: AppStyle.radius8,
-      child: Container(
+      child: DecoratedBox(
         decoration: BoxDecoration(
           color: Utils.convertHexColor(widget.message.backgroundColor),
         ),
@@ -106,8 +106,9 @@ class _SuperChatCardState extends State<SuperChatCard> {
             ),
             Container(
               decoration: BoxDecoration(
-                color:
-                    Utils.convertHexColor(widget.message.backgroundBottomColor),
+                color: Utils.convertHexColor(
+                  widget.message.backgroundBottomColor,
+                ),
               ),
               padding: AppStyle.edgeInsetsA8,
               child: SelectableText(

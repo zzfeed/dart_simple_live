@@ -36,8 +36,9 @@ class FollowUserController extends BasePageController<FollowUser> {
         }
       },
     );
-    onUpdatedListStream =
-        FollowService.instance.updatedListStream.listen((event) {
+    onUpdatedListStream = FollowService.instance.updatedListStream.listen((
+      event,
+    ) {
       filterData();
     });
     super.onInit();
@@ -95,9 +96,11 @@ class FollowUserController extends BasePageController<FollowUser> {
     filterData();
   }
 
-  void removeFollow(FollowUser follow) async {
-    var result = await Utils.showAlertDialog("确定要取消关注${follow.userName}吗?",
-        title: "取消关注");
+  Future<void> removeFollow(FollowUser follow) async {
+    var result = await Utils.showAlertDialog(
+      "确定要取消关注${follow.userName}吗?",
+      title: "取消关注",
+    );
     if (!result) {
       return;
     }
@@ -126,7 +129,7 @@ class FollowUserController extends BasePageController<FollowUser> {
     Log.i('删除tag${tag.tag}');
   }
 
-  void addTag(String tag) async {
+  Future<void> addTag(String tag) async {
     await FollowService.instance.addFollowUserTag(tag);
     updateTagList();
   }
@@ -162,6 +165,7 @@ class FollowUserController extends BasePageController<FollowUser> {
   @override
   void onClose() {
     onUpdatedIndexedStream?.cancel();
+    onUpdatedListStream?.cancel();
     super.onClose();
   }
 }

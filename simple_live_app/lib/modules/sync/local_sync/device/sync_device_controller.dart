@@ -27,7 +27,7 @@ class SyncDeviceController extends BaseController {
     return overlay;
   }
 
-  void syncFollowAndTag() async {
+  Future<void> syncFollowAndTag() async {
     try {
       var overlay = await showOverlayDialog();
       SmartDialog.showLoading(msg: "同步中...");
@@ -47,7 +47,7 @@ class SyncDeviceController extends BaseController {
     }
   }
 
-  void syncHistory() async {
+  Future<void> syncHistory() async {
     try {
       var overlay = await showOverlayDialog();
       SmartDialog.showLoading(msg: "同步中...");
@@ -63,7 +63,7 @@ class SyncDeviceController extends BaseController {
     }
   }
 
-  void syncBlockedWord() async {
+  Future<void> syncBlockedWord() async {
     try {
       var overlay = await showOverlayDialog();
       SmartDialog.showLoading(msg: "同步中...");
@@ -79,7 +79,7 @@ class SyncDeviceController extends BaseController {
     }
   }
 
-  void syncBiliAccount() async {
+  Future<void> syncBiliAccount() async {
     try {
       if (!BiliBiliAccountService.instance.logged.value) {
         SmartDialog.showToast("未登录哔哩哔哩");
@@ -88,7 +88,9 @@ class SyncDeviceController extends BaseController {
       SmartDialog.showLoading(msg: "同步中...");
 
       await request.syncBiliAccount(
-          client, BiliBiliAccountService.instance.cookie);
+        client,
+        BiliBiliAccountService.instance.cookie,
+      );
       SmartDialog.showToast("已同步哔哩哔哩账号");
     } catch (e) {
       SmartDialog.showToast("同步失败:$e");

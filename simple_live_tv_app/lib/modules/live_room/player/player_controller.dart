@@ -173,7 +173,7 @@ mixin PlayerSystemMixin on PlayerMixin, PlayerStateMixin, PlayerDanmakuMixin {
   final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
   /// 初始化一些系统状态
-  void initSystem() async {
+  Future<void> initSystem() async {
     // 屏幕常亮
     WakelockPlus.enable();
 
@@ -225,14 +225,16 @@ class PlayerController extends BaseController
     });
     _widthSubscription = player.stream.width.listen((event) {
       Log.w(
-          'width:$event  W:${(player.state.width)}  H:${(player.state.height)}');
+        'width:$event  W:${(player.state.width)}  H:${(player.state.height)}',
+      );
       width.value = event ?? 0;
       // isVertical.value =
       //     (player.state.height ?? 9) > (player.state.width ?? 16);
     });
     _heightSubscription = player.stream.height.listen((event) {
       Log.w(
-          'height:$event  W:${(player.state.width)}  H:${(player.state.height)}');
+        'height:$event  W:${(player.state.width)}  H:${(player.state.height)}',
+      );
       height.value = event ?? 0;
       // isVertical.value =
       //     (player.state.height ?? 9) > (player.state.width ?? 16);
@@ -252,7 +254,7 @@ class PlayerController extends BaseController
   void mediaError(String error) {}
 
   @override
-  void onClose() async {
+  Future<void> onClose() async {
     Log.w("播放器关闭");
     disposeStream();
     disposeDanmakuController();

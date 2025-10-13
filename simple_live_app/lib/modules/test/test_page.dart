@@ -8,7 +8,7 @@ class TestPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void function1() async {
+    Future<void> function1() async {
       const msg = '测试功能一';
       SmartDialog.showToast('测试功能一');
       Log.d(msg);
@@ -34,19 +34,19 @@ class TestPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ElevatedButton.icon(
-              onPressed: () => function1(),
+              onPressed: function1,
               icon: const Icon(Icons.check_circle_outline),
               label: const Text('测试功能一'),
             ),
             AppStyle.hGap16,
             ElevatedButton.icon(
-              onPressed: () => function2(),
+              onPressed: function2,
               icon: const Icon(Icons.check_circle_outline),
               label: const Text('测试功能二'),
             ),
             AppStyle.hGap16,
             ElevatedButton.icon(
-              onPressed: () => function3(),
+              onPressed: function3,
               icon: const Icon(Icons.check_circle_outline),
               label: const Text('测试功能三'),
             ),

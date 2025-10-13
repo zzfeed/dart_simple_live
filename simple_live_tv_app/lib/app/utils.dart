@@ -53,8 +53,10 @@ class Utils {
           borderRadius: AppStyle.radius16,
         ),
         titlePadding: AppStyle.edgeInsetsA24.copyWith(left: 48.w, right: 48.w),
-        contentPadding:
-            AppStyle.edgeInsetsA24.copyWith(left: 48.w, right: 48.w),
+        contentPadding: AppStyle.edgeInsetsA24.copyWith(
+          left: 48.w,
+          right: 48.w,
+        ),
         insetPadding: AppStyle.edgeInsetsA16,
         actionsPadding: AppStyle.edgeInsetsA16,
         surfaceTintColor: Colors.transparent,
@@ -102,8 +104,12 @@ class Utils {
   /// - `content` 内容
   /// - `title` 弹窗标题
   /// - `confirm` 确认按钮内容，留空为确定
-  static Future<bool> showMessageDialog(String content,
-      {String title = '', String confirm = '', bool selectable = false}) async {
+  static Future<bool> showMessageDialog(
+    String content, {
+    String title = '',
+    String confirm = '',
+    bool selectable = false,
+  }) async {
     var result = await Get.dialog(
       AlertDialog(
         title: Text(title),
@@ -127,24 +133,21 @@ class Utils {
     T value, {
     String title = '',
   }) async {
-    var result = await Get.dialog(
-      SimpleDialog(
-        title: Text(title),
-        children: contents
-            .map(
-              (e) => RadioListTile<T>(
-                title: Text(e.toString()),
-                value: e,
-                groupValue: value,
-                onChanged: (e) {
-                  Get.back(result: e);
-                },
-              ),
-            )
-            .toList(),
+    return Get.dialog(
+      RadioGroup<T>(
+        groupValue: value,
+        onChanged: (e) {
+          if (e == null) return;
+          Get.back(result: e);
+        },
+        child: SimpleDialog(
+          title: Text(title),
+          children: contents
+              .map((e) => RadioListTile<T>(title: Text(e.toString()), value: e))
+              .toList(),
+        ),
       ),
     );
-    return result;
   }
 
   static Future<T?> showMapOptionDialog<T>(
@@ -152,24 +155,26 @@ class Utils {
     T value, {
     String title = '',
   }) async {
-    var result = await Get.dialog(
-      SimpleDialog(
-        title: Text(title),
-        children: contents.keys
-            .map(
-              (e) => RadioListTile<T>(
-                title: Text((contents[e] ?? '-').tr),
-                value: e,
-                groupValue: value,
-                onChanged: (e) {
-                  Get.back(result: e);
-                },
-              ),
-            )
-            .toList(),
+    return Get.dialog(
+      RadioGroup<T>(
+        groupValue: value,
+        onChanged: (e) {
+          if (e == null) return;
+          Get.back(result: e);
+        },
+        child: SimpleDialog(
+          title: Text(title),
+          children: contents.keys
+              .map(
+                (e) => RadioListTile<T>(
+                  title: Text((contents[e] ?? '-').tr),
+                  value: e,
+                ),
+              )
+              .toList(),
+        ),
       ),
     );
-    return result;
   }
 
   static bool isRegexFormat(String keyword) {
@@ -240,13 +245,13 @@ class Utils {
     SmartDialog.dismiss(status: SmartStatus.allCustom);
   }
 
-  static void checkUpdate({bool showMsg = false}) async {
+  static Future<void> checkUpdate({bool showMsg = false}) async {
     try {
       int currentVer = Utils.parseVersion(packageInfo.version);
       CommonRequest request = CommonRequest();
-      Log.logPrint("检查更新 - 当前版本: $currentVer");
+      Log.i("检查更新 - 当前版本: $currentVer");
       var versionInfo = await request.checkUpdate();
-      Log.logPrint("检查更新 - 远程版本: ${versionInfo.versionNum}");
+      Log.i("检查更新 - 远程版本: ${versionInfo.versionNum}");
       if (versionInfo.versionNum > currentVer) {
         await showAlertDialog(
           "新版本已发布，建议更新",

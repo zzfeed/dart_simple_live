@@ -40,11 +40,11 @@ class DouyinUserInfoModel {
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'id': id,
-        'nickname': nickname,
-        'short_id': shortId,
-        'sign': sign,
-        'birthday': birthday,
-        'gender': gender,
-      };
+    'id': id,
+    'nickname': nickname,
+    'short_id': shortId,
+    'sign': sign,
+    'birthday': birthday,
+    'gender': gender,
+  };
 }

@@ -11,7 +11,7 @@ class CategoryListController extends BasePageController<AppLiveCategory> {
   Future<List<AppLiveCategory>> getData(int page, int pageSize) async {
     var result = await site.liveSite.getCategories();
 
-    return result.map((e) => AppLiveCategory.fromLiveCategory(e)).toList();
+    return result.map(AppLiveCategory.fromLiveCategory).toList();
   }
 }
 

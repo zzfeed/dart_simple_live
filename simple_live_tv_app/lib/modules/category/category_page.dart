@@ -114,12 +114,10 @@ class CategoryPage extends GetView<CategoryController> {
                           mainAxisSpacing: 36.w,
                           children: item.showAll.value
                               ? (item.childrenExt
-                                  .map((e) => buildSubCategory(e))
-                                  .toList())
-                              : (item.take15
-                                  .map((e) => buildSubCategory(e))
-                                  .toList()
-                                ..add(buildShowMore(item))),
+                                    .map(buildSubCategory)
+                                    .toList())
+                              : (item.take15.map(buildSubCategory).toList()
+                                  ..add(buildShowMore(item))),
                         ),
                       ),
                     ],

@@ -25,7 +25,7 @@ class CategoryController extends BasePageController<AppLiveCategory> {
   Future<List<AppLiveCategory>> getData(int page, int pageSize) async {
     var result = await site.liveSite.getCategories();
 
-    return result.map((e) => AppLiveCategory.fromLiveCategory(e)).toList();
+    return result.map(AppLiveCategory.fromLiveCategory).toList();
   }
 }
 
@@ -37,15 +37,15 @@ class AppLiveCategory extends LiveCategory {
     required super.name,
     required super.children,
   }) : childrenExt = children
-            .map(
-              (e) => LiveSubCategoryExt(
-                id: e.id,
-                name: e.name,
-                parentId: e.parentId,
-                pic: e.pic,
-              ),
-            )
-            .toList() {
+           .map(
+             (e) => LiveSubCategoryExt(
+               id: e.id,
+               name: e.name,
+               parentId: e.parentId,
+               pic: e.pic,
+             ),
+           )
+           .toList() {
     showAll.value = children.length < 19;
   }
 

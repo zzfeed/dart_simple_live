@@ -393,11 +393,13 @@ class CryptoUtility {
     for (int i = 0; i < abogusBytesStr.length; i += 3) {
       int n;
       if (i + 2 < abogusBytesStr.length) {
-        n = (abogusBytesStr.codeUnitAt(i) << 16) |
+        n =
+            (abogusBytesStr.codeUnitAt(i) << 16) |
             (abogusBytesStr.codeUnitAt(i + 1) << 8) |
             abogusBytesStr.codeUnitAt(i + 2);
       } else if (i + 1 < abogusBytesStr.length) {
-        n = (abogusBytesStr.codeUnitAt(i) << 16) |
+        n =
+            (abogusBytesStr.codeUnitAt(i) << 16) |
             (abogusBytesStr.codeUnitAt(i + 1) << 8);
       } else {
         n = abogusBytesStr.codeUnitAt(i) << 16;
@@ -450,9 +452,10 @@ class ABogus {
     this.userAgent = userAgent.isNotEmpty
         ? userAgent
         : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0";
-    browserFp =
-        fp.isNotEmpty ? fp : BrowserFingerprintGenerator.generateFingerprint();
+              "(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0";
+    browserFp = fp.isNotEmpty
+        ? fp
+        : BrowserFingerprintGenerator.generateFingerprint();
     uaKey = Uint8List.fromList([0, 1, 14]);
     cryptoUtility = CryptoUtility("cus", characterList);
   }
@@ -486,7 +489,8 @@ class ABogus {
     );
 
     List<int> combined = [...array1, ...array2, ...array3];
-    String abBytesStr = StringProcessor.generateRandomBytes() +
+    String abBytesStr =
+        StringProcessor.generateRandomBytes() +
         cryptoUtility.transformBytes(combined);
     return cryptoUtility.abogusEncode(abBytesStr, 0);
   }

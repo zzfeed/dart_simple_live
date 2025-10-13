@@ -45,8 +45,8 @@ import 'package:simple_live_app/modules/test/test_page.dart';
 import 'package:simple_live_app/modules/follow_user/follow_info_setting/follow_info_controller.dart';
 import 'package:simple_live_app/modules/follow_user/follow_info_setting/follow_info_page.dart';
 
-import '../modules/indexed/indexed_page.dart';
-import 'route_path.dart';
+import 'package:simple_live_app/modules/indexed/indexed_page.dart';
+import 'package:simple_live_app/routes/route_path.dart';
 
 class AppPages {
   AppPages._();
@@ -56,7 +56,7 @@ class AppPages {
       name: RoutePath.kIndex,
       page: () => const IndexedPage(),
       bindings: [
-        BindingsBuilder.put(() => IndexedController()),
+        BindingsBuilder.put(IndexedController.new),
         //BindingsBuilder.put(() => HomeController()),
       ],
     ),
@@ -65,7 +65,7 @@ class AppPages {
       name: RoutePath.kHistory,
       page: () => const HistoryPage(),
       bindings: [
-        BindingsBuilder.put(() => HistoryController()),
+        BindingsBuilder.put(HistoryController.new),
       ],
     ),
     // 关注用户
@@ -73,7 +73,7 @@ class AppPages {
       name: RoutePath.kFollowUser,
       page: () => const FollowUserPage(),
       bindings: [
-        BindingsBuilder.put(() => FollowUserController()),
+        BindingsBuilder.put(FollowUserController.new),
       ],
     ),
     // 搜索
@@ -81,7 +81,7 @@ class AppPages {
       name: RoutePath.kSearch,
       page: () => const SearchPage(),
       bindings: [
-        BindingsBuilder.put(() => AppSearchController()),
+        BindingsBuilder.put(AppSearchController.new),
       ],
     ),
     //分类详情
@@ -113,8 +113,9 @@ class AppPages {
     ),
     //外观设置
     GetPage(
-        name: RoutePath.kAppstyleSetting,
-        page: () => const AppstyleSettingPage()),
+      name: RoutePath.kAppstyleSetting,
+      page: () => const AppstyleSettingPage(),
+    ),
     //播放设置
     GetPage(
       name: RoutePath.kSettingsPlay,
@@ -130,7 +131,7 @@ class AppPages {
       name: RoutePath.kTools,
       page: () => const ParsePage(),
       bindings: [
-        BindingsBuilder.put(() => ParseController()),
+        BindingsBuilder.put(ParseController.new),
       ],
     ),
     //关键词屏蔽
@@ -138,7 +139,7 @@ class AppPages {
       name: RoutePath.kSettingsDanmuShield,
       page: () => const DanmuShieldPage(),
       bindings: [
-        BindingsBuilder.put(() => DanmuShieldController()),
+        BindingsBuilder.put(DanmuShieldController.new),
       ],
     ),
     //主页设置
@@ -146,7 +147,7 @@ class AppPages {
       name: RoutePath.kSettingsIndexed,
       page: () => const IndexedSettingsPage(),
       bindings: [
-        BindingsBuilder.put(() => IndexedSettingsController()),
+        BindingsBuilder.put(IndexedSettingsController.new),
       ],
     ),
     //账号设置
@@ -154,7 +155,7 @@ class AppPages {
       name: RoutePath.kSettingsAccount,
       page: () => const AccountPage(),
       bindings: [
-        BindingsBuilder.put(() => AccountController()),
+        BindingsBuilder.put(AccountController.new),
       ],
     ),
     //哔哩哔哩Web登录
@@ -162,7 +163,7 @@ class AppPages {
       name: RoutePath.kBiliBiliWebLogin,
       page: () => const BiliBiliWebLoginPage(),
       bindings: [
-        BindingsBuilder.put(() => BiliBiliWebLoginController()),
+        BindingsBuilder.put(BiliBiliWebLoginController.new),
       ],
     ),
     //哔哩哔哩二维码登录
@@ -170,7 +171,7 @@ class AppPages {
       name: RoutePath.kBiliBiliQRLogin,
       page: () => const BiliBiliQRLoginPage(),
       bindings: [
-        BindingsBuilder.put(() => BiliBiliQRLoginController()),
+        BindingsBuilder.put(BiliBiliQRLoginController.new),
       ],
     ),
     // 数据同步
@@ -195,7 +196,7 @@ class AppPages {
       name: RoutePath.kSyncScan,
       page: () => const SyncScanQRPage(),
       bindings: [
-        BindingsBuilder.put(() => SyncScanQRController()),
+        BindingsBuilder.put(SyncScanQRController.new),
       ],
     ),
     //同步设备
@@ -227,7 +228,7 @@ class AppPages {
       page: () => const RemoteSyncWebDAVPage(),
       bindings: [
         BindingsBuilder.put(
-          () => RemoteSyncWebDAVController(),
+          RemoteSyncWebDAVController.new,
         ),
       ],
     ),
@@ -241,7 +242,7 @@ class AppPages {
       name: RoutePath.kSettingsOther,
       page: () => const OtherSettingsPage(),
       bindings: [
-        BindingsBuilder.put(() => OtherSettingsController()),
+        BindingsBuilder.put(OtherSettingsController.new),
       ],
     ),
     //关注设置
@@ -259,7 +260,7 @@ class AppPages {
       name: RoutePath.kFollowInfo,
       page: () => const FollowInfoPage(),
       bindings: [
-        BindingsBuilder.put(() => FollowInfoController()),
+        BindingsBuilder.put(FollowInfoController.new),
       ],
     ),
   ];

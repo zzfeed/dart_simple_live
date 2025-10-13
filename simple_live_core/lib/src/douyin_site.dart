@@ -40,8 +40,10 @@ class DouyinSite implements LiveSite {
       if (existCookies.contains('ttwid')) {
         return headers;
       }
-      var head = await HttpClient.instance
-          .head("https://live.douyin.com", header: headers);
+      var head = await HttpClient.instance.head(
+        "https://live.douyin.com",
+        header: headers,
+      );
       head.headers["set-cookie"]?.forEach((element) {
         var cookie = element.split(";")[0];
         if (cookie.contains("ttwid")) {
@@ -60,7 +62,7 @@ class DouyinSite implements LiveSite {
   /// 成功返回 data(Map)，失败返回空 Map
   Future<Map<String, dynamic>> getUserInfoByCookie(String cookie) async {
     try {
-      final url = "https://live.douyin.com/webcast/user/me/";
+      const url = "https://live.douyin.com/webcast/user/me/";
       final result = await HttpClient.instance.getJson(
         url,
         queryParameters: {
@@ -96,15 +98,17 @@ class DouyinSite implements LiveSite {
     );
 
     var renderData =
-        RegExp(r'\{\\"pathname\\":\\"\/\\",\\"categoryData.*?\]\\n')
-                .firstMatch(result)
-                ?.group(0) ??
-            "";
-    var renderDataJson = json.decode(renderData
-        .trim()
-        .replaceAll('\\"', '"')
-        .replaceAll(r"\\", r"\")
-        .replaceAll(']\\n', ""));
+        RegExp(
+          r'\{\\"pathname\\":\\"\/\\",\\"categoryData.*?\]\\n',
+        ).firstMatch(result)?.group(0) ??
+        "";
+    var renderDataJson = json.decode(
+      renderData
+          .trim()
+          .replaceAll('\\"', '"')
+          .replaceAll(r"\\", r"\")
+          .replaceAll(']\\n', ""),
+    );
 
     for (var item in renderDataJson["categoryData"]) {
       List<LiveSubCategory> subs = [];
@@ -125,21 +129,24 @@ class DouyinSite implements LiveSite {
         name: asT<String?>(item["partition"]["title"]) ?? "",
       );
       subs.insert(
-          0,
-          LiveSubCategory(
-            id: category.id,
-            name: category.name,
-            parentId: category.id,
-            pic: "",
-          ));
+        0,
+        LiveSubCategory(
+          id: category.id,
+          name: category.name,
+          parentId: category.id,
+          pic: "",
+        ),
+      );
       categories.add(category);
     }
     return categories;
   }
 
   @override
-  Future<LiveCategoryResult> getCategoryRooms(LiveSubCategory category,
-      {int page = 1}) async {
+  Future<LiveCategoryResult> getCategoryRooms(
+    LiveSubCategory category, {
+    int page = 1,
+  }) async {
     var ids = category.id.split(',');
     var partitionId = ids[0];
     var partitionType = ids[1];
@@ -165,7 +172,7 @@ class DouyinSite implements LiveSite {
       "offset": ((page - 1) * 15).toString(),
       "partition": partitionId,
       "partition_type": partitionType,
-      "req_from": '2'
+      "req_from": '2',
     };
 
     var msToken = ABogus.getMSToken();
@@ -173,8 +180,9 @@ class DouyinSite implements LiveSite {
 
     var chromeFp = BrowserFingerprintGenerator.generateFingerprint("Edge");
     var abogus = await ABogus(
-            userAgent: DouyinRequestParams.kDefaultUserAgent, fp: chromeFp)
-        .generateAbogus(Uri(queryParameters: queryParams).query);
+      userAgent: DouyinRequestParams.kDefaultUserAgent,
+      fp: chromeFp,
+    ).generateAbogus(Uri(queryParameters: queryParams).query);
 
     queryParams["a_bogus"] = abogus;
 
@@ -193,8 +201,10 @@ class DouyinSite implements LiveSite {
         cover: item["room"]["cover"]["url_list"][0].toString(),
         areaName: item["tag_name"].toString(),
         userName: item["room"]["owner"]["nickname"].toString(),
-        online: int.tryParse(
-                item["room"]["room_view_stats"]["display_value"].toString()) ??
+        online:
+            int.tryParse(
+              item["room"]["room_view_stats"]["display_value"].toString(),
+            ) ??
             0,
       );
       items.add(roomItem);
@@ -226,7 +236,7 @@ class DouyinSite implements LiveSite {
       "offset": ((page - 1) * 15).toString(),
       "partition": '720',
       "partition_type": '1',
-      "req_from": '2'
+      "req_from": '2',
     };
 
     var msToken = ABogus.getMSToken();
@@ -261,7 +271,7 @@ class DouyinSite implements LiveSite {
         userName: item["owner"]["nickname"].toString(),
         online:
             int.tryParse(item["room_view_stats"]["display_value"].toString()) ??
-                0,
+            0,
       );
       items.add(roomItem);
     }
@@ -362,11 +372,11 @@ class DouyinSite implements LiveSite {
     var userData = data["user"];
     var roomId = roomData["id_str"].toString();
 
-    var partitionTitle =
-        data["partition_road_map"]?["partition"]?["title"]?.toString();
-    var subPartitionTitle = data["partition_road_map"]?["sub_partition"]
-            ?["partition"]?["title"]
+    var partitionTitle = data["partition_road_map"]?["partition"]?["title"]
         ?.toString();
+    var subPartitionTitle =
+        data["partition_road_map"]?["sub_partition"]?["partition"]?["title"]
+            ?.toString();
 
     var areaName = (subPartitionTitle != null && subPartitionTitle.isNotEmpty)
         ? subPartitionTitle
@@ -417,8 +427,8 @@ class DouyinSite implements LiveSite {
   Future<LiveRoomDetail> _getRoomDetailByWebRidHtml(String webRid) async {
     var roomData = await _getRoomDataByHtml(webRid);
     var roomId = roomData["roomStore"]["roomInfo"]["room"]["id_str"].toString();
-    var userUniqueId =
-        roomData["userStore"]["odin"]["user_unique_id"].toString();
+    var userUniqueId = roomData["userStore"]["odin"]["user_unique_id"]
+        .toString();
 
     var room = roomData["roomStore"]["roomInfo"]["room"];
     var owner = room["owner"];
@@ -506,9 +516,10 @@ class DouyinSite implements LiveSite {
       },
     );
 
-    var renderData = RegExp(r'\{\\"state\\":\{\\"appStore.*?\]\\n')
-            .firstMatch(result)
-            ?.group(0) ??
+    var renderData =
+        RegExp(
+          r'\{\\"state\\":\{\\"appStore.*?\]\\n',
+        ).firstMatch(result)?.group(0) ??
         "";
     var str = renderData
         .trim()
@@ -541,7 +552,7 @@ class DouyinSite implements LiveSite {
       "browser_language": "zh-CN",
       "browser_platform": "Win32",
       "browser_name": "Edge",
-      "browser_version": "125.0.0.0"
+      "browser_version": "125.0.0.0",
     };
 
     String chromeFp = BrowserFingerprintGenerator.generateFingerprint("Edge");
@@ -550,8 +561,9 @@ class DouyinSite implements LiveSite {
     queryParams["msToken"] = msToken;
 
     var abogus = await ABogus(
-            userAgent: DouyinRequestParams.kDefaultUserAgent, fp: chromeFp)
-        .generateAbogus(Uri(queryParameters: queryParams).query);
+      userAgent: DouyinRequestParams.kDefaultUserAgent,
+      fp: chromeFp,
+    ).generateAbogus(Uri(queryParameters: queryParams).query);
 
     queryParams["a_bogus"] = abogus;
 
@@ -582,21 +594,22 @@ class DouyinSite implements LiveSite {
   }
 
   @override
-  Future<List<LivePlayQuality>> getPlayQualities(
-      {required LiveRoomDetail detail}) async {
+  Future<List<LivePlayQuality>> getPlayQualities({
+    required LiveRoomDetail detail,
+  }) async {
     List<LivePlayQuality> qualities = [];
 
     var qualityList =
         detail.data["live_core_sdk_data"]["pull_data"]["options"]["qualities"];
-    var streamData = detail.data["live_core_sdk_data"]["pull_data"]
-            ["stream_data"]
+    var streamData = detail
+        .data["live_core_sdk_data"]["pull_data"]["stream_data"]
         .toString();
 
     if (!streamData.startsWith('{')) {
-      var flvList =
-          (detail.data["flv_pull_url"] as Map).values.cast<String>().toList();
-      var hlsList = (detail.data["hls_pull_url_map"] as Map)
-          .values
+      var flvList = (detail.data["flv_pull_url"] as Map).values
+          .cast<String>()
+          .toList();
+      var hlsList = (detail.data["hls_pull_url_map"] as Map).values
           .cast<String>()
           .toList();
       for (var quality in qualityList) {
@@ -623,14 +636,14 @@ class DouyinSite implements LiveSite {
       var qualityData = json.decode(streamData)["data"] as Map;
       for (var quality in qualityList) {
         List<String> urls = [];
-        var flvUrl =
-            qualityData[quality["sdk_key"]]?["main"]?["flv"]?.toString();
+        var flvUrl = qualityData[quality["sdk_key"]]?["main"]?["flv"]
+            ?.toString();
 
         if (flvUrl != null && flvUrl.isNotEmpty) {
           urls.add(flvUrl);
         }
-        var hlsUrl =
-            qualityData[quality["sdk_key"]]?["main"]?["hls"]?.toString();
+        var hlsUrl = qualityData[quality["sdk_key"]]?["main"]?["hls"]
+            ?.toString();
         if (hlsUrl != null && hlsUrl.isNotEmpty) {
           urls.add(hlsUrl);
         }
@@ -652,15 +665,18 @@ class DouyinSite implements LiveSite {
   }
 
   @override
-  Future<LivePlayUrl> getPlayUrls(
-      {required LiveRoomDetail detail,
-      required LivePlayQuality quality}) async {
+  Future<LivePlayUrl> getPlayUrls({
+    required LiveRoomDetail detail,
+    required LivePlayQuality quality,
+  }) async {
     return LivePlayUrl(urls: quality.data);
   }
 
   @override
-  Future<LiveSearchRoomResult> searchRooms(String keyword,
-      {int page = 1}) async {
+  Future<LiveSearchRoomResult> searchRooms(
+    String keyword, {
+    int page = 1,
+  }) async {
     String serverHost = "www.douyin.com";
     String serverPath = "/aweme/v1/web/live/search/";
     var queryParams = {
@@ -704,17 +720,21 @@ class DouyinSite implements LiveSite {
     var msToken = ABogus.getMSToken();
     queryParams["msToken"] = msToken;
 
-    var abogus = await ABogus(
-            userAgent: DouyinRequestParams.kDefaultUserAgent, fp: chromeFp)
-        .generateAbogus(
-      Uri(queryParameters: queryParams).query,
-    );
+    var abogus =
+        await ABogus(
+          userAgent: DouyinRequestParams.kDefaultUserAgent,
+          fp: chromeFp,
+        ).generateAbogus(
+          Uri(queryParameters: queryParams).query,
+        );
     queryParams["a_bogus"] = abogus;
 
     var requestUrl = Uri.https(serverHost, serverPath, queryParams).toString();
 
-    var headResp = await HttpClient.instance
-        .head('https://live.douyin.com', header: headers);
+    var headResp = await HttpClient.instance.head(
+      'https://live.douyin.com',
+      header: headers,
+    );
     var dyCookie = "";
     headResp.headers["set-cookie"]?.forEach((element) {
       var cookie = element.split(";")[0];
@@ -767,8 +787,10 @@ class DouyinSite implements LiveSite {
   }
 
   @override
-  Future<LiveSearchAnchorResult> searchAnchors(String keyword,
-      {int page = 1}) async {
+  Future<LiveSearchAnchorResult> searchAnchors(
+    String keyword, {
+    int page = 1,
+  }) async {
     throw Exception("抖音暂不支持搜索主播，请直接搜索直播间");
   }
 
@@ -779,8 +801,9 @@ class DouyinSite implements LiveSite {
   }
 
   @override
-  Future<List<LiveSuperChatMessage>> getSuperChatMessage(
-      {required String roomId}) {
+  Future<List<LiveSuperChatMessage>> getSuperChatMessage({
+    required String roomId,
+  }) {
     return Future.value(<LiveSuperChatMessage>[]);
   }
 

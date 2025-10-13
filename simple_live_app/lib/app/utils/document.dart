@@ -6,7 +6,7 @@ import 'package:simple_live_app/app/log.dart';
 extension DirectoryCleaner on Directory {
   Future<void> clear() async {
     // 首先判断是否为文件夹
-    if (await exists() && await FileSystemEntity.isDirectory(path)) {
+    if (await exists() && FileSystemEntity.isDirectorySync(path)) {
       // 列出文件夹中的所有文件和子文件夹
       List<FileSystemEntity> files = listSync();
 

@@ -18,7 +18,7 @@ class HistoryController extends BasePageController<History> {
     return Future.value(DBService.instance.getHistories());
   }
 
-  void clean() async {
+  Future<void> clean() async {
     var result = await Utils.showAlertDialog("确定要清空观看记录吗?", title: "清空观看记录");
     if (!result) {
       return;
@@ -27,7 +27,7 @@ class HistoryController extends BasePageController<History> {
     refreshData();
   }
 
-  void removeItem(History item) async {
+  Future<void> removeItem(History item) async {
     var result = await Utils.showAlertDialog("确定要删除此记录吗?", title: "删除记录");
     if (!result) {
       return;

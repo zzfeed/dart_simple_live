@@ -71,7 +71,8 @@ class PageListView extends StatelessWidget {
             right: 12,
             child: Obx(
               () => Visibility(
-                visible: pageController.canLoadMore.value &&
+                visible:
+                    pageController.canLoadMore.value &&
                     !pageController.pageLoading.value &&
                     !pageController.pageEmpty.value,
                 child: IconButton(
@@ -79,9 +80,7 @@ class PageListView extends StatelessWidget {
                     backgroundColor: Get.theme.cardColor.withAlpha(200),
                     elevation: 4,
                   ),
-                  onPressed: () {
-                    pageController.refreshData();
-                  },
+                  onPressed: pageController.refreshData,
                   icon: const Icon(Icons.refresh),
                 ),
               ),
@@ -90,7 +89,7 @@ class PageListView extends StatelessWidget {
         Offstage(
           offstage: !pageController.pageEmpty.value,
           child: AppEmptyWidget(
-            onRefresh: () => pageController.refreshData(),
+            onRefresh: pageController.refreshData,
           ),
         ),
         Offstage(
@@ -101,7 +100,7 @@ class PageListView extends StatelessWidget {
           offstage: !pageController.pageError.value,
           child: AppErrorWidget(
             errorMsg: pageController.errorMsg.value,
-            onRefresh: () => pageController.refreshData(),
+            onRefresh: pageController.refreshData,
           ),
         ),
       ],

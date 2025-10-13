@@ -51,19 +51,19 @@ class CategoryListView extends StatelessWidget {
                         sliver: SliverGrid(
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount:
-                                MediaQuery.of(context).size.width ~/ 80,
-                            crossAxisSpacing: 8,
-                            mainAxisSpacing: 8,
-                            childAspectRatio: 1,
-                          ),
+                                crossAxisCount:
+                                    MediaQuery.of(context).size.width ~/ 80,
+                                crossAxisSpacing: 8,
+                                mainAxisSpacing: 8,
+                                childAspectRatio: 1,
+                              ),
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
                               final subItem = item.showAll.value
                                   ? item.children[index]
                                   : (index < item.take15.length
-                                      ? item.take15[index]
-                                      : null);
+                                        ? item.take15[index]
+                                        : null);
 
                               if (subItem != null) {
                                 return buildSubCategory(subItem, controller);
@@ -91,7 +91,9 @@ class CategoryListView extends StatelessWidget {
   }
 
   Widget buildSubCategory(
-      LiveSubCategory item, CategoryListController controller) {
+    LiveSubCategory item,
+    CategoryListController controller,
+  ) {
     return ShadowCard(
       onTap: () {
         AppNavigator.toCategoryDetail(site: controller.site, category: item);
@@ -118,7 +120,9 @@ class CategoryListView extends StatelessWidget {
   }
 
   Widget buildShowMore(
-      AppLiveCategory item, CategoryListController controller) {
+    AppLiveCategory item,
+    CategoryListController controller,
+  ) {
     return ShadowCard(
       onTap: () {
         item.showAll.value = true;

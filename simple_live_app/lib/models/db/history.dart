@@ -37,22 +37,22 @@ class History {
   String? watchDuration; // "00:00:00"
 
   factory History.fromJson(Map<String, dynamic> json) => History(
-        id: json["id"],
-        roomId: json["roomId"],
-        siteId: json["siteId"],
-        userName: json["userName"],
-        face: json["face"],
-        updateTime: DateTime.parse(json["updateTime"]),
-        watchDuration: json["watchDuration"] ?? "00:00:00",
-      );
+    id: json["id"],
+    roomId: json["roomId"],
+    siteId: json["siteId"],
+    userName: json["userName"],
+    face: json["face"],
+    updateTime: DateTime.parse(json["updateTime"]),
+    watchDuration: json["watchDuration"] ?? "00:00:00",
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "roomId": roomId,
-        "siteId": siteId,
-        "userName": userName,
-        "face": face,
-        "updateTime": updateTime.toString(),
-        "watchDuration": watchDuration ?? "00:00:00",
-      };
+    "id": id,
+    "roomId": roomId,
+    "siteId": siteId,
+    "userName": userName,
+    "face": face,
+    "updateTime": updateTime.toString(),
+    "watchDuration": watchDuration ?? "00:00:00",
+  };
 }

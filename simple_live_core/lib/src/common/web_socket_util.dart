@@ -60,7 +60,7 @@ class WebSocketUtils {
 
   StreamSubscription<dynamic>? streamSubscription;
 
-  void connect({bool retry = false}) async {
+  Future<void> connect({bool retry = false}) async {
     close();
     try {
       var wsurl = url;
@@ -69,7 +69,7 @@ class WebSocketUtils {
       }
       webSocket = IOWebSocketChannel.connect(
         wsurl,
-        connectTimeout: Duration(seconds: 10),
+        connectTimeout: const Duration(seconds: 10),
         headers: headers,
       );
 
@@ -89,8 +89,8 @@ class WebSocketUtils {
     status = SocketStatus.connected;
 
     streamSubscription = webSocket?.stream.listen(
-      (data) => receiveMessage(data),
-      onError: (e, s) => onError(e, s),
+      receiveMessage,
+      onError: onError,
       onDone: onDone,
     );
 
@@ -150,7 +150,7 @@ class WebSocketUtils {
     status = SocketStatus.closed;
     if (reconnectTime < maxReconnectTime) {
       reconnectTime++;
-      reconnectTimer ??= Timer.periodic(Duration(seconds: 5), (timer) {
+      reconnectTimer ??= Timer.periodic(const Duration(seconds: 5), (timer) {
         connect();
       });
     } else {

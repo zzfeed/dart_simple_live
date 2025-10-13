@@ -79,7 +79,7 @@ class HighlightWidget extends StatelessWidget {
               duration: const Duration(milliseconds: 200),
               child: GestureDetector(
                 onTap: onTap,
-                child: Container(
+                child: DecoratedBox(
                   decoration: BoxDecoration(
                     borderRadius: borderRadius,
                     boxShadow: focusNode.isFocused.value

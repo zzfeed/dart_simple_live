@@ -7,7 +7,7 @@ import 'package:simple_live_app/app/log.dart';
 import 'package:simple_live_app/app/utils/duration_2str.dart';
 import 'package:simple_live_app/models/db/history.dart';
 
-import 'db_service.dart';
+import 'package:simple_live_app/services/db_service.dart';
 
 class HistoryService extends GetxService {
   static HistoryService get instance => Get.find<HistoryService>();
@@ -69,7 +69,8 @@ class HistoryService extends GetxService {
     _elapsed = _stopwatch.elapsed;
     Duration curTime = _oldWatchedDuration + _elapsed;
     Log.i(
-        "已观看时间：${_oldWatchedDuration.toHMSString()}_增加时间：${_elapsed.toHMSString()}");
+      "已观看时间：${_oldWatchedDuration.toHMSString()}_增加时间：${_elapsed.toHMSString()}",
+    );
     curLiveRoomHistory?.watchDuration = curTime.toHMSString();
     curLiveRoomHistory?.updateTime = DateTime.now();
     DBService.instance.addOrUpdateHistory(curLiveRoomHistory!);

@@ -12,17 +12,18 @@ class SettingsNumber extends StatelessWidget {
   final int max;
   final String? displayValue;
   final Function(int)? onChanged;
-  const SettingsNumber(
-      {required this.title,
-      required this.value,
-      required this.max,
-      this.subtitle,
-      this.onChanged,
-      this.step = 1,
-      this.min = 0,
-      this.unit = '',
-      this.displayValue,
-      super.key});
+  const SettingsNumber({
+    required this.title,
+    required this.value,
+    required this.max,
+    this.subtitle,
+    this.onChanged,
+    this.step = 1,
+    this.min = 0,
+    this.unit = '',
+    this.displayValue,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -71,10 +72,9 @@ class SettingsNumber extends StatelessWidget {
             Text(
               displayValue ?? "$value$unit",
               textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium!
-                  .copyWith(color: Colors.grey),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium!.copyWith(color: Colors.grey),
             ),
             IconButton(
               padding: AppStyle.edgeInsetsA4,

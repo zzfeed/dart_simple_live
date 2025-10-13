@@ -39,16 +39,18 @@ class MinePage extends StatelessWidget {
               subtitle: const Text("简简单单看直播"),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
-                Get.dialog(AboutDialog(
-                  applicationIcon: Image.asset(
-                    'assets/images/logo.png',
-                    width: 48,
-                    height: 48,
+                Get.dialog(
+                  AboutDialog(
+                    applicationIcon: Image.asset(
+                      'assets/images/logo.png',
+                      width: 48,
+                      height: 48,
+                    ),
+                    applicationName: "Simple Live",
+                    applicationVersion: "简简单单看直播",
+                    applicationLegalese: "Ver ${Utils.packageInfo.version}",
                   ),
-                  applicationName: "Simple Live",
-                  applicationVersion: "简简单单看直播",
-                  applicationLegalese: "Ver ${Utils.packageInfo.version}",
-                ));
+                );
               },
             ),
             Divider(

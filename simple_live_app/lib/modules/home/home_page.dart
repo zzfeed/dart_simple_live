@@ -23,7 +23,6 @@ class HomePage extends GetView<HomeController> {
               .map(
                 (e) => Tab(
                   //text: e.name,
-
                   child: Row(
                     children: [
                       Image.asset(
@@ -43,7 +42,7 @@ class HomePage extends GetView<HomeController> {
           IconButton(
             onPressed: controller.toSearch,
             icon: const Icon(Icons.search),
-          )
+          ),
         ],
       ),
       body: TabBarView(

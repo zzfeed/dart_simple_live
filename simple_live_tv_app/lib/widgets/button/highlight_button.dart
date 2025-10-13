@@ -63,7 +63,8 @@ class HighlightButton extends StatelessWidget {
     if (icon != null || iconData != null) {
       return Padding(
         padding: AppStyle.edgeInsetsR12,
-        child: icon ??
+        child:
+            icon ??
             Icon(
               iconData,
               size: 40.w,

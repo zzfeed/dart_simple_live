@@ -144,7 +144,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   }
 
   /// 加载直播间信息
-  void loadData() async {
+  Future<void> loadData() async {
     try {
       SmartDialog.showLoading(msg: "");
       pageLoading.value = true;
@@ -171,7 +171,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   }
 
   /// 初始化播放器
-  void getPlayQualities() async {
+  Future<void> getPlayQualities() async {
     qualities.clear();
     currentQuality = -1;
     try {
@@ -204,7 +204,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
     }
   }
 
-  void getPlayUrl() async {
+  Future<void> getPlayUrl() async {
     playUrls.clear();
     currentQualityInfo.value = qualities[currentQuality].quality;
     currentLineInfo.value = "";
@@ -233,7 +233,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
     setPlayer();
   }
 
-  void setPlayer() async {
+  Future<void> setPlayer() async {
     currentLineInfo.value = "线路${currentLineIndex + 1}";
     errorMsg.value = "";
 
@@ -243,7 +243,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   }
 
   @override
-  void mediaEnd() async {
+  Future<void> mediaEnd() async {
     if (mediaErrorRetryCount < 2) {
       Log.d("播放结束，尝试第${mediaErrorRetryCount + 1}次刷新");
       if (mediaErrorRetryCount == 1) {
@@ -269,7 +269,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
 
   int mediaErrorRetryCount = 0;
   @override
-  void mediaError(String error) async {
+  Future<void> mediaError(String error) async {
     if (mediaErrorRetryCount < 2) {
       Log.d("播放失败，尝试第${mediaErrorRetryCount + 1}次刷新");
       if (mediaErrorRetryCount == 1) {
@@ -336,7 +336,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   }
 
   /// 取消关注用户
-  void removeFollowUser() async {
+  Future<void> removeFollowUser() async {
     if (detail.value == null) {
       return;
     }
@@ -351,7 +351,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
     SmartDialog.showToast("已取消关注");
   }
 
-  void resetRoom(Site site, String roomId) async {
+  Future<void> resetRoom(Site site, String roomId) async {
     if (this.site == site && this.roomId == roomId) {
       return;
     }
@@ -440,10 +440,10 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   }
 
   @override
-  void onClose() {
+  Future<void> onClose() async {
     liveDanmaku.stop();
 
     danmakuController = null;
-    super.onClose();
+    await super.onClose();
   }
 }

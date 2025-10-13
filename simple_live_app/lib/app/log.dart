@@ -21,8 +21,9 @@ class Log {
   }
 
   static void writeLog(dynamic content, [Level level = Level.info]) {
-    logFileWriter
-        ?.write("[${level.name.toUpperCase()}] $_currentTime：$content");
+    logFileWriter?.write(
+      "[${level.name.toUpperCase()}] $_currentTime：$content",
+    );
   }
 
   static RxList<DebugLogModel> debugLogs = <DebugLogModel>[].obs;
@@ -71,8 +72,11 @@ class Log {
     }
   }
 
-  static void e(String message, StackTrace stackTrace,
-      [bool writeFile = true]) {
+  static void e(
+    String message,
+    StackTrace stackTrace, [
+    bool writeFile = true,
+  ]) {
     addDebugLog('$message\r\n\r\n$stackTrace', Colors.red);
     logger.e("${DateTime.now().toString()}\n$message", stackTrace: stackTrace);
     if (writeFile) {
@@ -110,10 +114,10 @@ class LogFileWriter {
     initFile();
   }
   IOSink? fileWriter;
-  void initFile() async {
+  Future<void> initFile() async {
     var supportDir = await getApplicationSupportDirectory();
     var logDir = Directory("${supportDir.path}/log");
-    if (!await logDir.exists()) {
+    if (!logDir.existsSync()) {
       await logDir.create();
     }
     var logFile = File("${logDir.path}/$fileName");
@@ -130,7 +134,7 @@ class LogFileWriter {
     await fileWriter?.close();
   }
 
-  void writeSystemInfo() async {
+  Future<void> writeSystemInfo() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     write("System Info:");
     write("Current Time: ${DateTime.now()}");
@@ -138,7 +142,8 @@ class LogFileWriter {
     write("Version: ${Platform.operatingSystemVersion}");
     write("Local: ${Platform.localeName}");
     write(
-        "App Version: ${Utils.packageInfo.version}+${Utils.packageInfo.buildNumber}");
+      "App Version: ${Utils.packageInfo.version}+${Utils.packageInfo.buildNumber}",
+    );
     if (Platform.isAndroid) {
       write((await deviceInfo.androidInfo).data.toString());
     } else if (Platform.isIOS) {

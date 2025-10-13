@@ -66,8 +66,8 @@
 ## 💻 环境
 
 ```bash
-[√] Flutter (Channel [user-branch], 3.32.0, on Microsoft Windows 10, locale zh-CN)
-[√] Flutter (Channel [user-branch], 3.32.0, on macOS 15.6.1 24G90 darwin-arm64, locale zh-Hans-CN)
+[√] Flutter (Channel stable, 3.35.6, on Microsoft Windows 10, locale zh-CN)
+[√] Flutter (Channel stable, 3.35.6, on macOS 15.6.1 24G90 darwin-arm64, locale zh-Hans-CN)
 [√] Android toolchain - develop for Android devices (SDK 36.0.0)
 [√] Xcode - develop for iOS and macOS (Xcode 16.4)
 [√] Chrome - develop for the web

@@ -7,7 +7,7 @@ import 'package:brotli/brotli.dart';
 import 'package:simple_live_core/simple_live_core.dart';
 import 'package:simple_live_core/src/common/web_socket_util.dart';
 
-import '../common/binary_writer.dart';
+import 'package:simple_live_core/src/common/binary_writer.dart';
 
 class BiliBiliDanmakuArgs {
   final int roomId;
@@ -101,10 +101,12 @@ class BiliBiliDanmaku implements LiveDanmaku {
 
   @override
   void heartbeat() {
-    webSocketUtils?.sendMessage(encodeData(
-      "",
-      2,
-    ));
+    webSocketUtils?.sendMessage(
+      encodeData(
+        "",
+        2,
+      ),
+    );
   }
 
   @override
@@ -120,24 +122,18 @@ class BiliBiliDanmaku implements LiveDanmaku {
     var length = data.length + 16;
     var buffer = Uint8List(length);
 
-    var writer = BinaryWriter([]);
-
-    //数据包长度
-    writer.writeInt(buffer.length, 4);
-    //数据包头部长度,固定16
-    writer.writeInt(16, 2);
-
-    //协议版本，0=JSON,1=Int32,2=Buffer
-    writer.writeInt(0, 2);
-
-    //操作类型
-    writer.writeInt(action, 4);
-
-    //数据包头部长度,固定1
-
-    writer.writeInt(1, 4);
-
-    writer.writeBytes(data);
+    var writer = BinaryWriter([])
+      //数据包长度
+      ..writeInt(buffer.length, 4)
+      //数据包头部长度,固定16
+      ..writeInt(16, 2)
+      //协议版本，0=JSON,1=Int32,2=Buffer
+      ..writeInt(0, 2)
+      //操作类型
+      ..writeInt(action, 4)
+      //数据包头部长度,固定1
+      ..writeInt(1, 4)
+      ..writeBytes(data);
 
     return writer.buffer;
   }
@@ -171,10 +167,12 @@ class BiliBiliDanmaku implements LiveDanmaku {
 
         var text = utf8.decode(body, allowMalformed: true);
 
-        var group =
-            text.split(RegExp(r"[\x00-\x1f]+", unicode: true, multiLine: true));
-        for (var item
-            in group.where((x) => x.length > 2 && x.startsWith('{'))) {
+        var group = text.split(
+          RegExp(r"[\x00-\x1f]+", unicode: true, multiLine: true),
+        );
+        for (var item in group.where(
+          (x) => x.length > 2 && x.startsWith('{'),
+        )) {
           parseMessage(item);
         }
       }
@@ -218,8 +216,9 @@ class BiliBiliDanmaku implements LiveDanmaku {
           face: "${data["user_info"]["face"]}@200w.jpg",
           message: data["message"].toString(),
           price: data["price"],
-          startTime:
-              DateTime.fromMillisecondsSinceEpoch(data["start_time"] * 1000),
+          startTime: DateTime.fromMillisecondsSinceEpoch(
+            data["start_time"] * 1000,
+          ),
           userName: data["user_info"]["uname"].toString(),
         );
 
@@ -274,8 +273,9 @@ class BiliBiliDanmaku implements LiveDanmaku {
   }
 
   int readInt(List<int> buffer, int start, int len) {
-    var bytes =
-        Uint8List.fromList(buffer.getRange(start, start + len).toList());
+    var bytes = Uint8List.fromList(
+      buffer.getRange(start, start + len).toList(),
+    );
     var byteBuffer = bytes.buffer;
     var data = ByteData.view(byteBuffer);
     var result = 0;

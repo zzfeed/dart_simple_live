@@ -52,16 +52,18 @@ class PageGridView extends StatelessWidget {
           },
           onRefresh: pageController.refreshData,
           childBuilder: (context, physics) {
-            return Obx(() => MasonryGridView.count(
-                  padding: padding,
-                  itemCount: pageController.list.length,
-                  itemBuilder: itemBuilder,
-                  crossAxisCount: crossAxisCount,
-                  crossAxisSpacing: crossAxisSpacing,
-                  mainAxisSpacing: mainAxisSpacing,
-                  physics: physics,
-                  controller: pageController.scrollController,
-                ));
+            return Obx(
+              () => MasonryGridView.count(
+                padding: padding,
+                itemCount: pageController.list.length,
+                itemBuilder: itemBuilder,
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: crossAxisSpacing,
+                mainAxisSpacing: mainAxisSpacing,
+                physics: physics,
+                controller: pageController.scrollController,
+              ),
+            );
           },
         ),
         if ((Platform.isWindows || Platform.isLinux || Platform.isMacOS) &&
@@ -71,7 +73,8 @@ class PageGridView extends StatelessWidget {
             right: 12,
             child: Obx(
               () => Visibility(
-                visible: pageController.canLoadMore.value &&
+                visible:
+                    pageController.canLoadMore.value &&
                     !pageController.pageLoading.value &&
                     !pageController.pageEmpty.value,
                 child: IconButton(
@@ -79,9 +82,7 @@ class PageGridView extends StatelessWidget {
                     backgroundColor: Get.theme.cardColor.withAlpha(200),
                     elevation: 4,
                   ),
-                  onPressed: () {
-                    pageController.refreshData();
-                  },
+                  onPressed: pageController.refreshData,
                   icon: const Icon(Icons.refresh),
                 ),
               ),
@@ -90,7 +91,7 @@ class PageGridView extends StatelessWidget {
         Offstage(
           offstage: !pageController.pageEmpty.value,
           child: AppEmptyWidget(
-            onRefresh: () => pageController.refreshData(),
+            onRefresh: pageController.refreshData,
           ),
         ),
         Offstage(
@@ -101,7 +102,7 @@ class PageGridView extends StatelessWidget {
           offstage: !pageController.pageError.value,
           child: AppErrorWidget(
             errorMsg: pageController.errorMsg.value,
-            onRefresh: () => pageController.refreshData(),
+            onRefresh: pageController.refreshData,
           ),
         ),
       ],

@@ -22,10 +22,11 @@ class GetCdnTokenReq extends TarsStruct {
 
   @override
   void writeTo(TarsOutputStream outputStream) {
-    outputStream.write(url, 0);
-    outputStream.write(cdnType, 1);
-    outputStream.write(streamName, 2);
-    outputStream.write(presenterUid, 3);
+    outputStream
+      ..write(url, 0)
+      ..write(cdnType, 1)
+      ..write(streamName, 2)
+      ..write(presenterUid, 3);
   }
 
   @override
@@ -39,10 +40,10 @@ class GetCdnTokenReq extends TarsStruct {
 
   @override
   void displayAsString(StringBuffer sb, int level) {
-    TarsDisplayer disPlayer = TarsDisplayer(sb, level: level);
-    disPlayer.DisplayString(url, "url");
-    disPlayer.DisplayString(cdnType, "cdnType");
-    disPlayer.DisplayString(streamName, "streamName");
-    disPlayer.DisplayInt(presenterUid, "presenterUid");
+    TarsDisplayer(sb, level: level)
+      ..DisplayString(url, "url")
+      ..DisplayString(cdnType, "cdnType")
+      ..DisplayString(streamName, "streamName")
+      ..DisplayInt(presenterUid, "presenterUid");
   }
 }

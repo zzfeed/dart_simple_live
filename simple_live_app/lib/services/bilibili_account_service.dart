@@ -22,8 +22,10 @@ class BiliBiliAccountService extends GetxService {
 
   @override
   void onInit() {
-    cookie = LocalStorageService.instance
-        .getValue(LocalStorageService.kBilibiliCookie, "");
+    cookie = LocalStorageService.instance.getValue(
+      LocalStorageService.kBilibiliCookie,
+      "",
+    );
     logged.value = cookie.isNotEmpty;
     loadUserInfo();
     super.onInit();
@@ -55,25 +57,29 @@ class BiliBiliAccountService extends GetxService {
   }
 
   void setSite() {
-    var site = (Sites.allSites[Constant.kBiliBili]!.liveSite as BiliBiliSite);
-    site.userId = uid;
-    site.cookie = cookie;
+    (Sites.allSites[Constant.kBiliBili]!.liveSite as BiliBiliSite)
+      ..userId = uid
+      ..cookie = cookie;
   }
 
   void setCookie(String cookie) {
     this.cookie = cookie;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kBilibiliCookie, cookie);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kBilibiliCookie,
+      cookie,
+    );
     logged.value = cookie.isNotEmpty;
   }
 
-  void logout() async {
+  Future<void> logout() async {
     cookie = "";
     uid = 0;
     name.value = "未登录";
     setSite();
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kBilibiliCookie, "");
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kBilibiliCookie,
+      "",
+    );
     logged.value = false;
 
     if (Platform.isAndroid || Platform.isIOS) {

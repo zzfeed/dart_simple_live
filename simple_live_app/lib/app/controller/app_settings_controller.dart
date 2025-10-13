@@ -21,62 +21,104 @@ class AppSettingsController extends GetxController {
 
   @override
   void onInit() {
-    themeMode.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kThemeMode, 0);
-    firstRun = LocalStorageService.instance
-        .getValue(LocalStorageService.kFirstRun, true);
-    danmuSize.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kDanmuSize, 16.0);
-    danmuOpacity.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kDanmuOpacity, 1.0);
-    danmuArea.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kDanmuArea, 0.8);
-    danmuSpeed.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kDanmuSpeed, 10.0);
-    danmuEnable.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kDanmuEnable, true);
-    danmuStrokeWidth.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kDanmuStrokeWidth, 2.0);
-    danmuTopMargin.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kDanmuTopMargin, 0.0);
-    danmuBottomMargin.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kDanmuBottomMargin, 0.0);
+    themeMode.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kThemeMode,
+      0,
+    );
+    firstRun = LocalStorageService.instance.getValue(
+      LocalStorageService.kFirstRun,
+      true,
+    );
+    danmuSize.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kDanmuSize,
+      16.0,
+    );
+    danmuOpacity.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kDanmuOpacity,
+      1.0,
+    );
+    danmuArea.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kDanmuArea,
+      0.8,
+    );
+    danmuSpeed.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kDanmuSpeed,
+      10.0,
+    );
+    danmuEnable.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kDanmuEnable,
+      true,
+    );
+    danmuStrokeWidth.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kDanmuStrokeWidth,
+      2.0,
+    );
+    danmuTopMargin.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kDanmuTopMargin,
+      0.0,
+    );
+    danmuBottomMargin.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kDanmuBottomMargin,
+      0.0,
+    );
     danmuFontWeight.value = LocalStorageService.instance.getValue(
-        LocalStorageService.kDanmuFontWeight, FontWeight.normal.index);
+      LocalStorageService.kDanmuFontWeight,
+      FontWeight.normal.index,
+    );
 
-    chatTextSize.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kChatTextSize, 14.0);
+    chatTextSize.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kChatTextSize,
+      14.0,
+    );
 
-    chatTextGap.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kChatTextGap, 4.0);
+    chatTextGap.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kChatTextGap,
+      4.0,
+    );
 
     chatBubbleStyle.value = LocalStorageService.instance.getValue(
       LocalStorageService.kChatBubbleStyle,
       false,
     );
 
-    qualityLevel.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kQualityLevel, 1);
-    qualityLevelCellular.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kQualityLevelCellular, 1);
+    qualityLevel.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kQualityLevel,
+      1,
+    );
+    qualityLevelCellular.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kQualityLevelCellular,
+      1,
+    );
 
-    autoExitEnable.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kAutoExitEnable, false);
+    autoExitEnable.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kAutoExitEnable,
+      false,
+    );
 
-    autoExitDuration.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kAutoExitDuration, 60);
+    autoExitDuration.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kAutoExitDuration,
+      60,
+    );
 
-    roomAutoExitDuration.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kRoomAutoExitDuration, 60);
+    roomAutoExitDuration.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kRoomAutoExitDuration,
+      60,
+    );
 
-    playerAutoPause.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kPlayerAutoPause, false);
+    playerAutoPause.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kPlayerAutoPause,
+      false,
+    );
 
-    playerForceHttps.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kPlayerForceHttps, false);
+    playerForceHttps.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kPlayerForceHttps,
+      false,
+    );
 
-    autoFullScreen.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kAutoFullScreen, false);
+    autoFullScreen.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kAutoFullScreen,
+      false,
+    );
 
     // ignore: invalid_use_of_protected_member
     shieldList.value = LocalStorageService.instance.shieldBox.values.toSet();
@@ -90,29 +132,43 @@ class AppSettingsController extends GetxController {
       LocalStorageService.kPlayerVolume,
       100.0,
     );
-    pipHideDanmu.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kPIPHideDanmu, true);
+    pipHideDanmu.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kPIPHideDanmu,
+      true,
+    );
 
-    styleColor.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kStyleColor, 0xff3498db);
+    styleColor.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kStyleColor,
+      0xff3498db,
+    );
 
-    isDynamic.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kIsDynamic, false);
+    isDynamic.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kIsDynamic,
+      false,
+    );
 
-    bilibiliLoginTip.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kBilibiliLoginTip, true);
+    bilibiliLoginTip.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kBilibiliLoginTip,
+      true,
+    );
 
-    playerBufferSize.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kPlayerBufferSize, 32);
+    playerBufferSize.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kPlayerBufferSize,
+      32,
+    );
 
-    logEnable.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kLogEnable, false);
+    logEnable.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kLogEnable,
+      false,
+    );
     if (logEnable.value) {
       Log.initWriter();
     }
 
-    customPlayerDecoder.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kCustomPlayerDecoder, false);
+    customPlayerDecoder.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kCustomPlayerDecoder,
+      false,
+    );
 
     videoDecoder.value = LocalStorageService.instance.getValue(
       LocalStorageService.kVideoDecoder,
@@ -124,17 +180,25 @@ class AppSettingsController extends GetxController {
       "FFmpeg",
     );
 
-    autoUpdateFollowEnable.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kAutoUpdateFollowEnable, true);
+    autoUpdateFollowEnable.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kAutoUpdateFollowEnable,
+      true,
+    );
 
-    autoUpdateFollowDuration.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kUpdateFollowDuration, 10);
+    autoUpdateFollowDuration.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kUpdateFollowDuration,
+      10,
+    );
 
-    updateFollowThreadCount.value = LocalStorageService.instance
-        .getValue(LocalStorageService.kUpdateFollowThreadCount, 4);
+    updateFollowThreadCount.value = LocalStorageService.instance.getValue(
+      LocalStorageService.kUpdateFollowThreadCount,
+      4,
+    );
 
-    dbVer = LocalStorageService.instance
-        .getValue(LocalStorageService.kHiveDbVer, 10708);
+    dbVer = LocalStorageService.instance.getValue(
+      LocalStorageService.kHiveDbVer,
+      10708,
+    );
 
     initSiteSort();
     initHomeSort();
@@ -143,10 +207,7 @@ class AppSettingsController extends GetxController {
 
   void initSiteSort() {
     var sort = LocalStorageService.instance
-        .getValue(
-          LocalStorageService.kSiteSort,
-          Sites.allSites.keys.join(","),
-        )
+        .getValue(LocalStorageService.kSiteSort, Sites.allSites.keys.join(","))
         .split(",");
     //如果数量与allSites的数量不一致，将缺失的添加上
     if (sort.length != Sites.allSites.length) {
@@ -187,37 +248,21 @@ class AppSettingsController extends GetxController {
 
   void changeTheme() {
     Get.dialog(
-      SimpleDialog(
-        title: const Text("设置主题"),
-        children: [
-          RadioListTile<int>(
-            title: const Text("跟随系统"),
-            value: 0,
-            groupValue: themeMode.value,
-            onChanged: (e) {
-              Get.back();
-              setTheme(e ?? 0);
-            },
-          ),
-          RadioListTile<int>(
-            title: const Text("浅色模式"),
-            value: 1,
-            groupValue: themeMode.value,
-            onChanged: (e) {
-              Get.back();
-              setTheme(e ?? 1);
-            },
-          ),
-          RadioListTile<int>(
-            title: const Text("深色模式"),
-            value: 2,
-            groupValue: themeMode.value,
-            onChanged: (e) {
-              Get.back();
-              setTheme(e ?? 2);
-            },
-          ),
-        ],
+      RadioGroup<int>(
+        groupValue: themeMode.value,
+        onChanged: (e) {
+          if (e == null) return;
+          Get.back();
+          setTheme(e);
+        },
+        child: const SimpleDialog(
+          title: Text("设置主题"),
+          children: [
+            RadioListTile<int>(title: Text("跟随系统"), value: 0),
+            RadioListTile<int>(title: Text("浅色模式"), value: 1),
+            RadioListTile<int>(title: Text("深色模式"), value: 2),
+          ],
+        ),
       ),
     );
   }
@@ -245,8 +290,10 @@ class AppSettingsController extends GetxController {
   var chatBubbleStyle = false.obs;
   void setChatBubbleStyle(bool e) {
     chatBubbleStyle.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kChatBubbleStyle, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kChatBubbleStyle,
+      e,
+    );
   }
 
   var danmuSize = 16.0.obs;
@@ -282,78 +329,100 @@ class AppSettingsController extends GetxController {
   var danmuStrokeWidth = 2.0.obs;
   void setDanmuStrokeWidth(double e) {
     danmuStrokeWidth.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kDanmuStrokeWidth, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kDanmuStrokeWidth,
+      e,
+    );
   }
 
   var danmuFontWeight = FontWeight.normal.index.obs;
   void setDanmuFontWeight(int e) {
     danmuFontWeight.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kDanmuFontWeight, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kDanmuFontWeight,
+      e,
+    );
   }
 
   var qualityLevel = 1.obs;
   void setQualityLevel(int level) {
     qualityLevel.value = level;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kQualityLevel, level);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kQualityLevel,
+      level,
+    );
   }
 
   var qualityLevelCellular = 1.obs;
   void setQualityLevelCellular(int level) {
     qualityLevelCellular.value = level;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kQualityLevelCellular, level);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kQualityLevelCellular,
+      level,
+    );
   }
 
   var autoExitEnable = false.obs;
   void setAutoExitEnable(bool e) {
     autoExitEnable.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kAutoExitEnable, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kAutoExitEnable,
+      e,
+    );
   }
 
   var autoExitDuration = 60.obs;
   void setAutoExitDuration(int e) {
     autoExitDuration.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kAutoExitDuration, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kAutoExitDuration,
+      e,
+    );
   }
 
   var roomAutoExitDuration = 60.obs;
   void setRoomAutoExitDuration(int e) {
     roomAutoExitDuration.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kRoomAutoExitDuration, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kRoomAutoExitDuration,
+      e,
+    );
   }
 
   var playerBufferSize = 32.obs;
   void setPlayerBufferSize(int e) {
     playerBufferSize.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kPlayerBufferSize, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kPlayerBufferSize,
+      e,
+    );
   }
 
   var playerAutoPause = false.obs;
   void setPlayerAutoPause(bool e) {
     playerAutoPause.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kPlayerAutoPause, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kPlayerAutoPause,
+      e,
+    );
   }
 
   var autoFullScreen = false.obs;
   void setAutoFullScreen(bool e) {
     autoFullScreen.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kAutoFullScreen, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kAutoFullScreen,
+      e,
+    );
   }
 
   var playershowSuperChat = true.obs;
   void setPlayerShowSuperChat(bool e) {
     playershowSuperChat.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kPlayerShowSuperChat, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kPlayerShowSuperChat,
+      e,
+    );
   }
 
   RxSet<String> shieldList = <String>{}.obs;
@@ -428,22 +497,28 @@ class AppSettingsController extends GetxController {
   var danmuTopMargin = 0.0.obs;
   void setDanmuTopMargin(double e) {
     danmuTopMargin.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kDanmuTopMargin, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kDanmuTopMargin,
+      e,
+    );
   }
 
   var danmuBottomMargin = 0.0.obs;
   void setDanmuBottomMargin(double e) {
     danmuBottomMargin.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kDanmuBottomMargin, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kDanmuBottomMargin,
+      e,
+    );
   }
 
   var bilibiliLoginTip = true.obs;
   void setBiliBiliLoginTip(bool e) {
     bilibiliLoginTip.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kBilibiliLoginTip, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kBilibiliLoginTip,
+      e,
+    );
   }
 
   var logEnable = false.obs;
@@ -455,8 +530,10 @@ class AppSettingsController extends GetxController {
   var customPlayerDecoder = false.obs;
   void setCustomPlayerDecoder(bool e) {
     customPlayerDecoder.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kCustomPlayerDecoder, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kCustomPlayerDecoder,
+      e,
+    );
   }
 
   var videoDecoder = "".obs;
@@ -474,28 +551,36 @@ class AppSettingsController extends GetxController {
   var autoUpdateFollowEnable = false.obs;
   void setAutoUpdateFollowEnable(bool e) {
     autoUpdateFollowEnable.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kAutoUpdateFollowEnable, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kAutoUpdateFollowEnable,
+      e,
+    );
   }
 
   var autoUpdateFollowDuration = 10.obs;
   void setAutoUpdateFollowDuration(int e) {
     autoUpdateFollowDuration.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kUpdateFollowDuration, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kUpdateFollowDuration,
+      e,
+    );
   }
 
   var updateFollowThreadCount = 4.obs;
   void setUpdateFollowThreadCount(int e) {
     updateFollowThreadCount.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kUpdateFollowThreadCount, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kUpdateFollowThreadCount,
+      e,
+    );
   }
 
   var playerForceHttps = false.obs;
   void setPlayerForceHttps(bool e) {
     playerForceHttps.value = e;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kPlayerForceHttps, e);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kPlayerForceHttps,
+      e,
+    );
   }
 }

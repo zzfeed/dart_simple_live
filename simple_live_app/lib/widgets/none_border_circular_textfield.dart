@@ -58,9 +58,9 @@ class NoneBorderCircularTextField extends StatelessWidget {
         suffix: trailing,
         helperText: helperText,
         helperMaxLines: 3,
-        border: OutlineInputBorder(
+        border: const OutlineInputBorder(
           borderSide: BorderSide.none,
-          borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+          borderRadius: BorderRadius.all(Radius.circular(8.0)),
         ),
         labelText: labelText,
         errorText: errorText,

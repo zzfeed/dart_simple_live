@@ -20,7 +20,7 @@ class AppLoadingWidget extends StatelessWidget {
                   BoxShadow(
                     blurRadius: 4,
                     color: Colors.grey.withAlpha(50),
-                  )
+                  ),
                 ],
         ),
         child: const CupertinoActivityIndicator(

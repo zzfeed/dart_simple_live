@@ -14,8 +14,10 @@ class AppSearchController extends GetxController
   var searchMode = 0.obs;
 
   AppSearchController() {
-    tabController =
-        TabController(length: Sites.supportSites.length, vsync: this);
+    tabController = TabController(
+      length: Sites.supportSites.length,
+      vsync: this,
+    );
     tabController.animation?.addListener(() {
       var currentIndex = (tabController.animation?.value ?? 0).round();
       if (index == currentIndex) {
@@ -27,8 +29,9 @@ class AppSearchController extends GetxController
       //   return;
       // }
 
-      var controller =
-          Get.find<SearchListController>(tag: Sites.supportSites[index].id);
+      var controller = Get.find<SearchListController>(
+        tag: Sites.supportSites[index].id,
+      );
 
       if (controller.list.isEmpty &&
           !controller.pageEmpty.value &&
@@ -69,16 +72,16 @@ class AppSearchController extends GetxController
       //   controller.searchMode.value = searchMode.value;
       //   controller.reloadWebView();
       // } else {
-      var controller = Get.find<SearchListController>(tag: site.id);
-      controller.clear();
-      controller.keyword = searchController.text;
+      var controller = Get.find<SearchListController>(tag: site.id)
+        ..clear()
+        ..keyword = searchController.text;
       controller.searchMode.value = searchMode.value;
       //}
     }
     // if (Sites.supportSites[index].id != Constant.kDouyin) {
-    var controller =
-        Get.find<SearchListController>(tag: Sites.supportSites[index].id);
-    controller.refreshData();
+    Get.find<SearchListController>(
+      tag: Sites.supportSites[index].id,
+    ).refreshData();
     //}
   }
 

@@ -62,8 +62,9 @@ Future initServices() async {
     }
   };
 
-  Hive.registerAdapter(FollowUserAdapter());
-  Hive.registerAdapter(HistoryAdapter());
+  Hive
+    ..registerAdapter(FollowUserAdapter())
+    ..registerAdapter(HistoryAdapter());
 
   //包信息
   Utils.packageInfo = await PackageInfo.fromPlatform();
@@ -72,13 +73,11 @@ Future initServices() async {
   await Get.put(LocalStorageService()).init();
   await Get.put(DBService()).init();
   //初始化设置控制器
-  Get.put(AppSettingsController());
-
-  Get.put(BiliBiliAccountService());
-
-  Get.put(SyncService());
-
-  Get.put(FollowUserService());
+  Get
+    ..put(AppSettingsController())
+    ..put(BiliBiliAccountService())
+    ..put(SyncService())
+    ..put(FollowUserService());
 }
 
 class MyApp extends StatelessWidget {
@@ -113,7 +112,7 @@ class MyApp extends StatelessWidget {
             //字体大小不跟随系统变化
             builder: (context, child) => MediaQuery(
               data: MediaQuery.of(context).copyWith(
-                textScaler: const TextScaler.linear(1.0),
+                textScaler: TextScaler.noScaling,
               ),
               child: child!,
             ),

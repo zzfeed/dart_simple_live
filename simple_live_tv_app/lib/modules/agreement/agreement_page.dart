@@ -81,7 +81,7 @@ class AgreementPage extends StatelessWidget {
                     },
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),

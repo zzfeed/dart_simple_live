@@ -130,7 +130,8 @@ class SearchRoomPage extends GetView<SearchRoomController> {
                   ),
                   Obx(
                     () => Visibility(
-                      visible: controller.list.isEmpty &&
+                      visible:
+                          controller.list.isEmpty &&
                           !controller.loading.value &&
                           !controller.pageError.value,
                       child: AppEmptyWidget(
@@ -142,7 +143,8 @@ class SearchRoomPage extends GetView<SearchRoomController> {
                   ),
                   Obx(
                     () => Visibility(
-                      visible: controller.pageError.value &&
+                      visible:
+                          controller.pageError.value &&
                           !controller.loading.value,
                       child: AppErrorWidget(
                         errorMsg: controller.errorMsg.value,

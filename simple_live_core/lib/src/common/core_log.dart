@@ -57,8 +57,10 @@ class CoreLog {
     }
     onPrintLog?.call(Level.error, message);
     if (onPrintLog == null) {
-      logger.e("${DateTime.now().toString()}\n$message",
-          stackTrace: stackTrace);
+      logger.e(
+        "${DateTime.now().toString()}\n$message",
+        stackTrace: stackTrace,
+      );
     }
   }
 

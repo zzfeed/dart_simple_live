@@ -46,8 +46,10 @@ class IndexedController extends GetxController {
       }
     } else {
       if (index.value == i) {
-        EventBus.instance
-            .emit<int>(EventBus.kBottomNavigationBarClicked, items[i].index);
+        EventBus.instance.emit<int>(
+          EventBus.kBottomNavigationBarClicked,
+          items[i].index,
+        );
       }
     }
 
@@ -64,7 +66,7 @@ class IndexedController extends GetxController {
     super.onInit();
   }
 
-  void showFirstRun() async {
+  Future<void> showFirstRun() async {
     var settingsController = Get.find<AppSettingsController>();
     if (settingsController.firstRun) {
       settingsController.setNoFirstRun();

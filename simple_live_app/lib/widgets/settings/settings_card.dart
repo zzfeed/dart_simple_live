@@ -17,7 +17,7 @@ class SettingsCard extends StatelessWidget {
           color: Colors.grey.withAlpha(25),
         ),
       ),
-      child: Container(
+      child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: AppStyle.radius8,
         ),
