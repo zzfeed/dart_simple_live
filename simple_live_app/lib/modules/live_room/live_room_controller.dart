@@ -1035,12 +1035,13 @@ ${error?.stackTrace}''');
     if (state == AppLifecycleState.paused) {
       Log.d("进入后台");
       //进入后台，关闭弹幕
-      danmakuController?.clear();
+      danmakuController?.pause();
       isBackground = true;
     } else
     //返回前台
     if (state == AppLifecycleState.resumed) {
       Log.d("返回前台");
+      danmakuController?.resume();
       isBackground = false;
     }
   }
