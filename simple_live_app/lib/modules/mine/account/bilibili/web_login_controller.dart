@@ -17,12 +17,12 @@ class BiliBiliWebLoginController extends BaseController {
     );
   }
 
-  void toQRLogin() async {
+  Future<void> toQRLogin() async {
     await Get.toNamed(RoutePath.kBiliBiliQRLogin);
     Get.back();
   }
 
-  void onLoadStop(InAppWebViewController controller, Uri? uri) async {
+  Future<void> onLoadStop(InAppWebViewController controller, Uri? uri) async {
     if (uri == null) {
       return;
     }
@@ -33,8 +33,9 @@ class BiliBiliWebLoginController extends BaseController {
 
   Future<bool> logged() async {
     try {
-      var cookies =
-          await cookieManager.getCookies(url: WebUri("https://bilibili.com"));
+      var cookies = await cookieManager.getCookies(
+        url: WebUri("https://bilibili.com"),
+      );
       if (cookies.isEmpty) {
         return false;
       }

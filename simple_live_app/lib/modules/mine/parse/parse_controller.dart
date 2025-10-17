@@ -10,7 +10,7 @@ class ParseController extends GetxController {
   final TextEditingController roomJumpToController = TextEditingController();
   final TextEditingController getUrlController = TextEditingController();
 
-  void jumpToRoom(String e) async {
+  Future<void> jumpToRoom(String e) async {
     if (e.isEmpty) {
       SmartDialog.showToast("链接不能为空");
       return;
@@ -31,7 +31,7 @@ class ParseController extends GetxController {
     });
   }
 
-  void getPlayUrl(String e) async {
+  Future<void> getPlayUrl(String e) async {
     if (e.isEmpty) {
       SmartDialog.showToast("链接不能为空");
       return;
@@ -52,51 +52,57 @@ class ParseController extends GetxController {
 
         return;
       }
-      var result = await Get.dialog(SimpleDialog(
-        title: const Text("选择清晰度"),
-        children: qualities
-            .map(
-              (e) => ListTile(
-                title: Text(
-                  e.quality,
-                  textAlign: TextAlign.center,
+      var result = await Get.dialog(
+        SimpleDialog(
+          title: const Text("选择清晰度"),
+          children: qualities
+              .map(
+                (e) => ListTile(
+                  title: Text(
+                    e.quality,
+                    textAlign: TextAlign.center,
+                  ),
+                  onTap: () {
+                    Get.back(result: e);
+                  },
                 ),
-                onTap: () {
-                  Get.back(result: e);
-                },
-              ),
-            )
-            .toList(),
-      ));
+              )
+              .toList(),
+        ),
+      );
       if (result == null) {
         return;
       }
       SmartDialog.showLoading(msg: "");
-      var playUrl =
-          await site.liveSite.getPlayUrls(detail: detail, quality: result);
+      var playUrl = await site.liveSite.getPlayUrls(
+        detail: detail,
+        quality: result,
+      );
       SmartDialog.dismiss(status: SmartStatus.loading);
-      await Get.dialog(SimpleDialog(
-        title: const Text("选择线路"),
-        children: playUrl.urls
-            .map(
-              (e) => ListTile(
-                title: Text(
-                  "线路${playUrl.urls.indexOf(e) + 1}",
+      await Get.dialog(
+        SimpleDialog(
+          title: const Text("选择线路"),
+          children: playUrl.urls
+              .map(
+                (e) => ListTile(
+                  title: Text(
+                    "线路${playUrl.urls.indexOf(e) + 1}",
+                  ),
+                  subtitle: Text(
+                    e,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: e));
+                    Get.back();
+                    SmartDialog.showToast("已复制直链");
+                  },
                 ),
-                subtitle: Text(
-                  e,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                onTap: () {
-                  Clipboard.setData(ClipboardData(text: e));
-                  Get.back();
-                  SmartDialog.showToast("已复制直链");
-                },
-              ),
-            )
-            .toList(),
-      ));
+              )
+              .toList(),
+        ),
+      );
     } catch (e) {
       SmartDialog.showToast("读取直链失败");
     } finally {

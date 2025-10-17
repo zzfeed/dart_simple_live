@@ -63,14 +63,13 @@ class AppStyle {
     colorScheme: AppColors.darkColorScheme,
     visualDensity: VisualDensity.standard,
     textTheme: ThemeData.dark().textTheme.apply(
-          fontFamily: Platform.isWindows ? "Microsoft YaHei" : null,
-        ),
+      fontFamily: Platform.isWindows ? "Microsoft YaHei" : null,
+    ),
     primaryTextTheme: ThemeData().textTheme.apply(
-          fontFamily: Platform.isWindows ? "Microsoft YaHei" : null,
-        ),
+      fontFamily: Platform.isWindows ? "Microsoft YaHei" : null,
+    ),
     appBarTheme: AppBarTheme(
       //elevation: 0,
-
       centerTitle: true,
       titleTextStyle: const TextStyle(
         fontSize: 16,
@@ -201,10 +200,10 @@ class AppStyle {
       MediaQuery.of(Get.context!).padding.bottom;
 
   static Divider get divider => Divider(
-        height: 1,
-        thickness: 1,
-        indent: 16,
-        endIndent: 16,
-        color: Colors.grey.withAlpha(25),
-      );
+    height: 1,
+    thickness: 1,
+    indent: 16,
+    endIndent: 16,
+    color: Colors.grey.withAlpha(25),
+  );
 }

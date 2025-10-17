@@ -83,7 +83,7 @@ class SignalRService {
       _onRoomDestroyedStreamController.add(args![0].toString());
     });
     hubConnection?.on("onUserUpdated", (args) {
-      var list = (args![0] as List).map((e) => RoomUser.fromObject(e)).toList();
+      var list = (args![0] as List).map(RoomUser.fromObject).toList();
       _onRoomUserUpdatedStreamController.add(list);
     });
   }
@@ -101,8 +101,10 @@ class SignalRService {
     String app = "Simple Live TV";
     String platform = 'tv';
     String version = Utils.packageInfo.version;
-    var resp = await hubConnection
-        ?.invoke("CreateRoom", args: [app, platform, version]);
+    var resp = await hubConnection?.invoke(
+      "CreateRoom",
+      args: [app, platform, version],
+    );
     return Resp<String>.fromObject(resp);
   }
 
@@ -113,8 +115,10 @@ class SignalRService {
     String app = "Simple Live TV";
     String platform = 'tv';
     String version = Utils.packageInfo.version;
-    var resp = await hubConnection
-        ?.invoke("JoinRoom", args: [roomId, app, platform, version]);
+    var resp = await hubConnection?.invoke(
+      "JoinRoom",
+      args: [roomId, app, platform, version],
+    );
     return Resp.fromObject(resp);
   }
 
@@ -127,8 +131,10 @@ class SignalRService {
     if (state != SignalRConnectionState.connected) {
       throw Exception("not connected");
     }
-    var resp =
-        await hubConnection?.invoke(action, args: [roomName, overlay, content]);
+    var resp = await hubConnection?.invoke(
+      action,
+      args: [roomName, overlay, content],
+    );
     return Resp.fromObject(resp);
   }
 

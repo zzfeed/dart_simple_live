@@ -22,7 +22,8 @@ class SyncDevicePage extends GetView<SyncDeviceController> {
               leading: buildIcon(),
               title: Text(controller.info.name),
               subtitle: Text(
-                  "${controller.info.type.toUpperCase()}   ${controller.info.address}"),
+                "${controller.info.type.toUpperCase()}   ${controller.info.address}",
+              ),
             ),
           ),
           AppStyle.vGap12,

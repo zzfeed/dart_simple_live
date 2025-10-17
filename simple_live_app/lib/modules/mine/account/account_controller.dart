@@ -21,7 +21,14 @@ class AccountController extends GetxController {
     final buvid4Controller = TextEditingController();
 
     void parseCookie(String raw) {
-      final cookie = raw.replaceAll(RegExp(r"[" '' "]"), '');
+      final cookie = raw.replaceAll(
+        RegExp(
+          r"["
+          ''
+          "]",
+        ),
+        '',
+      );
       final parts = cookie.split(';');
       for (var part in parts) {
         final kv = part.trim().split('=');
@@ -59,8 +66,10 @@ class AccountController extends GetxController {
       return InputDecoration(
         labelText: label,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10,
+        ),
       );
     }
 
@@ -75,9 +84,7 @@ class AccountController extends GetxController {
                 controller: fullCookieController,
                 decoration: inputDecoration('粘贴完整 Cookie（自动解析）'),
                 maxLines: 3,
-                onChanged: (text) {
-                  parseCookie(text);
-                },
+                onChanged: parseCookie,
               ),
               AppStyle.hGap12,
               // SESSDATA
@@ -147,7 +154,7 @@ class AccountController extends GetxController {
                 dedeUserIdckMd5,
                 sid,
                 buvid3,
-                buvid4
+                buvid4,
               ].any((e) => e.isEmpty)) {
                 SmartDialog.showToast('请完整填写所有字段');
                 return;
@@ -171,7 +178,7 @@ class AccountController extends GetxController {
     );
   }
 
-  void bilibiliTap() async {
+  Future<void> bilibiliTap() async {
     if (BiliBiliAccountService.instance.logged.value) {
       var result = await Utils.showAlertDialog("确定要退出哔哩哔哩账号吗？", title: "退出登录");
       if (result) {
@@ -197,8 +204,9 @@ class AccountController extends GetxController {
               subtitle: const Text("填写用户名密码登录"),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
-                Get.back();
-                Get.toNamed(RoutePath.kBiliBiliWebLogin);
+                Get
+                  ..back()
+                  ..toNamed(RoutePath.kBiliBiliWebLogin);
               },
             ),
           ),
@@ -208,8 +216,9 @@ class AccountController extends GetxController {
             subtitle: const Text("使用哔哩哔哩APP扫描二维码登录"),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              Get.back();
-              Get.toNamed(RoutePath.kBiliBiliQRLogin);
+              Get
+                ..back()
+                ..toNamed(RoutePath.kBiliBiliQRLogin);
             },
           ),
           ListTile(
@@ -227,7 +236,7 @@ class AccountController extends GetxController {
     );
   }
 
-  void doCookieLogin() async {
+  Future<void> doCookieLogin() async {
     final cookie = await cookieInput();
     if (cookie == null || cookie.isEmpty) {
       return;
@@ -238,10 +247,12 @@ class AccountController extends GetxController {
   }
 
   // 需要用户手动复制抖音的Cookie
-  void douyinTap() async {
+  Future<void> douyinTap() async {
     if (DouyinAccountService.instance.logged.value) {
-      var result =
-          await Utils.showAlertDialog("确定要清除抖音Cookie吗？", title: "清除Cookie");
+      var result = await Utils.showAlertDialog(
+        "确定要清除抖音Cookie吗？",
+        title: "清除Cookie",
+      );
       if (result) {
         DouyinAccountService.instance.logout();
       }

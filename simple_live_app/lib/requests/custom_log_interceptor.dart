@@ -46,7 +46,8 @@ Response Data：${err.response?.data}''', err.stackTrace);
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    var time = DateTime.now().millisecondsSinceEpoch -
+    var time =
+        DateTime.now().millisecondsSinceEpoch -
         response.requestOptions.extra["ts"];
     if (!kReleaseMode) {
       Log.i(

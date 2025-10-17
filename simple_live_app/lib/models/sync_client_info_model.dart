@@ -36,10 +36,10 @@ class SyncClientInfoModel {
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'name': name,
-        'version': version,
-        'address': address,
-        'port': port,
-        'type': type,
-      };
+    'name': name,
+    'version': version,
+    'address': address,
+    'port': port,
+    'type': type,
+  };
 }

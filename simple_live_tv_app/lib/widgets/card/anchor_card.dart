@@ -35,7 +35,8 @@ class AnchorCard extends StatelessWidget {
     var focusNode = this.focusNode ?? AppFocusNode();
     return Obx(
       () => HighlightWidget(
-        onTap: onTap ??
+        onTap:
+            onTap ??
             () {
               AppNavigator.toLiveRoomDetail(site: site, roomId: roomId);
             },

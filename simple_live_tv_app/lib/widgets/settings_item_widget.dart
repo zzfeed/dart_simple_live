@@ -69,8 +69,9 @@ class SettingsItemWidget extends StatelessWidget {
                 Icon(
                   Icons.chevron_left,
                   size: 40.w,
-                  color:
-                      focusNode.isFocused.value ? Colors.black : Colors.white,
+                  color: focusNode.isFocused.value
+                      ? Colors.black
+                      : Colors.white,
                 ),
               AppStyle.hGap12,
               ConstrainedBox(
@@ -90,8 +91,9 @@ class SettingsItemWidget extends StatelessWidget {
                 Icon(
                   Icons.chevron_right,
                   size: 40.w,
-                  color:
-                      focusNode.isFocused.value ? Colors.black : Colors.white,
+                  color: focusNode.isFocused.value
+                      ? Colors.black
+                      : Colors.white,
                 ),
             ],
           ),

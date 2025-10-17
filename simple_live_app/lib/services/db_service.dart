@@ -35,7 +35,7 @@ class DBService extends GetxService {
 
   Future updateFollowTagOrder(List<FollowUserTag> userTagList) async {
     final Map<int, FollowUserTag> updatedMap = {
-      for (int i = 0; i < userTagList.length; i++) i: userTagList[i]
+      for (int i = 0; i < userTagList.length; i++) i: userTagList[i],
     };
     await tagBox.clear();
     await tagBox.putAll(updatedMap);
@@ -93,8 +93,8 @@ class DBService extends GetxService {
   }
 
   List<History> getHistories() {
-    var his = historyBox.values.toList();
-    his.sort((a, b) => b.updateTime.compareTo(a.updateTime));
+    var his = historyBox.values.toList()
+      ..sort((a, b) => b.updateTime.compareTo(a.updateTime));
     return his;
   }
 }

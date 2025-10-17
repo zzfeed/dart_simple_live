@@ -38,20 +38,20 @@ class FollowUser {
   Rx<int> liveStatus = 0.obs;
 
   factory FollowUser.fromJson(Map<String, dynamic> json) => FollowUser(
-        id: json['id'],
-        roomId: json['roomId'],
-        siteId: json['siteId'],
-        userName: json['userName'],
-        face: json['face'],
-        addTime: DateTime.parse(json['addTime']),
-      );
+    id: json['id'],
+    roomId: json['roomId'],
+    siteId: json['siteId'],
+    userName: json['userName'],
+    face: json['face'],
+    addTime: DateTime.parse(json['addTime']),
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'roomId': roomId,
-        'siteId': siteId,
-        'userName': userName,
-        'face': face,
-        'addTime': addTime.toString(),
-      };
+    'id': id,
+    'roomId': roomId,
+    'siteId': siteId,
+    'userName': userName,
+    'face': face,
+    'addTime': addTime.toString(),
+  };
 }

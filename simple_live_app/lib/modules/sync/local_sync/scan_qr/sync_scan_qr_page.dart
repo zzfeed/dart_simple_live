@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:simple_live_app/modules/sync/local_sync/scan_qr/sync_scan_qr_controller.dart';
 
 class SyncScanQRPage extends GetView<SyncScanQRController> {
@@ -13,25 +13,22 @@ class SyncScanQRPage extends GetView<SyncScanQRController> {
         title: const Text('扫描二维码'),
         actions: [
           IconButton(
-            onPressed: () {
-              controller.qrController?.toggleFlash();
-            },
+            onPressed: controller.toggleTorch,
             icon: const Icon(Icons.flash_on),
           ),
           // 反转摄像头
           IconButton(
-            onPressed: () {
-              controller.qrController?.flipCamera();
-            },
+            onPressed: controller.switchCamera,
             icon: const Icon(Icons.flip_camera_android),
           ),
         ],
       ),
       body: Stack(
         children: [
-          QRView(
-            key: controller.qrKey,
-            onQRViewCreated: controller.onQRViewCreated,
+          MobileScanner(
+            controller: controller.scannerController,
+            onDetect: controller.onBarcodeDetected,
+            fit: BoxFit.cover,
           ),
           const ScanRectangle(),
         ],
@@ -54,8 +51,10 @@ class _ScanRectangleState extends State<ScanRectangle>
 
   @override
   void initState() {
-    animeController =
-        AnimationController(duration: const Duration(seconds: 2), vsync: this);
+    animeController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
     animeController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         animeController.reverse();
@@ -64,7 +63,7 @@ class _ScanRectangleState extends State<ScanRectangle>
       }
     });
     animation = Tween(
-      begin: const Offset(0, 0),
+      begin: Offset.zero,
       end: const Offset(0, 1),
     ).animate(animeController);
     animeController.forward();

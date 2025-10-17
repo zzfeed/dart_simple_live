@@ -1,7 +1,7 @@
 import 'package:simple_live_core/src/common/core_error.dart';
 import 'package:dio/dio.dart';
 
-import 'custom_interceptor.dart';
+import 'package:simple_live_core/src/common/custom_interceptor.dart';
 
 class HttpClient {
   static HttpClient? _httpUtil;
@@ -15,9 +15,9 @@ class HttpClient {
   HttpClient() {
     dio = Dio(
       BaseOptions(
-        connectTimeout: Duration(seconds: 20),
-        receiveTimeout: Duration(seconds: 20),
-        sendTimeout: Duration(seconds: 20),
+        connectTimeout: const Duration(seconds: 20),
+        receiveTimeout: const Duration(seconds: 20),
+        sendTimeout: const Duration(seconds: 20),
       ),
     );
     dio.interceptors.add(CustomInterceptor());
@@ -48,8 +48,10 @@ class HttpClient {
       return result.data;
     } catch (e) {
       if (e is DioException && e.type == DioExceptionType.badResponse) {
-        throw CoreError(e.message ?? "",
-            statusCode: e.response?.statusCode ?? 0);
+        throw CoreError(
+          e.message ?? "",
+          statusCode: e.response?.statusCode ?? 0,
+        );
       } else {
         throw CoreError("发送GET请求失败");
       }
@@ -81,8 +83,10 @@ class HttpClient {
       return result.data;
     } catch (e) {
       if (e is DioException && e.type == DioExceptionType.badResponse) {
-        throw CoreError(e.message ?? "",
-            statusCode: e.response?.statusCode ?? 0);
+        throw CoreError(
+          e.message ?? "",
+          statusCode: e.response?.statusCode ?? 0,
+        );
       } else {
         throw CoreError("发送GET请求失败");
       }
@@ -113,16 +117,19 @@ class HttpClient {
         options: Options(
           responseType: ResponseType.json,
           headers: header,
-          contentType:
-              formUrlEncoded ? Headers.formUrlEncodedContentType : null,
+          contentType: formUrlEncoded
+              ? Headers.formUrlEncodedContentType
+              : null,
         ),
         cancelToken: cancel,
       );
       return result.data;
     } catch (e) {
       if (e is DioException && e.type == DioExceptionType.badResponse) {
-        throw CoreError(e.message ?? "",
-            statusCode: e.response?.statusCode ?? 0);
+        throw CoreError(
+          e.message ?? "",
+          statusCode: e.response?.statusCode ?? 0,
+        );
       } else {
         throw CoreError("发送POST请求失败");
       }

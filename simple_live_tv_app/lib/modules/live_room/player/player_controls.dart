@@ -34,7 +34,7 @@ Widget buildControls(VideoState videoState, LiveRoomController controller) {
       ),
       Center(
         child: // 中间
-            StreamBuilder(
+        StreamBuilder(
           stream: videoState.widget.controller.player.stream.buffering,
           initialData: videoState.widget.controller.player.state.buffering,
           builder: (_, s) => Visibility(
@@ -56,7 +56,8 @@ Widget buildControls(VideoState videoState, LiveRoomController controller) {
         () => AnimatedPositioned(
           left: 0,
           right: 0,
-          top: (controller.showControlsState.value &&
+          top:
+              (controller.showControlsState.value &&
                   !controller.lockControlsState.value)
               ? 0
               : -200.w,
@@ -113,7 +114,8 @@ Widget buildControls(VideoState videoState, LiveRoomController controller) {
         () => AnimatedPositioned(
           left: 0,
           right: 0,
-          bottom: (controller.showControlsState.value &&
+          bottom:
+              (controller.showControlsState.value &&
                   !controller.lockControlsState.value)
               ? 0
               : -300.w,
@@ -418,8 +420,9 @@ void showPlayerSettings(LiveRoomController controller) {
                   value: controller.currentQuality,
                   onChanged: (e) {
                     Get.back();
-                    controller.currentQuality = e;
-                    controller.getPlayUrl();
+                    controller
+                      ..currentQuality = e
+                      ..getPlayUrl();
                   },
                 ),
               ),
@@ -651,7 +654,8 @@ void showFollowUser(LiveRoomController controller) {
               focusNode: AppFocusNode(),
               iconData: Icons.arrow_back,
               text: "返回",
-              autofocus: currentIndex == 0 &&
+              autofocus:
+                  currentIndex == 0 &&
                   FollowUserService.instance.livingList.isEmpty,
               onTap: () {
                 // Utils.hideRightDialog();

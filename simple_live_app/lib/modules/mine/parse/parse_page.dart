@@ -45,8 +45,9 @@ class ParsePage extends GetView<ParseController> {
                   width: double.infinity,
                   child: TextButton.icon(
                     onPressed: () {
-                      controller
-                          .jumpToRoom(controller.roomJumpToController.text);
+                      controller.jumpToRoom(
+                        controller.roomJumpToController.text,
+                      );
                     },
                     icon: const Icon(Remix.play_circle_line),
                     label: const Text("链接跳转"),
@@ -126,7 +127,7 @@ https://webcast.amemv.com/webcast/reflow/xxxxx
                 BoxShadow(
                   blurRadius: 8,
                   color: Colors.grey.withAlpha(50),
-                )
+                ),
               ],
       ),
       margin: AppStyle.edgeInsetsB12,

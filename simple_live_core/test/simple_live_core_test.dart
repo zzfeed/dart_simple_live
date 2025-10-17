@@ -1,7 +1,7 @@
 import 'package:simple_live_core/simple_live_core.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
-void testSite(LiveSite site) async {
+Future<void> testSite(LiveSite site) async {
   var rooms = <LiveRoomItem>[];
   test('getRecommendRooms', () async {
     final result = await site.getRecommendRooms();
@@ -95,7 +95,9 @@ void testSite(LiveSite site) async {
 
   test('getPlayUrls', () async {
     var url = await site.getPlayUrls(
-        detail: roomDetail!, quality: playQualities.first);
+      detail: roomDetail!,
+      quality: playQualities.first,
+    );
     expect(url, isNotNull);
     expect(url.urls, isNotEmpty);
     print(url.urls.join('\n\n'));
@@ -107,14 +109,15 @@ void testSite(LiveSite site) async {
     expect(danmaku, isA<LiveDanmaku>());
     var closed = false;
     var ready = false;
-    danmaku.onReady = () {
-      print('ready');
-      ready = true;
-    };
-    danmaku.onClose = (msg) {
-      print('onClose $msg');
-      closed = true;
-    };
+    danmaku
+      ..onReady = () {
+        print('ready');
+        ready = true;
+      }
+      ..onClose = (msg) {
+        print('onClose $msg');
+        closed = true;
+      };
     var msgCount = 0;
     danmaku.onMessage = (LiveMessage msg) {
       print('onMessage ${msg.type} ${msg.message}');

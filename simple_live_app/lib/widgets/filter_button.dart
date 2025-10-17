@@ -21,9 +21,10 @@ class FilterButton extends StatelessWidget {
         padding: AppStyle.edgeInsetsH12.copyWith(top: 4, bottom: 4),
         decoration: BoxDecoration(
           border: Border.all(
-              color: selected
-                  ? Theme.of(context).textTheme.bodyMedium!.color!
-                  : Colors.grey),
+            color: selected
+                ? Theme.of(context).textTheme.bodyMedium!.color!
+                : Colors.grey,
+          ),
           borderRadius: AppStyle.radius24,
         ),
         child: Text(
@@ -31,8 +32,8 @@ class FilterButton extends StatelessWidget {
           style: selected
               ? Theme.of(context).textTheme.bodyMedium
               : Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: Colors.grey,
-                  ),
+                  color: Colors.grey,
+                ),
         ),
       ),
     );

@@ -49,8 +49,10 @@ class HttpClient {
       return result.data;
     } catch (e) {
       if (e is DioException && e.type == DioExceptionType.badResponse) {
-        throw HttpError(e.message ?? "",
-            statusCode: e.response?.statusCode ?? 0);
+        throw HttpError(
+          e.message ?? "",
+          statusCode: e.response?.statusCode ?? 0,
+        );
       } else {
         throw HttpError("发送GET请求失败");
       }
@@ -82,8 +84,10 @@ class HttpClient {
       return result.data;
     } catch (e) {
       if (e is DioException && e.type == DioExceptionType.badResponse) {
-        throw HttpError(e.message ?? "",
-            statusCode: e.response?.statusCode ?? 0);
+        throw HttpError(
+          e.message ?? "",
+          statusCode: e.response?.statusCode ?? 0,
+        );
       } else {
         throw HttpError("发送GET请求失败");
       }
@@ -115,8 +119,10 @@ class HttpClient {
       return result;
     } catch (e) {
       if (e is DioException && e.type == DioExceptionType.badResponse) {
-        throw HttpError(e.message ?? "",
-            statusCode: e.response?.statusCode ?? 0);
+        throw HttpError(
+          e.message ?? "",
+          statusCode: e.response?.statusCode ?? 0,
+        );
       } else {
         throw HttpError("发送GET请求失败");
       }
@@ -147,16 +153,19 @@ class HttpClient {
         options: Options(
           responseType: ResponseType.json,
           headers: header,
-          contentType:
-              formUrlEncoded ? Headers.formUrlEncodedContentType : null,
+          contentType: formUrlEncoded
+              ? Headers.formUrlEncodedContentType
+              : null,
         ),
         cancelToken: cancel,
       );
       return result.data;
     } catch (e) {
       if (e is DioException && e.type == DioExceptionType.badResponse) {
-        throw HttpError(e.message ?? "",
-            statusCode: e.response?.statusCode ?? 0);
+        throw HttpError(
+          e.message ?? "",
+          statusCode: e.response?.statusCode ?? 0,
+        );
       } else {
         throw HttpError("发送POST请求失败");
       }
@@ -202,18 +211,18 @@ class HttpClient {
   /// * [cancel] 任务取消Token
   /// * [onProgress] 下载进度 0~1
   Future<File> download(
-      String url,
-      String savePath, {
-        Map<String, dynamic>? header,
-        CancelToken? cancel,
-        Function(int value, int progress)? onReceiveProgress,
-      }) async {
+    String url,
+    String savePath, {
+    Map<String, dynamic>? header,
+    CancelToken? cancel,
+    Function(int value, int progress)? onReceiveProgress,
+  }) async {
     header ??= {};
     final tempPath = "$savePath.part";
     final tempFile = File(tempPath);
 
     try {
-      if (!await tempFile.exists()) {
+      if (!tempFile.existsSync()) {
         await tempFile.create(recursive: true);
       }
       final response = await dio.download(
@@ -236,8 +245,10 @@ class HttpClient {
       if (CancelToken.isCancel(e)) {
         throw HttpError("下载已取消");
       } else if (e.type == DioExceptionType.badResponse) {
-        throw HttpError(e.message ?? "",
-            statusCode: e.response?.statusCode ?? 0);
+        throw HttpError(
+          e.message ?? "",
+          statusCode: e.response?.statusCode ?? 0,
+        );
       } else {
         throw HttpError("下载请求失败");
       }

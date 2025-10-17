@@ -82,8 +82,10 @@ class SyncPage extends StatelessWidget {
                       },
                     );
                     if (input != null && input.isNotEmpty) {
-                      Get.toNamed(RoutePath.kRemoteSyncRoom,
-                          arguments: input.toUpperCase());
+                      Get.toNamed(
+                        RoutePath.kRemoteSyncRoom,
+                        arguments: input.toUpperCase(),
+                      );
                     }
                   },
                 ),

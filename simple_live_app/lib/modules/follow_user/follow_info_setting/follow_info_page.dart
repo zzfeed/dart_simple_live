@@ -48,8 +48,9 @@ class FollowInfoPage extends GetView<FollowInfoController> {
                 children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundImage:
-                        NetworkImage(controller.followUser.value!.face),
+                    backgroundImage: NetworkImage(
+                      controller.followUser.value!.face,
+                    ),
                   ),
                   AppStyle.hGap12,
                   Expanded(
@@ -125,8 +126,8 @@ class FollowInfoPage extends GetView<FollowInfoController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: const [
+                const Row(
+                  children: [
                     Icon(Remix.link),
                     SizedBox(width: 8),
                     Text('平台迁移（输入直播链接进行解析）'),
@@ -164,10 +165,10 @@ class FollowInfoPage extends GetView<FollowInfoController> {
                   ],
                 ),
                 AppStyle.vGap12,
-                Text(
+                const Text(
                   "other todo ...",
                   style: TextStyle(color: Colors.grey),
-                )
+                ),
               ],
             ),
           ),

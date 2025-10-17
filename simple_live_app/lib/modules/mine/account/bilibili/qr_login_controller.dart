@@ -34,7 +34,7 @@ class BiliBiliQRLoginController extends GetxController {
   /// - [4] 登录失败
   Rx<QRStatus> qrStatus = QRStatus.loading.obs;
 
-  void loadQRCode() async {
+  Future<void> loadQRCode() async {
     try {
       qrStatus.value = QRStatus.loading;
 
@@ -64,7 +64,7 @@ class BiliBiliQRLoginController extends GetxController {
     );
   }
 
-  void pollQRStatus() async {
+  Future<void> pollQRStatus() async {
     try {
       var response = await HttpClient.instance.get(
         "https://passport.bilibili.com/x/passport-login/web/qrcode/poll",

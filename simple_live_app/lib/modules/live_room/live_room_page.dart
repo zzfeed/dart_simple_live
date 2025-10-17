@@ -79,7 +79,7 @@ class LiveRoomPage extends GetView<LiveRoomController> {
                         label: const Text("刷新"),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
@@ -118,7 +118,7 @@ class LiveRoomPage extends GetView<LiveRoomController> {
             title: Obx(
               () => Text(controller.detail.value?.title ?? "直播间"),
             ),
-            actions: buildAppbarActions(context),
+            actions: buildAppBarActions(context),
           ),
           body: orientation == Orientation.portrait
               ? buildPhoneUI(context)
@@ -242,7 +242,7 @@ class LiveRoomPage extends GetView<LiveRoomController> {
                           label: const Text("复制播放直链"),
                         ),
                       ],
-                    )
+                    ),
             ],
           ),
         ),
@@ -291,7 +291,7 @@ class LiveRoomPage extends GetView<LiveRoomController> {
               break;
             case 3: // 16:9
               boxFit = BoxFit.none;
-              final targetAspect = 16 / 9;
+              const targetAspect = 16 / 9;
               if (parentAspect > targetAspect) {
                 displayHeight = maxHeight;
                 displayWidth = displayHeight * targetAspect;
@@ -302,7 +302,7 @@ class LiveRoomPage extends GetView<LiveRoomController> {
               break;
             case 4: // 4:3
               boxFit = BoxFit.none;
-              final targetAspect = 4 / 3;
+              const targetAspect = 4 / 3;
               if (parentAspect > targetAspect) {
                 displayHeight = maxHeight;
                 displayWidth = displayHeight * targetAspect;
@@ -348,7 +348,7 @@ class LiveRoomPage extends GetView<LiveRoomController> {
               Center(
                 child: ValueListenableBuilder<int?>(
                   valueListenable: controller.player.textureId,
-                  builder: (_, id, __) => id == null
+                  builder: (_, id, _) => id == null
                       ? const CircularProgressIndicator()
                       : buildVideo(id),
                 ),
@@ -393,7 +393,7 @@ class LiveRoomPage extends GetView<LiveRoomController> {
         () => Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
+            DecoratedBox(
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey.withAlpha(50)),
                 borderRadius: AppStyle.radius24,
@@ -561,8 +561,11 @@ class LiveRoomPage extends GetView<LiveRoomController> {
                           separatorBuilder: (_, i) => Obx(
                             () => SizedBox(
                               // *2与原来的EdgeInsets.symmetric(vertical: )做兼容
-                              height: AppSettingsController
-                                      .instance.chatTextGap.value *
+                              height:
+                                  AppSettingsController
+                                      .instance
+                                      .chatTextGap
+                                      .value *
                                   2,
                             ),
                           ),
@@ -626,48 +629,56 @@ class LiveRoomPage extends GetView<LiveRoomController> {
 
     for (final match in matches) {
       if (match.start > lastIndex) {
-        parts.add(TextSpan(
-          text: text.substring(lastIndex, match.start),
-          style: TextStyle(
-            color: Get.isDarkMode ? Colors.white : AppColors.black333,
+        parts.add(
+          TextSpan(
+            text: text.substring(lastIndex, match.start),
+            style: TextStyle(
+              color: Get.isDarkMode ? Colors.white : AppColors.black333,
+            ),
           ),
-        ));
+        );
       }
       if (imageIndex < (message.imageUrls?.length ?? 0)) {
         final imageUrl = message.imageUrls![imageIndex++];
-        parts.add(WidgetSpan(
-          alignment: PlaceholderAlignment.middle,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: Image.network(
-              imageUrl,
-              width: 20,
-              height: 20,
-              fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) =>
-                  const Icon(Icons.broken_image, size: 20),
+        parts.add(
+          WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: Image.network(
+                imageUrl,
+                width: 20,
+                height: 20,
+                fit: BoxFit.contain,
+                errorBuilder: (_, _, _) =>
+                    const Icon(Icons.broken_image, size: 20),
+              ),
             ),
           ),
-        ));
+        );
       } else {
-        parts.add(TextSpan(
-          text: match.group(0),
-          style: TextStyle(
-            color: Get.isDarkMode ? Colors.white : AppColors.black333,
+        parts.add(
+          TextSpan(
+            text: match.group(0),
+            style: TextStyle(
+              color: Get.isDarkMode ? Colors.white : AppColors.black333,
+            ),
           ),
-        ));
+        );
       }
 
       lastIndex = match.end;
     }
 
     if (lastIndex < text.length) {
-      parts.add(TextSpan(
-        text: text.substring(lastIndex),
-        style: TextStyle(
-          color: Get.isDarkMode ? Colors.white : AppColors.black333,
+      parts.add(
+        TextSpan(
+          text: text.substring(lastIndex),
+          style: TextStyle(
+            color: Get.isDarkMode ? Colors.white : AppColors.black333,
+          ),
         ),
-      ));
+      );
     }
 
     return Obx(
@@ -687,8 +698,10 @@ class LiveRoomPage extends GetView<LiveRoomController> {
                         bottomRight: Radius.circular(12),
                       ),
                     ),
-                    padding:
-                        AppStyle.edgeInsetsA4.copyWith(left: 12, right: 12),
+                    padding: AppStyle.edgeInsetsA4.copyWith(
+                      left: 12,
+                      right: 12,
+                    ),
                     child: SelectableText.rich(
                       TextSpan(
                         text: "${message.userName}：",
@@ -766,13 +779,14 @@ class LiveRoomPage extends GetView<LiveRoomController> {
               Obx(
                 () => SettingsNumber(
                   title: "文字大小",
-                  value:
-                      AppSettingsController.instance.chatTextSize.value.toInt(),
+                  value: AppSettingsController.instance.chatTextSize.value
+                      .toInt(),
                   min: 8,
                   max: 36,
                   onChanged: (e) {
-                    AppSettingsController.instance
-                        .setChatTextSize(e.toDouble());
+                    AppSettingsController.instance.setChatTextSize(
+                      e.toDouble(),
+                    );
                   },
                 ),
               ),
@@ -780,8 +794,8 @@ class LiveRoomPage extends GetView<LiveRoomController> {
               Obx(
                 () => SettingsNumber(
                   title: "上下间隔",
-                  value:
-                      AppSettingsController.instance.chatTextGap.value.toInt(),
+                  value: AppSettingsController.instance.chatTextGap.value
+                      .toInt(),
                   min: 0,
                   max: 12,
                   onChanged: (e) {
@@ -853,16 +867,18 @@ class LiveRoomPage extends GetView<LiveRoomController> {
   Widget buildFollowList() {
     return Obx(
       () {
-        final sortedList = [...FollowService.instance.liveList];
-        sortedList.sort((a, b) {
-          final watchingA = controller.rxSite.value.id == a.siteId &&
-              controller.rxRoomId.value == a.roomId;
-          final watchingB = controller.rxSite.value.id == b.siteId &&
-              controller.rxRoomId.value == b.roomId;
-          if (watchingA && !watchingB) return -1;
-          if (!watchingA && watchingB) return 1;
-          return 0;
-        });
+        final sortedList = [...FollowService.instance.liveList]
+          ..sort((a, b) {
+            final watchingA =
+                controller.rxSite.value.id == a.siteId &&
+                controller.rxRoomId.value == a.roomId;
+            final watchingB =
+                controller.rxSite.value.id == b.siteId &&
+                controller.rxRoomId.value == b.roomId;
+            if (watchingA && !watchingB) return -1;
+            if (!watchingA && watchingB) return 1;
+            return 0;
+          });
 
         return Stack(
           children: [
@@ -875,7 +891,8 @@ class LiveRoomPage extends GetView<LiveRoomController> {
                   return Obx(
                     () => FollowUserItem(
                       item: item,
-                      playing: controller.rxSite.value.id == item.siteId &&
+                      playing:
+                          controller.rxSite.value.id == item.siteId &&
                           controller.rxRoomId.value == item.roomId,
                       onTap: () {
                         controller.resetRoom(
@@ -905,12 +922,10 @@ class LiveRoomPage extends GetView<LiveRoomController> {
     );
   }
 
-  List<Widget> buildAppbarActions(BuildContext context) {
+  List<Widget> buildAppBarActions(BuildContext context) {
     return [
       IconButton(
-        onPressed: () {
-          showMore();
-        },
+        onPressed: showMore,
         icon: const Icon(Icons.more_horiz),
       ),
     ];

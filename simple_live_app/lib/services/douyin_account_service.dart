@@ -18,8 +18,10 @@ class DouyinAccountService extends GetxService {
 
   @override
   void onInit() {
-    cookie = LocalStorageService.instance
-        .getValue(LocalStorageService.kDouyinCookie, "");
+    cookie = LocalStorageService.instance.getValue(
+      LocalStorageService.kDouyinCookie,
+      "",
+    );
     logged.value = cookie.isNotEmpty;
     loadUserInfo();
     super.onInit();
@@ -57,14 +59,18 @@ class DouyinAccountService extends GetxService {
 
   void setCookie(String cookie) {
     this.cookie = cookie;
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kDouyinCookie, cookie);
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kDouyinCookie,
+      cookie,
+    );
   }
 
-  void logout() async {
+  Future<void> logout() async {
     cookie = "";
-    LocalStorageService.instance
-        .setValue(LocalStorageService.kDouyinCookie, "");
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kDouyinCookie,
+      "",
+    );
     logged.value = false;
     name.value = "未登录";
     _setSite();

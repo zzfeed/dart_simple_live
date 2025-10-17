@@ -57,7 +57,8 @@ class DanmuSettingsView extends GetView<AppSettingsController> {
             children: [
               SettingsAction(
                 title: "关键词屏蔽",
-                onTap: onTapDanmuShield ??
+                onTap:
+                    onTapDanmuShield ??
                     () => Get.toNamed(RoutePath.kSettingsDanmuShield),
               ),
             ],
@@ -127,8 +128,9 @@ class DanmuSettingsView extends GetView<AppSettingsController> {
                   onChanged: (e) {
                     controller.setDanmuSize(e.toDouble());
                     updateDanmuOption(
-                      danmakuController?.option
-                          .copyWith(fontSize: e.toDouble()),
+                      danmakuController?.option.copyWith(
+                        fontSize: e.toDouble(),
+                      ),
                     );
                   },
                 ),
@@ -150,9 +152,8 @@ class DanmuSettingsView extends GetView<AppSettingsController> {
                     "偏粗",
                     "粗",
                     "很粗",
-                    "极粗"
-                  ][controller.danmuFontWeight.value]
-                      .toString(),
+                    "极粗",
+                  ][controller.danmuFontWeight.value].toString(),
                   onChanged: (e) {
                     controller.setDanmuFontWeight(e);
                     updateDanmuOption(

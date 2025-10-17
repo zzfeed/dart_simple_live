@@ -46,13 +46,13 @@ class BiliBiliUserInfoModel {
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'mid': mid,
-        'uname': uname,
-        'userid': userid,
-        'sign': sign,
-        'birthday': birthday,
-        'sex': sex,
-        'nick_free': nickFree,
-        'rank': rank,
-      };
+    'mid': mid,
+    'uname': uname,
+    'userid': userid,
+    'sign': sign,
+    'birthday': birthday,
+    'sex': sex,
+    'nick_free': nickFree,
+    'rank': rank,
+  };
 }

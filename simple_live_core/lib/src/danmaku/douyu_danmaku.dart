@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:simple_live_core/simple_live_core.dart';
 import 'package:simple_live_core/src/common/web_socket_util.dart';
 
-import '../common/binary_writer.dart';
+import 'package:simple_live_core/src/common/binary_writer.dart';
 
 class DouyuDanmaku implements LiveDanmaku {
   @override
@@ -47,10 +47,12 @@ class DouyuDanmaku implements LiveDanmaku {
   }
 
   void joinRoom(dynamic roomId) {
-    webSocketUtils
-        ?.sendMessage(serializeDouyu("type@=loginreq/roomid@=$roomId/"));
     webSocketUtils?.sendMessage(
-        serializeDouyu("type@=joingroup/rid@=$roomId/gid@=-9999/"));
+      serializeDouyu("type@=loginreq/roomid@=$roomId/"),
+    );
+    webSocketUtils?.sendMessage(
+      serializeDouyu("type@=joingroup/rid@=$roomId/gid@=-9999/"),
+    );
   }
 
   @override
@@ -103,14 +105,14 @@ class DouyuDanmaku implements LiveDanmaku {
 
       List<int> buffer = utf8.encode(body);
 
-      var writer = BinaryWriter([]);
-      writer.writeInt(4 + 4 + body.length + 1, 4, endian: Endian.little);
-      writer.writeInt(4 + 4 + body.length + 1, 4, endian: Endian.little);
-      writer.writeInt(clientSendToServer, 2, endian: Endian.little);
-      writer.writeInt(encrypted, 1, endian: Endian.little);
-      writer.writeInt(reserved, 1, endian: Endian.little);
-      writer.writeBytes(buffer);
-      writer.writeInt(0, 1, endian: Endian.little);
+      var writer = BinaryWriter([])
+        ..writeInt(4 + 4 + body.length + 1, 4, endian: Endian.little)
+        ..writeInt(4 + 4 + body.length + 1, 4, endian: Endian.little)
+        ..writeInt(clientSendToServer, 2, endian: Endian.little)
+        ..writeInt(encrypted, 1, endian: Endian.little)
+        ..writeInt(reserved, 1, endian: Endian.little)
+        ..writeBytes(buffer)
+        ..writeInt(0, 1, endian: Endian.little);
       return writer.buffer;
     } catch (e) {
       CoreLog.error(e);
@@ -121,13 +123,15 @@ class DouyuDanmaku implements LiveDanmaku {
   String? deserializeDouyu(List<int> buffer) {
     try {
       var reader = BinaryReader(Uint8List.fromList(buffer));
-      int fullMsgLength =
-          reader.readInt32(endian: Endian.little); //fullMsgLength
+      int fullMsgLength = reader.readInt32(
+        endian: Endian.little,
+      ); //fullMsgLength
       reader.readInt32(endian: Endian.little); //fullMsgLength2
       int bodyLength = fullMsgLength - 9;
-      reader.readShort(endian: Endian.little); //packType
-      reader.readByte(endian: Endian.little); //encrypted
-      reader.readByte(endian: Endian.little); //reserved
+      reader
+        ..readShort(endian: Endian.little) //packType
+        ..readByte(endian: Endian.little) //encrypted
+        ..readByte(endian: Endian.little); //reserved
 
       var bytes = reader.readBytes(bodyLength);
 

@@ -72,26 +72,29 @@ class HuyaDanmaku implements LiveDanmaku {
   }
 
   void joinRoom() {
-    var joinData =
-        getJoinData(danmakuArgs.ayyuid, danmakuArgs.topSid, danmakuArgs.topSid);
+    var joinData = getJoinData(
+      danmakuArgs.ayyuid,
+      danmakuArgs.topSid,
+      danmakuArgs.topSid,
+    );
     webSocketUtils?.sendMessage(joinData);
   }
 
   List<int> getJoinData(int ayyuid, int tid, int sid) {
     try {
-      var oos = TarsOutputStream();
-      oos.write(ayyuid, 0);
-      oos.write(true, 1);
-      oos.write("", 2);
-      oos.write("", 3);
-      oos.write(tid, 4);
-      oos.write(sid, 5);
-      oos.write(0, 6);
-      oos.write(0, 7);
+      var oos = TarsOutputStream()
+        ..write(ayyuid, 0)
+        ..write(true, 1)
+        ..write("", 2)
+        ..write("", 3)
+        ..write(tid, 4)
+        ..write(sid, 5)
+        ..write(0, 6)
+        ..write(0, 7);
 
-      var wscmd = TarsOutputStream();
-      wscmd.write(1, 0);
-      wscmd.write(oos.toUint8List(), 1);
+      var wscmd = TarsOutputStream()
+        ..write(1, 0)
+        ..write(oos.toUint8List(), 1);
       return wscmd.toUint8List();
     } catch (e) {
       CoreLog.error(e);
@@ -117,12 +120,12 @@ class HuyaDanmaku implements LiveDanmaku {
       var type = stream.read(0, 0, false);
       if (type == 7) {
         stream = TarsInputStream(stream.readBytes(1, false));
-        HYPushMessage wSPushMessage = HYPushMessage();
-        wSPushMessage.readFrom(stream);
+        HYPushMessage wSPushMessage = HYPushMessage()..readFrom(stream);
         if (wSPushMessage.uri == 1400) {
-          HYMessage messageNotice = HYMessage();
-          messageNotice
-              .readFrom(TarsInputStream(Uint8List.fromList(wSPushMessage.msg)));
+          HYMessage messageNotice = HYMessage()
+            ..readFrom(
+              TarsInputStream(Uint8List.fromList(wSPushMessage.msg)),
+            );
           var uname = messageNotice.userInfo.nickName;
           var content = messageNotice.content;
 

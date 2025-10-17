@@ -34,14 +34,15 @@ class GetCdnTokenResp extends TarsStruct {
 
   @override
   void writeTo(TarsOutputStream outputStream) {
-    outputStream.write(url, 0);
-    outputStream.write(cdnType, 1);
-    outputStream.write(streamName, 2);
-    outputStream.write(presenterUid, 3);
-    outputStream.write(antiCode, 4);
-    outputStream.write(sTime, 5);
-    outputStream.write(flvAntiCode, 6);
-    outputStream.write(hlsAntiCode, 7);
+    outputStream
+      ..write(url, 0)
+      ..write(cdnType, 1)
+      ..write(streamName, 2)
+      ..write(presenterUid, 3)
+      ..write(antiCode, 4)
+      ..write(sTime, 5)
+      ..write(flvAntiCode, 6)
+      ..write(hlsAntiCode, 7);
   }
 
   @override
@@ -59,14 +60,14 @@ class GetCdnTokenResp extends TarsStruct {
 
   @override
   void displayAsString(StringBuffer sb, int level) {
-    TarsDisplayer displayer = TarsDisplayer(sb, level: level);
-    displayer.DisplayString(url, "url");
-    displayer.DisplayString(cdnType, "cdnType");
-    displayer.DisplayString(streamName, "streamName");
-    displayer.DisplayInt(presenterUid, "presenterUid");
-    displayer.DisplayString(antiCode, "antiCode");
-    displayer.DisplayString(sTime, "sTime");
-    displayer.DisplayString(flvAntiCode, "flvAntiCode");
-    displayer.DisplayString(hlsAntiCode, "hlsAntiCode");
+    TarsDisplayer(sb, level: level)
+      ..DisplayString(url, "url")
+      ..DisplayString(cdnType, "cdnType")
+      ..DisplayString(streamName, "streamName")
+      ..DisplayInt(presenterUid, "presenterUid")
+      ..DisplayString(antiCode, "antiCode")
+      ..DisplayString(sTime, "sTime")
+      ..DisplayString(flvAntiCode, "flvAntiCode")
+      ..DisplayString(hlsAntiCode, "hlsAntiCode");
   }
 }

@@ -40,8 +40,9 @@ class HomeBigButton extends StatelessWidget {
                 child: Icon(
                   iconData,
                   size: 64.w,
-                  color:
-                      focusNode.isFocused.value ? Colors.black : Colors.white,
+                  color: focusNode.isFocused.value
+                      ? Colors.black
+                      : Colors.white,
                 ),
               ),
               AppStyle.vGap24,
@@ -49,8 +50,9 @@ class HomeBigButton extends StatelessWidget {
                 text,
                 style: TextStyle(
                   fontSize: 36.w,
-                  color:
-                      focusNode.isFocused.value ? Colors.black : Colors.white,
+                  color: focusNode.isFocused.value
+                      ? Colors.black
+                      : Colors.white,
                 ),
               ),
             ],

@@ -35,14 +35,16 @@ class HotliveController extends BasePageController<LiveRoomItemExt> {
     var result = await site.liveSite.getRecommendRooms(page: page);
 
     return result.items
-        .map((e) => LiveRoomItemExt(
-              roomId: e.roomId,
-              title: e.title,
-              cover: e.cover,
-              userName: e.userName,
-              online: e.online,
-              areaName: '',
-            ))
+        .map(
+          (e) => LiveRoomItemExt(
+            roomId: e.roomId,
+            title: e.title,
+            cover: e.cover,
+            userName: e.userName,
+            online: e.online,
+            areaName: '',
+          ),
+        )
         .toList();
   }
 

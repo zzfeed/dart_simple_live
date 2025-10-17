@@ -42,8 +42,8 @@ class DBService extends GetxService {
   }
 
   List<History> getHistories() {
-    var his = historyBox.values.toList();
-    his.sort((a, b) => b.updateTime.compareTo(a.updateTime));
+    var his = historyBox.values.toList()
+      ..sort((a, b) => b.updateTime.compareTo(a.updateTime));
     return his;
   }
 }

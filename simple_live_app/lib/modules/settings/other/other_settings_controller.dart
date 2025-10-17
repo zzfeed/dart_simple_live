@@ -36,7 +36,7 @@ class OtherSettingsController extends BaseController {
   void initDecoders() {
     videoDecoders.value = {
       "FFmpeg": "FFmpeg (通用软件解码器)",
-      customDecoderKey: "自定义解码器..."
+      customDecoderKey: "自定义解码器...",
     };
 
     if (Platform.isWindows) {
@@ -110,8 +110,9 @@ class OtherSettingsController extends BaseController {
   }
 
   void showCustomDecoderDialog() {
-    TextEditingController textController =
-        TextEditingController(text: customVideoDecoder.value);
+    TextEditingController textController = TextEditingController(
+      text: customVideoDecoder.value,
+    );
 
     Get.dialog(
       AlertDialog(
@@ -135,7 +136,7 @@ class OtherSettingsController extends BaseController {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text("取消")),
+          TextButton(onPressed: Get.back, child: const Text("取消")),
           TextButton(
             onPressed: () {
               String input = textController.text.trim();
@@ -161,18 +162,16 @@ class OtherSettingsController extends BaseController {
     AppSettingsController.instance.setLogEnable(e);
     if (e) {
       Log.initWriter();
-      Future.delayed(const Duration(milliseconds: 100), () {
-        loadLogFiles();
-      });
+      Future.delayed(const Duration(milliseconds: 100), loadLogFiles);
     } else {
       Log.disposeWriter();
     }
   }
 
-  void loadLogFiles() async {
+  Future<void> loadLogFiles() async {
     var supportDir = await getApplicationSupportDirectory();
     var logDir = Directory("${supportDir.path}/log");
-    if (!await logDir.exists()) {
+    if (!logDir.existsSync()) {
       await logDir.create();
     }
     logFiles.clear();
@@ -187,7 +186,7 @@ class OtherSettingsController extends BaseController {
     logFiles.sort((a, b) => b.time.compareTo(a.time));
   }
 
-  void cleanLog() async {
+  Future<void> cleanLog() async {
     if (AppSettingsController.instance.logEnable.value) {
       SmartDialog.showToast("请先关闭日志记录");
       return;
@@ -195,7 +194,7 @@ class OtherSettingsController extends BaseController {
 
     var supportDir = await getApplicationSupportDirectory();
     var logDir = Directory("${supportDir.path}/log");
-    if (await logDir.exists()) {
+    if (logDir.existsSync()) {
       await logDir.delete(recursive: true);
     }
     loadLogFiles();
@@ -210,7 +209,7 @@ class OtherSettingsController extends BaseController {
     await SharePlus.instance.share(params);
   }
 
-  void saveLogFile(LogFileModel item) async {
+  Future<void> saveLogFile(LogFileModel item) async {
     var filePath = await FilePicker.platform.saveFile(
       allowedExtensions: ['log'],
       type: FileType.custom,
@@ -223,7 +222,7 @@ class OtherSettingsController extends BaseController {
     }
   }
 
-  void exportConfig() async {
+  Future<void> exportConfig() async {
     try {
       // 组装数据
       var data = {
@@ -264,7 +263,7 @@ class OtherSettingsController extends BaseController {
     }
   }
 
-  void importConfig() async {
+  Future<void> importConfig() async {
     try {
       var file = await FilePicker.platform.pickFiles(
         allowedExtensions: ['json'],
@@ -287,8 +286,9 @@ class OtherSettingsController extends BaseController {
       LocalStorageService.instance.settingsBox.clear();
       LocalStorageService.instance.shieldBox.clear();
       LocalStorageService.instance.settingsBox.putAll(data["config"]);
-      LocalStorageService.instance.shieldBox
-          .putAll(data["shield"].cast<String, String>());
+      LocalStorageService.instance.shieldBox.putAll(
+        data["shield"].cast<String, String>(),
+      );
       SmartDialog.showToast("导入成功,重启生效");
     } catch (e) {
       Log.logPrint(e);

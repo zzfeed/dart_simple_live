@@ -28,8 +28,9 @@ class SyncController extends BaseController {
   Timer? _timer;
   var countDown = 600.obs;
 
-  Rx<SignalRConnectionState> state =
-      Rx<SignalRConnectionState>(SignalRConnectionState.connecting);
+  Rx<SignalRConnectionState> state = Rx<SignalRConnectionState>(
+    SignalRConnectionState.connecting,
+  );
 
   @override
   void onInit() {
@@ -37,7 +38,7 @@ class SyncController extends BaseController {
     super.onInit();
   }
 
-  void connect() async {
+  Future<void> connect() async {
     listenSignalR();
     await signalR.connect();
     if (signalR.state == SignalRConnectionState.connected) {
@@ -45,7 +46,7 @@ class SyncController extends BaseController {
     }
   }
 
-  void createRoom() async {
+  Future<void> createRoom() async {
     try {
       var resp = await signalR.createRoom();
       if (resp.isSuccess) {
@@ -100,7 +101,7 @@ class SyncController extends BaseController {
     });
   }
 
-  void onReceiveFavorite(bool overlay, String data) async {
+  Future<void> onReceiveFavorite(bool overlay, String data) async {
     try {
       var jsonBody = json.decode(data);
       if (overlay) {
@@ -119,7 +120,7 @@ class SyncController extends BaseController {
     }
   }
 
-  void onReceiveHistory(bool overlay, String data) async {
+  Future<void> onReceiveHistory(bool overlay, String data) async {
     try {
       var jsonBody = json.decode(data);
       if (overlay) {
@@ -144,7 +145,7 @@ class SyncController extends BaseController {
     }
   }
 
-  void onReceiveShieldWord(bool overlay, String data) async {
+  Future<void> onReceiveShieldWord(bool overlay, String data) async {
     try {
       var jsonBody = json.decode(data);
       if (overlay) {
@@ -160,7 +161,7 @@ class SyncController extends BaseController {
     }
   }
 
-  void onReceiveBiliAccount(bool overlay, String data) async {
+  Future<void> onReceiveBiliAccount(bool overlay, String data) async {
     try {
       var jsonBody = json.decode(data);
       var cookie = jsonBody['cookie'];

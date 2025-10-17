@@ -44,7 +44,7 @@ class RemoteSyncRoomController extends BaseController {
     super.onInit();
   }
 
-  void connect() async {
+  Future<void> connect() async {
     listenSignalR();
     await signalR.connect();
     if (signalR.state == SignalRConnectionState.connected) {
@@ -56,7 +56,7 @@ class RemoteSyncRoomController extends BaseController {
     }
   }
 
-  void createRoom() async {
+  Future<void> createRoom() async {
     try {
       var resp = await signalR.createRoom();
       if (resp.isSuccess) {
@@ -84,7 +84,7 @@ class RemoteSyncRoomController extends BaseController {
     });
   }
 
-  void joinRoom(String roomId) async {
+  Future<void> joinRoom(String roomId) async {
     try {
       var resp = await signalR.joinRoom(roomId);
       if (!resp.isSuccess) {
@@ -121,7 +121,7 @@ class RemoteSyncRoomController extends BaseController {
     });
   }
 
-  void onReceiveFavorite(bool overlay, String data) async {
+  Future<void> onReceiveFavorite(bool overlay, String data) async {
     try {
       var jsonBody = json.decode(data);
       if (overlay) {
@@ -140,7 +140,7 @@ class RemoteSyncRoomController extends BaseController {
     }
   }
 
-  void onReceiveHistory(bool overlay, String data) async {
+  Future<void> onReceiveHistory(bool overlay, String data) async {
     try {
       var jsonBody = json.decode(data);
       if (overlay) {
@@ -165,7 +165,7 @@ class RemoteSyncRoomController extends BaseController {
     }
   }
 
-  void onReceiveShieldWord(bool overlay, String data) async {
+  Future<void> onReceiveShieldWord(bool overlay, String data) async {
     try {
       var jsonBody = json.decode(data);
       if (overlay) {
@@ -182,7 +182,7 @@ class RemoteSyncRoomController extends BaseController {
     }
   }
 
-  void onReceiveBiliAccount(bool overlay, String data) async {
+  Future<void> onReceiveBiliAccount(bool overlay, String data) async {
     try {
       var jsonBody = json.decode(data);
       var cookie = jsonBody['cookie'];
@@ -205,7 +205,7 @@ class RemoteSyncRoomController extends BaseController {
     return overlay;
   }
 
-  void syncFollow() async {
+  Future<void> syncFollow() async {
     try {
       if (roomUsers.length <= 1) {
         SmartDialog.showToast("无设备连接");
@@ -236,7 +236,7 @@ class RemoteSyncRoomController extends BaseController {
     }
   }
 
-  void syncHistory() async {
+  Future<void> syncHistory() async {
     try {
       if (roomUsers.length <= 1) {
         SmartDialog.showToast("无设备连接");
@@ -265,7 +265,7 @@ class RemoteSyncRoomController extends BaseController {
     }
   }
 
-  void syncBlockedWord() async {
+  Future<void> syncBlockedWord() async {
     try {
       if (roomUsers.length <= 1) {
         SmartDialog.showToast("无设备连接");
@@ -295,7 +295,7 @@ class RemoteSyncRoomController extends BaseController {
     }
   }
 
-  void syncBiliAccount() async {
+  Future<void> syncBiliAccount() async {
     try {
       if (roomUsers.length <= 1) {
         SmartDialog.showToast("无设备连接");

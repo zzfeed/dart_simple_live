@@ -24,7 +24,7 @@ import 'package:simple_live_tv_app/modules/settings/settings_page.dart';
 import 'package:simple_live_tv_app/modules/sync/sync_controller.dart';
 import 'package:simple_live_tv_app/modules/sync/sync_page.dart';
 
-import 'route_path.dart';
+import 'package:simple_live_tv_app/routes/route_path.dart';
 
 class AppPages {
   AppPages._();
@@ -38,7 +38,7 @@ class AppPages {
       name: RoutePath.kHome,
       page: () => const HomePage(),
       bindings: [
-        BindingsBuilder.put(() => HomeController()),
+        BindingsBuilder.put(HomeController.new),
       ],
     ),
     // 数据同步
@@ -46,7 +46,7 @@ class AppPages {
       name: RoutePath.kSync,
       page: () => const SyncPage(),
       bindings: [
-        BindingsBuilder.put(() => SyncController()),
+        BindingsBuilder.put(SyncController.new),
       ],
     ),
 
@@ -72,7 +72,7 @@ class AppPages {
       name: RoutePath.kBiliBiliQRLogin,
       page: () => const BiliBiliQRLoginPage(),
       bindings: [
-        BindingsBuilder.put(() => BiliBiliQRLoginController()),
+        BindingsBuilder.put(BiliBiliQRLoginController.new),
       ],
     ),
     // 设置
@@ -80,7 +80,7 @@ class AppPages {
       name: RoutePath.kSettings,
       page: () => const SettingsPage(),
       bindings: [
-        BindingsBuilder.put(() => SettingsController()),
+        BindingsBuilder.put(SettingsController.new),
       ],
     ),
     // 历史记录
@@ -88,7 +88,7 @@ class AppPages {
       name: RoutePath.kHistory,
       page: () => const HistoryPage(),
       bindings: [
-        BindingsBuilder.put(() => HistoryController()),
+        BindingsBuilder.put(HistoryController.new),
       ],
     ),
     //热门直播
@@ -96,7 +96,7 @@ class AppPages {
       name: RoutePath.kHotLive,
       page: () => const HotLivePage(),
       bindings: [
-        BindingsBuilder.put(() => HotliveController()),
+        BindingsBuilder.put(HotliveController.new),
       ],
     ),
     //分类
@@ -104,7 +104,7 @@ class AppPages {
       name: RoutePath.kCategory,
       page: () => const CategoryPage(),
       bindings: [
-        BindingsBuilder.put(() => CategoryController()),
+        BindingsBuilder.put(CategoryController.new),
       ],
     ),
     //分类

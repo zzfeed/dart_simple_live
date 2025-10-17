@@ -194,9 +194,9 @@ class FollowService extends GetxService {
         if (a.liveStatus.value != b.liveStatus.value) {
           return b.liveStatus.value.compareTo(a.liveStatus.value);
         }
-        return b.watchDuration!
-            .toDuration()
-            .compareTo(a.watchDuration!.toDuration());
+        return b.watchDuration!.toDuration().compareTo(
+          a.watchDuration!.toDuration(),
+        );
       },
     );
   }
@@ -217,8 +217,9 @@ class FollowService extends GetxService {
 
   // 更新关注的历史记录
   void updateFollowHistory(History history) {
-    var follow =
-        followList.where((follow) => follow.id == history.id).firstOrNull;
+    var follow = followList
+        .where((follow) => follow.id == history.id)
+        .firstOrNull;
     if (follow == null) {
       return;
     } else {
@@ -233,8 +234,9 @@ class FollowService extends GetxService {
       updateTimer?.cancel();
       updateTimer = Timer.periodic(
         Duration(
-            minutes:
-                AppSettingsController.instance.autoUpdateFollowDuration.value),
+          minutes:
+              AppSettingsController.instance.autoUpdateFollowDuration.value,
+        ),
         (timer) {
           Log.logPrint("Update Follow Timer");
           loadData();
@@ -259,7 +261,7 @@ class FollowService extends GetxService {
     }
   }
 
-  void startUpdateStatus() async {
+  Future<void> startUpdateStatus() async {
     updatedCount = 0;
     updating.value = true;
 
@@ -296,9 +298,10 @@ class FollowService extends GetxService {
       if (item.liveStatus.value == 2) {
         // 只有正在直播时才查详细信息
         var detail = await site.liveSite.getRoomDetail(roomId: item.roomId);
-        item.liveTitle = detail.title;
-        item.liveAreaName = detail.areaName;
-        item.liveStartTime = detail.showTime;
+        item
+          ..liveTitle = detail.title
+          ..liveAreaName = detail.areaName
+          ..liveStartTime = detail.showTime;
       } else {
         item.liveStartTime = null;
       }
@@ -334,7 +337,7 @@ class FollowService extends GetxService {
     _updatedListController.add(0);
   }
 
-  void exportFile() async {
+  Future<void> exportFile() async {
     if (followList.isEmpty) {
       SmartDialog.showToast("列表为空");
       return;
@@ -358,7 +361,8 @@ class FollowService extends GetxService {
         return;
       }
       var jsonFile = File(
-          '$dir/SimpleLive_${DateTime.now().millisecondsSinceEpoch ~/ 1000}.json');
+        '$dir/SimpleLive_${DateTime.now().millisecondsSinceEpoch ~/ 1000}.json',
+      );
       var jsonText = generateJson();
       await jsonFile.writeAsString(jsonText);
       SmartDialog.showToast("已导出关注列表");
@@ -368,7 +372,7 @@ class FollowService extends GetxService {
     }
   }
 
-  void inputFile() async {
+  Future<void> inputFile() async {
     try {
       var status = await Utils.checkStoragePermission();
       if (!status) {
@@ -418,9 +422,7 @@ class FollowService extends GetxService {
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Get.back();
-            },
+            onPressed: Get.back,
             child: const Text("关闭"),
           ),
           TextButton(
@@ -435,7 +437,7 @@ class FollowService extends GetxService {
     );
   }
 
-  void inputText() async {
+  Future<void> inputText() async {
     final TextEditingController textController = TextEditingController();
     await Get.dialog(
       AlertDialog(
@@ -451,9 +453,7 @@ class FollowService extends GetxService {
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Get.back();
-            },
+            onPressed: Get.back,
             child: const Text("关闭"),
           ),
           TextButton(

@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 
-import 'core_log.dart';
+import 'package:simple_live_core/src/common/core_log.dart';
 
 class CustomInterceptor extends Interceptor {
   @override
@@ -49,7 +49,8 @@ Response Data：${err.response?.data}''', err.stackTrace);
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    var time = DateTime.now().millisecondsSinceEpoch -
+    var time =
+        DateTime.now().millisecondsSinceEpoch -
         response.requestOptions.extra["ts"];
     if (CoreLog.requestLogType == RequestLogType.all) {
       CoreLog.i(

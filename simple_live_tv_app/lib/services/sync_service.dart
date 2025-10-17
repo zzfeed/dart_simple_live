@@ -46,7 +46,7 @@ class SyncService extends GetxService {
 
   /// 监听来自其他客户端的UDP广播
   /// - 如果收到广播，回复自己的信息
-  void listenUDP() async {
+  Future<void> listenUDP() async {
     udp = await UDP.bind(Endpoint.any(port: const Port(udpPort)));
     udp!.asStream().listen((datagram) {
       var str = String.fromCharCodes(datagram!.data);
@@ -72,7 +72,7 @@ class SyncService extends GetxService {
   }
 
   /// 发送自己的信息
-  void sendInfo() async {
+  Future<void> sendInfo() async {
     //var ip = await getLocalIP();
 
     var name = await getDeviceName();
@@ -140,15 +140,15 @@ class SyncService extends GetxService {
   }
 
   /// 初始化HTTP服务
-  void initServer() async {
+  Future<void> initServer() async {
     try {
-      var serverRouter = Router();
-      serverRouter.get('/', _helloRequest);
-      serverRouter.get('/info', _infoRequest);
-      serverRouter.post('/sync/follow', _syncFollowUserRequest);
-      serverRouter.post('/sync/history', _syncHistoryRequest);
-      serverRouter.post('/sync/blocked_word', _syncBlockedWordRequest);
-      serverRouter.post('/sync/account/bilibili', _syncBiliAccountRequest);
+      var serverRouter = Router()
+        ..get('/', _helloRequest)
+        ..get('/info', _infoRequest)
+        ..post('/sync/follow', _syncFollowUserRequest)
+        ..post('/sync/history', _syncHistoryRequest)
+        ..post('/sync/blocked_word', _syncBlockedWordRequest)
+        ..post('/sync/account/bilibili', _syncBiliAccountRequest);
 
       var server = await shelf_io.serve(
         serverRouter.call,
@@ -197,8 +197,9 @@ class SyncService extends GetxService {
   /// 同步关注用户列表
   Future<shelf.Response> _syncFollowUserRequest(shelf.Request request) async {
     try {
-      var overlay =
-          int.parse(request.requestedUri.queryParameters['overlay'] ?? '0');
+      var overlay = int.parse(
+        request.requestedUri.queryParameters['overlay'] ?? '0',
+      );
 
       var body = await request.readAsString();
       Log.d('_syncFollowUserRequest: $body');
@@ -228,8 +229,9 @@ class SyncService extends GetxService {
   /// 同步观看记录
   Future<shelf.Response> _syncHistoryRequest(shelf.Request request) async {
     try {
-      var overlay =
-          int.parse(request.requestedUri.queryParameters['overlay'] ?? '0');
+      var overlay = int.parse(
+        request.requestedUri.queryParameters['overlay'] ?? '0',
+      );
       var body = await request.readAsString();
       Log.d('_syncFollowUserRequest: $body');
       var jsonBody = json.decode(body);
@@ -265,8 +267,9 @@ class SyncService extends GetxService {
   /// 同步弹幕屏蔽词
   Future<shelf.Response> _syncBlockedWordRequest(shelf.Request request) async {
     try {
-      var overlay =
-          int.parse(request.requestedUri.queryParameters['overlay'] ?? '0');
+      var overlay = int.parse(
+        request.requestedUri.queryParameters['overlay'] ?? '0',
+      );
       var body = await request.readAsString();
       Log.d('_syncBlockedWordRequest: $body');
       var jsonBody = json.decode(body);

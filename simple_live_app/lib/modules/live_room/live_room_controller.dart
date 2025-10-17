@@ -34,17 +34,10 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   final Site pSite;
   final String pRoomId;
   late LiveDanmaku liveDanmaku;
-  LiveRoomController({
-    required this.pSite,
-    required this.pRoomId,
-  }) {
+  LiveRoomController({required this.pSite, required this.pRoomId}) {
     rxSite = pSite.obs;
     rxRoomId = pRoomId.obs;
     liveDanmaku = site.liveSite.getDanmaku();
-    // 抖音应该默认是竖屏的
-    if (site.id == "douyin") {
-      isVertical.value = true;
-    }
   }
 
   late Rx<Site> rxSite;
@@ -160,8 +153,13 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
           exit(0);
         });
         autoExitTimer?.cancel();
-        var delay = await Utils.showAlertDialog("定时关闭已到时,是否延迟关闭?",
-            title: "延迟关闭", confirm: "延迟", cancel: "关闭", selectable: true);
+        var delay = await Utils.showAlertDialog(
+          "定时关闭已到时,是否延迟关闭?",
+          title: "延迟关闭",
+          confirm: "延迟",
+          cancel: "关闭",
+          selectable: true,
+        );
         if (delay) {
           timer.cancel();
           delayAutoExit.value = true;
@@ -232,9 +230,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
 
       messages.add(msg);
 
-      WidgetsBinding.instance.addPostFrameCallback(
-        (_) => chatScrollToBottom(),
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) => chatScrollToBottom());
       if (!liveStatus.value || isBackground) {
         return;
       }
@@ -242,12 +238,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
       danmakuController?.addDanmaku(
         DanmakuContentItem(
           msg.message,
-          color: Color.fromARGB(
-            255,
-            msg.color.r,
-            msg.color.g,
-            msg.color.b,
-          ),
+          color: Color.fromARGB(255, msg.color.r, msg.color.g, msg.color.b),
           selfSend: false,
         ),
       );
@@ -281,7 +272,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   }
 
   /// 加载直播间信息
-  void loadData() async {
+  Future<void> loadData() async {
     try {
       SmartDialog.showLoading(msg: "");
       loadError.value = false;
@@ -311,8 +302,9 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
               ),
             );
           } else {
-            followed.value =
-                DBService.instance.getFollowExist("${site.id}_$roomId");
+            followed.value = DBService.instance.getFollowExist(
+              "${site.id}_$roomId",
+            );
           }
         }
       }
@@ -345,13 +337,14 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   }
 
   /// 初始化播放器
-  void getPlayQualities() async {
+  Future<void> getPlayQualities() async {
     qualities.clear();
     currentQuality = -1;
 
     try {
-      var playQualities =
-          await site.liveSite.getPlayQualities(detail: detail.value!);
+      var playQualities = await site.liveSite.getPlayQualities(
+        detail: detail.value!,
+      );
 
       if (playQualities.isEmpty) {
         SmartDialog.showToast("无法读取播放清晰度");
@@ -392,13 +385,15 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
     return qualityLevel;
   }
 
-  void getPlayUrl() async {
+  Future<void> getPlayUrl() async {
     playUrls.clear();
     currentQualityInfo.value = qualities[currentQuality].quality;
     currentLineInfo.value = "";
     currentLineIndex = -1;
-    var playUrl = await site.liveSite
-        .getPlayUrls(detail: detail.value!, quality: qualities[currentQuality]);
+    var playUrl = await site.liveSite.getPlayUrls(
+      detail: detail.value!,
+      quality: qualities[currentQuality],
+    );
     if (playUrl.urls.isEmpty) {
       SmartDialog.showToast("无法读取播放地址");
       return;
@@ -419,7 +414,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
     setPlayer();
   }
 
-  void setPlayer() async {
+  Future<void> setPlayer() async {
     // 初始化播放器
     await initializePlayer();
 
@@ -436,14 +431,16 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
     }
 
     if (playHeaders != null && playHeaders!.isNotEmpty) {
-      final headers =
-          playHeaders!.entries.map((e) => "${e.key}: ${e.value}").join("\r\n");
+      final headers = playHeaders!.entries
+          .map((e) => "${e.key}: ${e.value}")
+          .join("\r\n");
       player.setProperty("avio.headers", headers);
     }
 
     player.media = playurl;
-    player.prepare();
-    player.state = PlaybackState.playing;
+    player
+      ..prepare()
+      ..state = PlaybackState.playing;
     if (player.textureId.value == null) {
       player.updateTexture();
     }
@@ -452,7 +449,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   }
 
   @override
-  void mediaEnd() async {
+  Future<void> mediaEnd() async {
     super.mediaEnd();
     if (mediaErrorRetryCount < 2) {
       Log.d("播放结束，尝试第${mediaErrorRetryCount + 1}次刷新");
@@ -479,7 +476,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
 
   int mediaErrorRetryCount = 0;
   @override
-  void mediaError(String error) async {
+  Future<void> mediaError(String error) async {
     super.mediaEnd();
     if (mediaErrorRetryCount < 2) {
       Log.d("播放失败，尝试第${mediaErrorRetryCount + 1}次刷新");
@@ -504,10 +501,11 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   }
 
   /// 读取SC
-  void getSuperChatMessage() async {
+  Future<void> getSuperChatMessage() async {
     try {
-      var sc =
-          await site.liveSite.getSuperChatMessage(roomId: detail.value!.roomId);
+      var sc = await site.liveSite.getSuperChatMessage(
+        roomId: detail.value!.roomId,
+      );
       superChats.addAll(sc);
     } catch (e) {
       Log.logPrint(e);
@@ -520,7 +518,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
     superChats.remove(message);
   }
 
-  void removeSuperChats() async {
+  Future<void> removeSuperChats() async {
     var now = DateTime.now().millisecondsSinceEpoch;
     superChats.value = superChats
         .where((x) => x.endTime.millisecondsSinceEpoch > now)
@@ -565,7 +563,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   }
 
   /// 取消关注用户
-  void removeFollowUser() async {
+  Future<void> removeFollowUser() async {
     if (detail.value == null) {
       return;
     }
@@ -581,11 +579,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
 
   void share() {
     if (detail.value == null) return;
-    SharePlus.instance.share(
-      ShareParams(
-        text: detail.value!.url,
-      ),
-    );
+    SharePlus.instance.share(ShareParams(text: detail.value!.url));
   }
 
   void copyUrl() {
@@ -597,13 +591,15 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   }
 
   /// 复制新生成的直播流
-  void copyPlayUrl() async {
+  Future<void> copyPlayUrl() async {
     // 未开播不复制
     if (!liveStatus.value) {
       return;
     }
-    var playUrl = await site.liveSite
-        .getPlayUrls(detail: detail.value!, quality: qualities[currentQuality]);
+    var playUrl = await site.liveSite.getPlayUrls(
+      detail: detail.value!,
+      quality: qualities[currentQuality],
+    );
     if (playUrl.urls.isEmpty) {
       SmartDialog.showToast("无法读取播放地址");
       return;
@@ -675,21 +671,21 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   void showQualitySheet() {
     Utils.showBottomSheet(
       title: "切换清晰度",
-      child: ListView.builder(
-        itemCount: qualities.length,
-        itemBuilder: (_, i) {
-          var item = qualities[i];
-          return RadioListTile(
-            value: i,
-            groupValue: currentQuality,
-            title: Text(item.quality),
-            onChanged: (e) {
-              Get.back();
-              currentQuality = i;
-              getPlayUrl();
-            },
-          );
+      child: RadioGroup<int>(
+        groupValue: currentQuality,
+        onChanged: (e) {
+          if (e == null) return;
+          Get.back();
+          currentQuality = e;
+          getPlayUrl();
         },
+        child: ListView.builder(
+          itemCount: qualities.length,
+          itemBuilder: (_, i) {
+            var item = qualities[i];
+            return RadioListTile<int>(value: i, title: Text(item.quality));
+          },
+        ),
       ),
     );
   }
@@ -697,24 +693,23 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   void showPlayUrlsSheet() {
     Utils.showBottomSheet(
       title: "切换线路",
-      child: ListView.builder(
-        itemCount: playUrls.length,
-        itemBuilder: (_, i) {
-          return RadioListTile(
-            value: i,
-            groupValue: currentLineIndex,
-            title: Text("线路${i + 1}"),
-            secondary: Text(
-              playUrls[i].contains(".flv") ? "FLV" : "HLS",
-            ),
-            onChanged: (e) {
-              Get.back();
-              //currentLineIndex = i;
-              //setPlayer();
-              changePlayLine(i);
-            },
-          );
+      child: RadioGroup<int>(
+        groupValue: currentLineIndex,
+        onChanged: (e) {
+          if (e == null) return;
+          Get.back();
+          changePlayLine(e);
         },
+        child: ListView.builder(
+          itemCount: playUrls.length,
+          itemBuilder: (_, i) {
+            return RadioListTile<int>(
+              value: i,
+              title: Text("线路${i + 1}"),
+              secondary: Text(playUrls[i].contains(".flv") ? "FLV" : "HLS"),
+            );
+          },
+        ),
       ),
     );
   }
@@ -723,55 +718,42 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
     Utils.showBottomSheet(
       title: "画面尺寸",
       child: Obx(
-        () => ListView(
-          padding: AppStyle.edgeInsetsV12,
-          children: [
-            RadioListTile(
-              value: 0,
-              title: const Text("适应"),
-              visualDensity: VisualDensity.compact,
-              groupValue: AppSettingsController.instance.scaleMode.value,
-              onChanged: (e) {
-                AppSettingsController.instance.setScaleMode(e ?? 0);
-              },
-            ),
-            RadioListTile(
-              value: 1,
-              title: const Text("拉伸"),
-              visualDensity: VisualDensity.compact,
-              groupValue: AppSettingsController.instance.scaleMode.value,
-              onChanged: (e) {
-                AppSettingsController.instance.setScaleMode(e ?? 1);
-              },
-            ),
-            RadioListTile(
-              value: 2,
-              title: const Text("铺满"),
-              visualDensity: VisualDensity.compact,
-              groupValue: AppSettingsController.instance.scaleMode.value,
-              onChanged: (e) {
-                AppSettingsController.instance.setScaleMode(e ?? 2);
-              },
-            ),
-            RadioListTile(
-              value: 3,
-              title: const Text("16:9"),
-              visualDensity: VisualDensity.compact,
-              groupValue: AppSettingsController.instance.scaleMode.value,
-              onChanged: (e) {
-                AppSettingsController.instance.setScaleMode(e ?? 3);
-              },
-            ),
-            RadioListTile(
-              value: 4,
-              title: const Text("4:3"),
-              visualDensity: VisualDensity.compact,
-              groupValue: AppSettingsController.instance.scaleMode.value,
-              onChanged: (e) {
-                AppSettingsController.instance.setScaleMode(e ?? 4);
-              },
-            ),
-          ],
+        () => RadioGroup<int>(
+          groupValue: AppSettingsController.instance.scaleMode.value,
+          onChanged: (e) {
+            if (e == null) return;
+            AppSettingsController.instance.setScaleMode(e);
+          },
+          child: ListView(
+            padding: AppStyle.edgeInsetsV12,
+            children: const [
+              RadioListTile<int>(
+                value: 0,
+                title: Text("适应"),
+                visualDensity: VisualDensity.compact,
+              ),
+              RadioListTile<int>(
+                value: 1,
+                title: Text("拉伸"),
+                visualDensity: VisualDensity.compact,
+              ),
+              RadioListTile<int>(
+                value: 2,
+                title: Text("铺满"),
+                visualDensity: VisualDensity.compact,
+              ),
+              RadioListTile<int>(
+                value: 3,
+                title: Text("16:9"),
+                visualDensity: VisualDensity.compact,
+              ),
+              RadioListTile<int>(
+                value: 4,
+                title: Text("4:3"),
+                visualDensity: VisualDensity.compact,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -786,8 +768,9 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
         return;
       }
 
-      AppSettingsController.instance
-          .addShieldList(keywordController.text.trim());
+      AppSettingsController.instance.addShieldList(
+        keywordController.text.trim(),
+      );
       keywordController.text = "";
     }
 
@@ -840,10 +823,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
                           top: 4,
                           bottom: 4,
                         ),
-                        child: Text(
-                          item,
-                          style: Get.textTheme.bodyMedium,
-                        ),
+                        child: Text(item, style: Get.textTheme.bodyMedium),
                       ),
                     ),
                   )
@@ -858,10 +838,9 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
   void showFollowUserSheet() {
     Utils.showBottomSheet(
       title: "关注列表",
-      child: Obx(
-        () {
-          var list = [...FollowService.instance.liveList];
-          list.sort((a, b) {
+      child: Obx(() {
+        var list = [...FollowService.instance.liveList]
+          ..sort((a, b) {
             bool aPlaying =
                 rxSite.value.id == a.siteId && rxRoomId.value == a.roomId;
             bool bPlaying =
@@ -871,46 +850,43 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
             return 0;
           });
 
-          return Stack(
-            children: [
-              RefreshIndicator(
-                onRefresh: FollowService.instance.loadData,
-                child: ListView.builder(
-                  itemCount: list.length,
-                  itemBuilder: (_, i) {
-                    var item = list[i];
-                    return Obx(
-                      () => FollowUserItem(
-                        item: item,
-                        playing: rxSite.value.id == item.siteId &&
-                            rxRoomId.value == item.roomId,
-                        onTap: () {
-                          Get.back();
-                          resetRoom(
-                            Sites.allSites[item.siteId]!,
-                            item.roomId,
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ),
-              if (Platform.isLinux || Platform.isWindows || Platform.isMacOS)
-                Positioned(
-                  right: 12,
-                  bottom: 12,
-                  child: Obx(
-                    () => DesktopRefreshButton(
-                      refreshing: FollowService.instance.updating.value,
-                      onPressed: FollowService.instance.loadData,
+        return Stack(
+          children: [
+            RefreshIndicator(
+              onRefresh: FollowService.instance.loadData,
+              child: ListView.builder(
+                itemCount: list.length,
+                itemBuilder: (_, i) {
+                  var item = list[i];
+                  return Obx(
+                    () => FollowUserItem(
+                      item: item,
+                      playing:
+                          rxSite.value.id == item.siteId &&
+                          rxRoomId.value == item.roomId,
+                      onTap: () {
+                        Get.back();
+                        resetRoom(Sites.allSites[item.siteId]!, item.roomId);
+                      },
                     ),
+                  );
+                },
+              ),
+            ),
+            if (Platform.isLinux || Platform.isWindows || Platform.isMacOS)
+              Positioned(
+                right: 12,
+                bottom: 12,
+                child: Obx(
+                  () => DesktopRefreshButton(
+                    refreshing: FollowService.instance.updating.value,
+                    onPressed: FollowService.instance.loadData,
                   ),
                 ),
-            ],
-          );
-        },
-      ),
+              ),
+          ],
+        );
+      }),
     );
   }
 
@@ -926,10 +902,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
         children: [
           Obx(
             () => SwitchListTile(
-              title: Text(
-                "启用定时关闭",
-                style: Get.textTheme.titleMedium,
-              ),
+              title: Text("启用定时关闭", style: Get.textTheme.titleMedium),
               value: autoExitEnable.value,
               onChanged: (e) {
                 autoExitEnable.value = e;
@@ -967,11 +940,14 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
                 if (value == null || (value.hour == 0 && value.minute == 0)) {
                   return;
                 }
-                var duration =
-                    Duration(hours: value.hour, minutes: value.minute);
+                var duration = Duration(
+                  hours: value.hour,
+                  minutes: value.minute,
+                );
                 autoExitMinutes.value = duration.inMinutes;
-                AppSettingsController.instance
-                    .setRoomAutoExitDuration(autoExitMinutes.value);
+                AppSettingsController.instance.setRoomAutoExitDuration(
+                  autoExitMinutes.value,
+                );
                 //setAutoExitDuration(duration.inMinutes);
                 setAutoExit();
               },
@@ -982,7 +958,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
     );
   }
 
-  void openNativeAPP() async {
+  Future<void> openNativeAPP() async {
     String nativeUrl = "";
     String webUrl = "";
     if (site.id == Constant.kBiliBili) {
@@ -1016,7 +992,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
     }
   }
 
-  void resetRoom(Site site, String roomId) async {
+  Future<void> resetRoom(Site site, String roomId) async {
     if (this.site == site && this.roomId == roomId) {
       return;
     }
@@ -1053,18 +1029,19 @@ ${error?.stackTrace}''');
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
 
     if (state == AppLifecycleState.paused) {
       Log.d("进入后台");
       //进入后台，关闭弹幕
-      danmakuController?.clear();
+      danmakuController?.pause();
       isBackground = true;
     } else
     //返回前台
     if (state == AppLifecycleState.resumed) {
       Log.d("返回前台");
+      danmakuController?.resume();
       isBackground = false;
     }
   }
@@ -1101,7 +1078,7 @@ ${error?.stackTrace}''');
   }
 
   @override
-  void onClose() {
+  Future<void> onClose() async {
     WidgetsBinding.instance.removeObserver(this);
     scrollController.removeListener(scrollListener);
     autoExitTimer?.cancel();
@@ -1110,6 +1087,6 @@ ${error?.stackTrace}''');
     liveDanmaku.stop();
     danmakuController = null;
     _liveDurationTimer?.cancel(); // 页面关闭时取消定时器
-    super.onClose();
+    await super.onClose();
   }
 }

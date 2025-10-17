@@ -31,56 +31,56 @@ class AppStyle {
   );
 
   static SizedBox get vGap4 => SizedBox(
-        height: 4.w,
-      );
+    height: 4.w,
+  );
   static SizedBox get vGap8 => SizedBox(
-        height: 8.w,
-      );
+    height: 8.w,
+  );
   static SizedBox get vGap12 => SizedBox(
-        height: 12.w,
-      );
+    height: 12.w,
+  );
   static SizedBox get vGap16 => SizedBox(
-        height: 16.w,
-      );
+    height: 16.w,
+  );
   static SizedBox get vGap24 => SizedBox(
-        height: 24.w,
-      );
+    height: 24.w,
+  );
   static SizedBox get vGap32 => SizedBox(
-        height: 32.w,
-      );
+    height: 32.w,
+  );
   static SizedBox get vGap40 => SizedBox(
-        height: 40.w,
-      );
+    height: 40.w,
+  );
   static SizedBox get vGap48 => SizedBox(
-        height: 48.w,
-      );
+    height: 48.w,
+  );
   static SizedBox get hGap4 => SizedBox(
-        width: 4.w,
-      );
+    width: 4.w,
+  );
   static SizedBox get hGap8 => SizedBox(
-        width: 8.w,
-      );
+    width: 8.w,
+  );
   static SizedBox get hGap12 => SizedBox(
-        width: 12.w,
-      );
+    width: 12.w,
+  );
   static SizedBox get hGap16 => SizedBox(
-        width: 16.w,
-      );
+    width: 16.w,
+  );
   static SizedBox get hGap20 => SizedBox(
-        width: 20.w,
-      );
+    width: 20.w,
+  );
   static SizedBox get hGap24 => SizedBox(
-        width: 24.w,
-      );
+    width: 24.w,
+  );
   static SizedBox get hGap32 => SizedBox(
-        width: 32.w,
-      );
+    width: 32.w,
+  );
   static SizedBox get hGap40 => SizedBox(
-        width: 40.w,
-      );
+    width: 40.w,
+  );
   static SizedBox get hGap48 => SizedBox(
-        width: 48.w,
-      );
+    width: 48.w,
+  );
 
   static EdgeInsets get edgeInsetsH4 => EdgeInsets.symmetric(horizontal: 4.w);
   static EdgeInsets get edgeInsetsH8 => EdgeInsets.symmetric(horizontal: 8.w);
@@ -152,38 +152,38 @@ class AppStyle {
       MediaQuery.of(Get.context!).padding.bottom;
 
   static TextStyle get titleStyleWhite => TextStyle(
-        color: Colors.white,
-        fontSize: 40.w,
-      );
+    color: Colors.white,
+    fontSize: 40.w,
+  );
   static TextStyle get titleStyleBlack => TextStyle(
-        color: colorBlack33,
-        fontSize: 40.w,
-      );
+    color: colorBlack33,
+    fontSize: 40.w,
+  );
   static TextStyle get textStyleWhite => TextStyle(
-        color: Colors.white,
-        fontSize: 32.w,
-      );
+    color: Colors.white,
+    fontSize: 32.w,
+  );
   static TextStyle get textStyleBlack => TextStyle(
-        color: colorBlack33,
-        fontSize: 32.w,
-      );
+    color: colorBlack33,
+    fontSize: 32.w,
+  );
   static TextStyle get subTextStyleWhite => TextStyle(
-        color: Colors.white54,
-        fontSize: 24.w,
-        height: 1.0,
-      );
+    color: Colors.white54,
+    fontSize: 24.w,
+    height: 1.0,
+  );
   static TextStyle get subTextStyleBlack => TextStyle(
-        color: Colors.black54,
-        fontSize: 24.w,
-        height: 1.0,
-      );
+    color: Colors.black54,
+    fontSize: 24.w,
+    height: 1.0,
+  );
 
   static List<BoxShadow> get highlightShadow => [
-        BoxShadow(
-          blurRadius: 6.w,
-          spreadRadius: 2.w,
-          color: Colors.pink.shade400,
-          //color: Color.fromARGB(255, 255, 120, 167),
-        )
-      ];
+    BoxShadow(
+      blurRadius: 6.w,
+      spreadRadius: 2.w,
+      color: Colors.pink.shade400,
+      //color: Color.fromARGB(255, 255, 120, 167),
+    ),
+  ];
 }

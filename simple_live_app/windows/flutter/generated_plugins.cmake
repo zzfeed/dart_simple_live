@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
   dynamic_color
   flutter_inappwebview_windows
+  flutter_qjs
   fvp
   permission_handler_windows
   screen_brightness_windows
@@ -17,7 +18,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
-  jsf
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

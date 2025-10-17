@@ -5,8 +5,9 @@ on:
     push:
         branches:
             - dev
-        paths-ignore:
-            - 'simple_live_tv_app/**'
+        paths:
+            - '**/*.dart'
+            - '!simple_live_tv_app/**'
 
 jobs:
     build:
@@ -61,7 +62,8 @@ jobs:
             - name: Setup Flutter
               uses: subosito/flutter-action@v2
               with:
-                  flutter-version: '3.32.0'
+                  channel: stable
+                  flutter-version-file: simple_live_app/pubspec.yaml
                   cache: true
 
             - name: Install Linux deps
@@ -177,7 +179,8 @@ jobs:
             - name: Setup Flutter
               uses: subosito/flutter-action@v2
               with:
-                  flutter-version: '3.32.0'
+                  channel: stable
+                  flutter-version-file: simple_live_app/pubspec.yaml
                   cache: true
 
             - name: Enable Windows Desktop

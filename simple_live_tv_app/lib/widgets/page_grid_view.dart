@@ -45,7 +45,7 @@ class PageGridView extends StatelessWidget {
           Offstage(
             offstage: !pageController.pageEmpty.value,
             child: AppEmptyWidget(
-              onRefresh: () => pageController.refreshData(),
+              onRefresh: pageController.refreshData,
             ),
           ),
           Offstage(
@@ -56,7 +56,7 @@ class PageGridView extends StatelessWidget {
             offstage: !pageController.pageError.value,
             child: AppErrorWidget(
               errorMsg: pageController.errorMsg.value,
-              onRefresh: () => pageController.refreshData(),
+              onRefresh: pageController.refreshData,
             ),
           ),
         ],

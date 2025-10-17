@@ -19,29 +19,21 @@ import 'package:simple_live_app/widgets/superchat_card.dart';
 import 'dart:async';
 import 'package:simple_live_core/simple_live_core.dart';
 
-Widget playerControls(
-  BuildContext context,
-  LiveRoomController controller,
-) {
+Widget playerControls(BuildContext context, LiveRoomController controller) {
   return Stack(
     children: [
       Obx(() {
         if (controller.fullScreenState.value) {
-          return buildFullControls(
-            context,
-            controller,
-          );
+          return buildFullControls(context, controller);
         }
-        return buildControls(
-          context,
-          controller,
-        );
+        return buildControls(context, controller);
       }),
       buildDanmuView(context, controller),
       // 左下角SC显示
       Obx(
         () => Visibility(
-          visible: AppSettingsController.instance.playershowSuperChat.value &&
+          visible:
+              AppSettingsController.instance.playershowSuperChat.value &&
               ((!Platform.isAndroid && !Platform.isIOS) ||
                   controller.fullScreenState.value),
           child: Positioned(
@@ -55,10 +47,7 @@ Widget playerControls(
   );
 }
 
-Widget buildFullControls(
-  BuildContext context,
-  LiveRoomController controller,
-) {
+Widget buildFullControls(BuildContext context, LiveRoomController controller) {
   var padding = MediaQuery.of(context).padding;
   GlobalKey volumeButtonKey = GlobalKey();
   return DragToMoveArea(
@@ -110,7 +99,8 @@ Widget buildFullControls(
           () => AnimatedPositioned(
             left: 0,
             right: 0,
-            top: (controller.showControlsState.value &&
+            top:
+                (controller.showControlsState.value &&
                     !controller.lockControlsState.value)
                 ? 0
                 : -(48 + padding.top),
@@ -126,10 +116,7 @@ Widget buildFullControls(
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black87,
-                  ],
+                  colors: [Colors.transparent, Colors.black87],
                 ),
               ),
               child: Row(
@@ -179,7 +166,7 @@ Widget buildFullControls(
                     ),
                   ),
                   Visibility(
-                    visible: Platform.isAndroid,
+                    visible: Platform.isAndroid || Platform.isIOS,
                     child: IconButton(
                       onPressed: () {
                         controller.enablePIP();
@@ -211,7 +198,8 @@ Widget buildFullControls(
           () => AnimatedPositioned(
             left: 0,
             right: 0,
-            bottom: (controller.showControlsState.value &&
+            bottom:
+                (controller.showControlsState.value &&
                     !controller.lockControlsState.value)
                 ? 0
                 : -(80 + padding.bottom),
@@ -221,10 +209,7 @@ Widget buildFullControls(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black87,
-                  ],
+                  colors: [Colors.transparent, Colors.black87],
                 ),
               ),
               padding: EdgeInsets.only(
@@ -287,8 +272,10 @@ Widget buildFullControls(
                       padding: const EdgeInsets.only(left: 8.0),
                       child: Text(
                         controller.liveDuration.value,
-                        style:
-                            const TextStyle(fontSize: 14, color: Colors.white),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
                       ),
                     );
                   }),
@@ -298,8 +285,9 @@ Widget buildFullControls(
                     child: IconButton(
                       key: volumeButtonKey,
                       onPressed: () {
-                        controller
-                            .showVolumeSlider(volumeButtonKey.currentContext!);
+                        controller.showVolumeSlider(
+                          volumeButtonKey.currentContext!,
+                        );
                       },
                       icon: SvgPicture.asset(
                         'assets/icons/icon_volume.svg',
@@ -315,8 +303,10 @@ Widget buildFullControls(
                     child: Obx(
                       () => Text(
                         controller.currentQualityInfo.value,
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 15),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                        ),
                       ),
                     ),
                   ),
@@ -423,10 +413,7 @@ Widget buildLockButton(LiveRoomController controller) {
   );
 }
 
-Widget buildControls(
-  BuildContext context,
-  LiveRoomController controller,
-) {
+Widget buildControls(BuildContext context, LiveRoomController controller) {
   GlobalKey volumeButtonKey = GlobalKey();
   return Stack(
     children: [
@@ -455,15 +442,12 @@ Widget buildControls(
           right: 0,
           bottom: controller.showControlsState.value ? 0 : -48,
           duration: const Duration(milliseconds: 200),
-          child: Container(
+          child: DecoratedBox(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Colors.transparent,
-                  Colors.black87,
-                ],
+                colors: [Colors.transparent, Colors.black87],
               ),
             ),
             child: Row(
@@ -551,8 +535,10 @@ Widget buildControls(
                     child: Obx(
                       () => Text(
                         controller.currentQualityInfo.value,
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 15),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                        ),
                       ),
                     ),
                   ),
@@ -674,22 +660,19 @@ void showLinesInfo(LiveRoomController controller) {
               text: "线路${i + 1}",
               children: [
                 WidgetSpan(
-                    child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: AppStyle.radius4,
-                    border: Border.all(
-                      color: Colors.grey,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: AppStyle.radius4,
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    padding: AppStyle.edgeInsetsH4,
+                    margin: AppStyle.edgeInsetsL8,
+                    child: Text(
+                      controller.playUrls[i].contains(".flv") ? "FLV" : "HLS",
+                      style: const TextStyle(fontSize: 12),
                     ),
                   ),
-                  padding: AppStyle.edgeInsetsH4,
-                  margin: AppStyle.edgeInsetsL8,
-                  child: Text(
-                    controller.playUrls[i].contains(".flv") ? "FLV" : "HLS",
-                    style: const TextStyle(
-                      fontSize: 12,
-                    ),
-                  ),
-                )),
+                ),
               ],
             ),
             style: const TextStyle(fontSize: 14),
@@ -722,15 +705,13 @@ void showQualitiesInfo(LiveRoomController controller) {
         var item = controller.qualities[i];
         return ListTile(
           selected: controller.currentQuality == i,
-          title: Text(
-            item.quality,
-            style: const TextStyle(fontSize: 14),
-          ),
+          title: Text(item.quality, style: const TextStyle(fontSize: 14)),
           minLeadingWidth: 16,
           onTap: () {
             Utils.hideRightDialog();
-            controller.currentQuality = i;
-            controller.getPlayUrl();
+            controller
+              ..currentQuality = i
+              ..getPlayUrl();
           },
         );
       },
@@ -750,9 +731,7 @@ void showDanmakuSettings(LiveRoomController controller) {
     child: ListView(
       padding: AppStyle.edgeInsetsA12,
       children: [
-        DanmuSettingsView(
-          danmakuController: controller.danmakuController,
-        ),
+        DanmuSettingsView(danmakuController: controller.danmakuController),
       ],
     ),
   );
@@ -768,67 +747,51 @@ void showPlayerSettings(LiveRoomController controller) {
     width: 320,
     useSystem: true,
     child: Obx(
-      () => ListView(
-        padding: AppStyle.edgeInsetsV12,
-        children: [
-          Padding(
-            padding: AppStyle.edgeInsetsH16,
-            child: Text(
-              "画面尺寸",
-              style: Get.textTheme.titleMedium,
+      () => RadioGroup<int>(
+        groupValue: AppSettingsController.instance.scaleMode.value,
+        onChanged: (e) {
+          if (e == null) return;
+          AppSettingsController.instance.setScaleMode(e);
+        },
+        child: ListView(
+          padding: AppStyle.edgeInsetsV12,
+          children: [
+            Padding(
+              padding: AppStyle.edgeInsetsH16,
+              child: Text("画面尺寸", style: Get.textTheme.titleMedium),
             ),
-          ),
-          RadioListTile(
-            value: 0,
-            contentPadding: AppStyle.edgeInsetsH4,
-            title: const Text("适应"),
-            visualDensity: VisualDensity.compact,
-            groupValue: AppSettingsController.instance.scaleMode.value,
-            onChanged: (e) {
-              AppSettingsController.instance.setScaleMode(e ?? 0);
-            },
-          ),
-          RadioListTile(
-            value: 1,
-            contentPadding: AppStyle.edgeInsetsH4,
-            title: const Text("拉伸"),
-            visualDensity: VisualDensity.compact,
-            groupValue: AppSettingsController.instance.scaleMode.value,
-            onChanged: (e) {
-              AppSettingsController.instance.setScaleMode(e ?? 1);
-            },
-          ),
-          RadioListTile(
-            value: 2,
-            contentPadding: AppStyle.edgeInsetsH4,
-            title: const Text("铺满"),
-            visualDensity: VisualDensity.compact,
-            groupValue: AppSettingsController.instance.scaleMode.value,
-            onChanged: (e) {
-              AppSettingsController.instance.setScaleMode(e ?? 2);
-            },
-          ),
-          RadioListTile(
-            value: 3,
-            contentPadding: AppStyle.edgeInsetsH4,
-            title: const Text("16:9"),
-            visualDensity: VisualDensity.compact,
-            groupValue: AppSettingsController.instance.scaleMode.value,
-            onChanged: (e) {
-              AppSettingsController.instance.setScaleMode(e ?? 3);
-            },
-          ),
-          RadioListTile(
-            value: 4,
-            contentPadding: AppStyle.edgeInsetsH4,
-            title: const Text("4:3"),
-            visualDensity: VisualDensity.compact,
-            groupValue: AppSettingsController.instance.scaleMode.value,
-            onChanged: (e) {
-              AppSettingsController.instance.setScaleMode(e ?? 4);
-            },
-          ),
-        ],
+            const RadioListTile<int>(
+              value: 0,
+              contentPadding: AppStyle.edgeInsetsH4,
+              title: Text("适应"),
+              visualDensity: VisualDensity.compact,
+            ),
+            const RadioListTile<int>(
+              value: 1,
+              contentPadding: AppStyle.edgeInsetsH4,
+              title: Text("拉伸"),
+              visualDensity: VisualDensity.compact,
+            ),
+            const RadioListTile<int>(
+              value: 2,
+              contentPadding: AppStyle.edgeInsetsH4,
+              title: Text("铺满"),
+              visualDensity: VisualDensity.compact,
+            ),
+            const RadioListTile<int>(
+              value: 3,
+              contentPadding: AppStyle.edgeInsetsH4,
+              title: Text("16:9"),
+              visualDensity: VisualDensity.compact,
+            ),
+            const RadioListTile<int>(
+              value: 4,
+              contentPadding: AppStyle.edgeInsetsH4,
+              title: Text("4:3"),
+              visualDensity: VisualDensity.compact,
+            ),
+          ],
+        ),
       ),
     ),
   );
@@ -844,59 +807,60 @@ void showFollowUser(LiveRoomController controller) {
     title: "关注列表",
     width: 400,
     useSystem: true,
-    child: Obx(
-      () {
-        var list = [...FollowService.instance.liveList];
-        list.sort((a, b) {
-          bool aPlaying = controller.rxSite.value.id == a.siteId &&
+    child: Obx(() {
+      var list = [...FollowService.instance.liveList]
+        ..sort((a, b) {
+          bool aPlaying =
+              controller.rxSite.value.id == a.siteId &&
               controller.rxRoomId.value == a.roomId;
-          bool bPlaying = controller.rxSite.value.id == b.siteId &&
+          bool bPlaying =
+              controller.rxSite.value.id == b.siteId &&
               controller.rxRoomId.value == b.roomId;
           if (aPlaying && !bPlaying) return -1;
           if (!aPlaying && bPlaying) return 1;
           return 0;
         });
 
-        return Stack(
-          children: [
-            RefreshIndicator(
-              onRefresh: FollowService.instance.loadData,
-              child: ListView.builder(
-                itemCount: list.length,
-                itemBuilder: (_, i) {
-                  var item = list[i];
-                  return Obx(
-                    () => FollowUserItem(
-                      item: item,
-                      playing: controller.rxSite.value.id == item.siteId &&
-                          controller.rxRoomId.value == item.roomId,
-                      onTap: () {
-                        Utils.hideRightDialog();
-                        controller.resetRoom(
-                          Sites.allSites[item.siteId]!,
-                          item.roomId,
-                        );
-                      },
-                    ),
-                  );
-                },
-              ),
-            ),
-            if (Platform.isLinux || Platform.isWindows || Platform.isMacOS)
-              Positioned(
-                right: 12,
-                bottom: 12,
-                child: Obx(
-                  () => DesktopRefreshButton(
-                    refreshing: FollowService.instance.updating.value,
-                    onPressed: FollowService.instance.loadData,
+      return Stack(
+        children: [
+          RefreshIndicator(
+            onRefresh: FollowService.instance.loadData,
+            child: ListView.builder(
+              itemCount: list.length,
+              itemBuilder: (_, i) {
+                var item = list[i];
+                return Obx(
+                  () => FollowUserItem(
+                    item: item,
+                    playing:
+                        controller.rxSite.value.id == item.siteId &&
+                        controller.rxRoomId.value == item.roomId,
+                    onTap: () {
+                      Utils.hideRightDialog();
+                      controller.resetRoom(
+                        Sites.allSites[item.siteId]!,
+                        item.roomId,
+                      );
+                    },
                   ),
+                );
+              },
+            ),
+          ),
+          if (Platform.isLinux || Platform.isWindows || Platform.isMacOS)
+            Positioned(
+              right: 12,
+              bottom: 12,
+              child: Obx(
+                () => DesktopRefreshButton(
+                  refreshing: FollowService.instance.updating.value,
+                  onPressed: FollowService.instance.loadData,
                 ),
               ),
-          ],
-        );
-      },
-    ),
+            ),
+        ],
+      );
+    }),
   );
 }
 
@@ -904,11 +868,12 @@ class PlayerSuperChatCard extends StatefulWidget {
   final LiveSuperChatMessage message;
   final VoidCallback onExpire;
   final int duration;
-  const PlayerSuperChatCard(
-      {required this.message,
-      required this.onExpire,
-      required this.duration,
-      super.key});
+  const PlayerSuperChatCard({
+    required this.message,
+    required this.onExpire,
+    required this.duration,
+    super.key,
+  });
   @override
   State<PlayerSuperChatCard> createState() => _PlayerSuperChatCardState();
 }
@@ -997,8 +962,9 @@ class _PlayerSuperChatOverlayState extends State<PlayerSuperChatOverlay> {
       }
     }
     // 监听SC列表变化
-    _worker =
-        ever<List<LiveSuperChatMessage>>(widget.controller.superChats, (list) {
+    _worker = ever<List<LiveSuperChatMessage>>(widget.controller.superChats, (
+      list,
+    ) {
       // 新增
       for (var sc in list) {
         if (!_displayed.any((e) => e.sc == sc)) {

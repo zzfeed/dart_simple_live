@@ -60,9 +60,7 @@ class Utils {
       AlertDialog(
         title: Text(title),
         content: Container(
-          constraints: const BoxConstraints(
-            maxHeight: 400,
-          ),
+          constraints: const BoxConstraints(maxHeight: 400),
           child: SingleChildScrollView(
             child: Padding(
               padding: AppStyle.edgeInsetsV12,
@@ -90,8 +88,12 @@ class Utils {
   /// - `content` 内容
   /// - `title` 弹窗标题
   /// - `confirm` 确认按钮内容，留空为确定
-  static Future<bool> showMessageDialog(String content,
-      {String title = '', String confirm = '', bool selectable = false}) async {
+  static Future<bool> showMessageDialog(
+    String content, {
+    String title = '',
+    String confirm = '',
+    bool selectable = false,
+  }) async {
     var result = await Get.dialog(
       AlertDialog(
         title: Text(title),
@@ -154,24 +156,16 @@ class Utils {
                   contentPadding: EdgeInsets.zero,
                   leading: IconButton(
                     onPressed: () {
-                      SmartDialog.dismiss(status: SmartStatus.allCustom).then(
-                        (value) => onDismiss?.call(),
-                      );
+                      SmartDialog.dismiss(
+                        status: SmartStatus.allCustom,
+                      ).then((value) => onDismiss?.call());
                     },
                     icon: const Icon(Icons.arrow_back),
                   ),
-                  title: Text(
-                    title,
-                    style: Get.textTheme.titleMedium,
-                  ),
+                  title: Text(title, style: Get.textTheme.titleMedium),
                 ),
-                Divider(
-                  height: 1,
-                  color: Colors.grey.withAlpha(25),
-                ),
-                Expanded(
-                  child: child,
-                ),
+                Divider(height: 1, color: Colors.grey.withAlpha(25)),
+                Expanded(child: child),
               ],
             ),
           ),
@@ -191,9 +185,7 @@ class Utils {
   }) async {
     var result = await showModalBottomSheet(
       context: Get.context!,
-      constraints: BoxConstraints(
-        maxWidth: maxWidth,
-      ),
+      constraints: BoxConstraints(maxWidth: maxWidth),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(12),
@@ -203,18 +195,14 @@ class Utils {
       builder: (_) => Column(
         children: [
           ListTile(
-            contentPadding: const EdgeInsets.only(
-              left: 12,
-            ),
+            contentPadding: const EdgeInsets.only(left: 12),
             title: Text(title),
             trailing: IconButton(
               onPressed: Get.back,
               icon: const Icon(Remix.close_line),
             ),
           ),
-          Expanded(
-            child: child,
-          ),
+          Expanded(child: child),
         ],
       ),
     );
@@ -234,8 +222,9 @@ class Utils {
     String cancel = '',
     TextValidate? validate,
   }) async {
-    final TextEditingController textEditingController =
-        TextEditingController(text: content);
+    final TextEditingController textEditingController = TextEditingController(
+      text: content,
+    );
     var result = await Get.dialog(
       AlertDialog(
         title: Text(title),
@@ -256,10 +245,7 @@ class Utils {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: Get.back,
-            child: const Text("取消"),
-          ),
+          TextButton(onPressed: Get.back, child: const Text("取消")),
           TextButton(
             onPressed: () {
               if (validate != null && !validate(textEditingController.text)) {
@@ -283,24 +269,21 @@ class Utils {
     T value, {
     String title = '',
   }) async {
-    var result = await Get.dialog(
-      SimpleDialog(
-        title: Text(title),
-        children: contents
-            .map(
-              (e) => RadioListTile<T>(
-                title: Text(e.toString()),
-                value: e,
-                groupValue: value,
-                onChanged: (e) {
-                  Get.back(result: e);
-                },
-              ),
-            )
-            .toList(),
+    return Get.dialog(
+      RadioGroup<T>(
+        groupValue: value,
+        onChanged: (e) {
+          if (e == null) return;
+          Get.back(result: e);
+        },
+        child: SimpleDialog(
+          title: Text(title),
+          children: contents
+              .map((e) => RadioListTile<T>(title: Text(e.toString()), value: e))
+              .toList(),
+        ),
       ),
     );
-    return result;
   }
 
   static Future<T?> showInformationHelpDialog<T>({
@@ -313,13 +296,9 @@ class Utils {
         title: title ?? const Text("帮助"),
         scrollable: true,
         content: SingleChildScrollView(child: ListBody(children: content)),
-        actions: actions ??
-            [
-              TextButton(
-                onPressed: Get.back,
-                child: const Text("确定"),
-              ),
-            ],
+        actions:
+            actions ??
+            [TextButton(onPressed: Get.back, child: const Text("确定"))],
       ),
     );
     return result;
@@ -345,33 +324,35 @@ class Utils {
     T value, {
     String title = '',
   }) async {
-    var result = await Get.dialog(
-      SimpleDialog(
-        title: Text(title),
-        children: contents.keys
-            .map(
-              (e) => RadioListTile<T>(
-                title: Text((contents[e] ?? '-').tr),
-                value: e,
-                groupValue: value,
-                onChanged: (e) {
-                  Get.back(result: e);
-                },
-              ),
-            )
-            .toList(),
+    return Get.dialog(
+      RadioGroup<T>(
+        groupValue: value,
+        onChanged: (e) {
+          if (e == null) return;
+          Get.back(result: e);
+        },
+        child: SimpleDialog(
+          title: Text(title),
+          children: contents.keys
+              .map(
+                (e) => RadioListTile<T>(
+                  title: Text((contents[e] ?? '-').tr),
+                  value: e,
+                ),
+              )
+              .toList(),
+        ),
       ),
     );
-    return result;
   }
 
-  static void checkUpdate({bool showMsg = false}) async {
+  static Future<void> checkUpdate({bool showMsg = false}) async {
     try {
       int currentVer = Utils.parseVersion(packageInfo.version);
       CommonRequest request = CommonRequest();
-      Log.logPrint("检查更新 - 当前版本: $currentVer");
+      Log.i("检查更新 - 当前版本: $currentVer");
       var versionInfo = await request.checkUpdate();
-      Log.logPrint("检查更新 - 远程版本: ${versionInfo.versionNum}");
+      Log.i("检查更新 - 远程版本: ${versionInfo.versionNum}");
       if (versionInfo.versionNum > currentVer) {
         Get.dialog(
           AlertDialog(
@@ -391,18 +372,14 @@ class Utils {
                 children: [
                   Expanded(
                     child: TextButton(
-                      onPressed: () {
-                        Get.back();
-                      },
+                      onPressed: Get.back,
                       child: const Text("取消"),
                     ),
                   ),
                   AppStyle.hGap12,
                   Expanded(
                     child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                      ),
+                      style: ElevatedButton.styleFrom(elevation: 0),
                       onPressed: () {
                         launchUrlString(
                           versionInfo.downloadUrl,
@@ -445,6 +422,25 @@ class Utils {
     return num.toString();
   }
 
+  /// 检查相机权限
+  static Future<bool> checkCameraPermission() async {
+    try {
+      var status = await Permission.camera.status;
+      if (status == PermissionStatus.granted) {
+        return true;
+      }
+      status = await Permission.camera.request();
+      if (status.isGranted) {
+        return true;
+      } else {
+        SmartDialog.showToast("请授予相机访问权限");
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
   /// 检查相册权限
   static Future<bool> checkPhotoPermission() async {
     try {
@@ -459,9 +455,7 @@ class Utils {
       if (status.isGranted) {
         return true;
       } else {
-        SmartDialog.showToast(
-          "请授予相册访问权限",
-        );
+        SmartDialog.showToast("请授予相册访问权限");
         return false;
       }
     } catch (e) {
@@ -478,8 +472,8 @@ class Utils {
         return true;
       }
       Permission permission = Permission.storage;
-      var androidIndo = await deviceInfo.androidInfo;
-      if (androidIndo.version.sdkInt >= 33) {
+      var androidInfo = await deviceInfo.androidInfo;
+      if (androidInfo.version.sdkInt >= 33) {
         permission = Permission.manageExternalStorage;
       }
 
@@ -491,9 +485,7 @@ class Utils {
       if (status.isGranted) {
         return true;
       } else {
-        SmartDialog.showToast(
-          "请授予文件访问权限",
-        );
+        SmartDialog.showToast("请授予文件访问权限");
         return false;
       }
     } catch (e) {
@@ -527,7 +519,7 @@ class Utils {
   }
 
   /// 复制内容到剪贴板
-  static void copyToClipboard(String text) async {
+  static Future<void> copyToClipboard(String text) async {
     try {
       await Clipboard.setData(ClipboardData(text: text));
       SmartDialog.showToast("已复制到剪贴板");

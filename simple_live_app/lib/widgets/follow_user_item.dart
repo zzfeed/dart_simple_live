@@ -32,9 +32,10 @@ class _FollowUserItemState extends State<FollowUserItem>
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 2))
-          ..repeat(reverse: true);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
   }
 
   @override
@@ -55,8 +56,9 @@ class _FollowUserItemState extends State<FollowUserItem>
         onTap: widget.onTap,
         onLongPress: widget.onLongPress,
         borderRadius: AppStyle.radius12,
-        splashColor:
-            Theme.of(context).colorScheme.primary.withValues(alpha: .08),
+        splashColor: Theme.of(
+          context,
+        ).colorScheme.primary.withValues(alpha: .08),
         child: Container(
           margin: AppStyle.edgeInsetsV4,
           padding: AppStyle.edgeInsetsA12,
@@ -73,8 +75,9 @@ class _FollowUserItemState extends State<FollowUserItem>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color:
-                        isLive ? Colors.red : Colors.grey.withValues(alpha: .3),
+                    color: isLive
+                        ? Colors.red
+                        : Colors.grey.withValues(alpha: .3),
                     width: 2,
                   ),
                 ),
@@ -94,9 +97,7 @@ class _FollowUserItemState extends State<FollowUserItem>
                         Expanded(
                           child: Text(
                             item.userName,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
+                            style: Theme.of(context).textTheme.titleSmall
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: .2,
@@ -107,7 +108,9 @@ class _FollowUserItemState extends State<FollowUserItem>
                         if (item.liveAreaName.isNotEmpty)
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 1),
+                              horizontal: 6,
+                              vertical: 1,
+                            ),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                               color: Colors.blue.withValues(alpha: .1),
@@ -126,14 +129,16 @@ class _FollowUserItemState extends State<FollowUserItem>
                         if (widget.playing || item.liveStatus.value != 0)
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 2),
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                               color: widget.playing
                                   ? Colors.green.withValues(alpha: .12)
                                   : (isLive
-                                      ? Colors.red.withValues(alpha: .12)
-                                      : Colors.grey.withValues(alpha: .12)),
+                                        ? Colors.red.withValues(alpha: .12)
+                                        : Colors.grey.withValues(alpha: .12)),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
@@ -172,9 +177,7 @@ class _FollowUserItemState extends State<FollowUserItem>
                               AppStyle.hGap4,
                               Text(
                                 site.name,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
+                                style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(
                                       color: Colors.grey[600],
                                       fontWeight: FontWeight.w500,
@@ -186,9 +189,7 @@ class _FollowUserItemState extends State<FollowUserItem>
                                 Flexible(
                                   child: Text(
                                     '已开播 ${formatLiveDuration(item.liveStartTime)}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
+                                    style: Theme.of(context).textTheme.bodySmall
                                         ?.copyWith(
                                           color: Colors.grey,
                                           fontSize: 10,
@@ -207,15 +208,20 @@ class _FollowUserItemState extends State<FollowUserItem>
                             alignment: Alignment.center,
                             child: Row(
                               children: [
-                                const Icon(Icons.access_time,
-                                    size: 12, color: Colors.grey),
+                                const Icon(
+                                  Icons.access_time,
+                                  size: 12,
+                                  color: Colors.grey,
+                                ),
                                 AppStyle.hGap4,
                                 Expanded(
                                   child: Text(
                                     item.watchDuration!,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
-                                        fontSize: 10, color: Colors.grey),
+                                      fontSize: 10,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                 ),
                               ],

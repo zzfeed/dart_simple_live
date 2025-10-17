@@ -44,20 +44,23 @@ class DouyinSearchController extends BaseController {
     }
   }
 
-  void onLoadStop(InAppWebViewController controller, Uri? uri) async {
+  Future<void> onLoadStop(InAppWebViewController controller, Uri? uri) async {
     pageLoading.value = false;
   }
 
-  void onLoadStart(InAppWebViewController controller, Uri? uri) async {
+  Future<void> onLoadStart(InAppWebViewController controller, Uri? uri) async {
     pageLoading.value = true;
   }
 
-  Future<bool?> onCreateWindow(InAppWebViewController controller,
-      CreateWindowAction createWindowAction) async {
+  Future<bool?> onCreateWindow(
+    InAppWebViewController controller,
+    CreateWindowAction createWindowAction,
+  ) async {
     if (createWindowAction.request.url?.host == "live.douyin.com") {
       {
         var regExp = RegExp(r"live\.douyin\.com/([\d|\w]+)");
-        var id = regExp
+        var id =
+            regExp
                 .firstMatch(createWindowAction.request.url.toString())
                 ?.group(1) ??
             "";

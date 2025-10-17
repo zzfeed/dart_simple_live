@@ -58,7 +58,7 @@ class AutoExitSettingsPage extends GetView<AppSettingsController> {
     );
   }
 
-  void setTimer(BuildContext context) async {
+  Future<void> setTimer(BuildContext context) async {
     var value = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(

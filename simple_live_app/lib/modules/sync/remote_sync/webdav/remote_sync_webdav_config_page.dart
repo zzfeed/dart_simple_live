@@ -51,13 +51,17 @@ class _RemoteSyncWebDAVConfigPageState
                 content: [
                   const Text("此功能可以将您的数据备份到 WebDAV 服务器中或者进行数据恢复.\n"),
                   const Text(
-                      "WebDAV 服务器地址请以 http:// 或 https:// 开头，如坚果云(点击复制)："),
+                    "WebDAV 服务器地址请以 http:// 或 https:// 开头，如坚果云(点击复制)：",
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     child: InkWell(
                       onTap: () {
-                        Clipboard.setData(const ClipboardData(
-                            text: "https://dav.jianguoyun.com/dav/"));
+                        Clipboard.setData(
+                          const ClipboardData(
+                            text: "https://dav.jianguoyun.com/dav/",
+                          ),
+                        );
                         SmartDialog.showToast("复制成功");
                       },
                       child: const Text("https://dav.jianguoyun.com/dav/"),
@@ -95,11 +99,12 @@ class _RemoteSyncWebDAVConfigPageState
                     labelText: "账号",
                     prefixIcon: const Icon(Icons.account_circle),
                     trailing: InkWell(
-                        child: const Icon(
-                          Icons.cancel,
-                          size: 20,
-                        ),
-                        onTap: () => _userNameController.clear()),
+                      child: const Icon(
+                        Icons.cancel,
+                        size: 20,
+                      ),
+                      onTap: () => _userNameController.clear(),
+                    ),
                   ),
                   NoneBorderCircularTextField(
                     editingController: _passwordController,
@@ -152,7 +157,7 @@ class _RemoteSyncWebDAVConfigPageState
                         );
                       },
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

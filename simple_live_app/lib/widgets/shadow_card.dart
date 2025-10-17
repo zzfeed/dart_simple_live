@@ -15,7 +15,7 @@ class ShadowCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius),
         boxShadow: Get.isDarkMode
@@ -24,7 +24,7 @@ class ShadowCard extends StatelessWidget {
                 BoxShadow(
                   blurRadius: 4,
                   color: Colors.grey.withAlpha(50),
-                )
+                ),
               ],
       ),
       child: Material(
@@ -33,7 +33,7 @@ class ShadowCard extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(radius),
           onTap: onTap,
-          child: Container(
+          child: DecoratedBox(
             decoration: BoxDecoration(
               borderRadius: AppStyle.radius8,
             ),

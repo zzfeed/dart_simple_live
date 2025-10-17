@@ -1,3 +1,6 @@
+import com.android.build.gradle.internal.api.ApkVariantOutputImpl
+import org.jetbrains.kotlin.konan.properties.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -8,15 +11,15 @@ plugins {
 android {
     namespace = "com.xycz.simple_live_tv_app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "28.2.13676358"
+    ndkVersion = "28.0.13004108"
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     defaultConfig {
@@ -30,11 +33,44 @@ android {
         versionName = flutter.versionName
     }
 
+    packagingOptions.jniLibs.useLegacyPackaging = true
+
+    val keyProperties = Properties().also {
+        val properties = rootProject.file("key.properties")
+        if (properties.exists())
+            it.load(properties.inputStream())
+    }
+
+    val config = keyProperties.getProperty("storeFile")?.let {
+        signingConfigs.create("release") {
+            storeFile = file(it)
+            storePassword = keyProperties.getProperty("storePassword")
+            keyAlias = keyProperties.getProperty("keyAlias")
+            keyPassword = keyProperties.getProperty("keyPassword")
+            enableV1Signing = true
+            enableV2Signing = true
+        }
+    }
+
     buildTypes {
+        all {
+            signingConfig = config ?: signingConfigs["debug"]
+        }
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        debug {
+            applicationIdSuffix = ".debug"
+        }
+    }
+
+    applicationVariants.all {
+        val variant = this
+        variant.outputs.forEach { output ->
+            (output as ApkVariantOutputImpl).versionCodeOverride = flutter.versionCode
         }
     }
 }

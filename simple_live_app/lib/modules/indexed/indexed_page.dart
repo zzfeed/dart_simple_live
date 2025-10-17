@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simple_live_app/app/app_style.dart';
 
-import 'indexed_controller.dart';
+import 'package:simple_live_app/modules/indexed/indexed_controller.dart';
 
 class IndexedPage extends GetView<IndexedController> {
   const IndexedPage({super.key});
@@ -35,7 +35,7 @@ class IndexedPage extends GetView<IndexedController> {
               ),
               Expanded(
                 child: Obx(
-                  () => Container(
+                  () => DecoratedBox(
                     decoration: BoxDecoration(
                       border: Border(
                         left: orientation == Orientation.landscape

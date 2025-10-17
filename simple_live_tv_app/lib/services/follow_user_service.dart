@@ -77,7 +77,7 @@ class FollowUserService extends BasePageController<FollowUser> {
     livingList.assignAll(list.where((x) => x.liveStatus.value == 2));
   }
 
-  void startUpdateStatus(List<FollowUser> followList) async {
+  Future<void> startUpdateStatus(List<FollowUser> followList) async {
     updatedCount = 0;
     updating.value = true;
 
@@ -123,9 +123,11 @@ class FollowUserService extends BasePageController<FollowUser> {
     }
   }
 
-  void removeItem(FollowUser item, {bool refresh = true}) async {
-    var result =
-        await Utils.showAlertDialog("确定要取消关注${item.userName}吗?", title: "取消关注");
+  Future<void> removeItem(FollowUser item, {bool refresh = true}) async {
+    var result = await Utils.showAlertDialog(
+      "确定要取消关注${item.userName}吗?",
+      title: "取消关注",
+    );
     if (!result) {
       return;
     }

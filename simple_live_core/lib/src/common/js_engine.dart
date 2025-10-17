@@ -1,26 +1,50 @@
-import 'package:jsf/jsf.dart';
+import 'package:flutter_qjs/flutter_qjs.dart';
 import 'package:flutter/services.dart';
+import 'package:simple_live_core/simple_live_core.dart';
 
 class JsEngine {
-  static JsRuntime? _jsRuntime;
+  static FlutterQjs? _engine;
 
-  static JsRuntime get jsRuntime => _jsRuntime ??= JsRuntime();
+  static void init({int stackSize = 1024 * 1024}) {
+    if (_engine == null) {
+      _engine = FlutterQjs(stackSize: stackSize);
+      _engine!.dispatch();
+    }
+  }
 
-  static void init() {
-    _jsRuntime ??= JsRuntime();
+  static FlutterQjs get engine {
+    if (_engine == null) {
+      init();
+    }
+    return _engine!;
   }
 
   static dynamic evaluate(String code) {
-    return jsRuntime.eval(code);
+    try {
+      return engine.evaluate(code);
+    } on JSError catch (e) {
+      CoreLog.error("JsEngine evaluate error: $e");
+      return null;
+    }
   }
 
   static Future<void> loadJSFile(String path) async {
-    final jsCode = await rootBundle.loadString(path);
-    jsRuntime.eval(jsCode);
+    try {
+      final jsCode = await rootBundle.loadString(path);
+      engine.evaluate(jsCode);
+    } catch (e) {
+      CoreLog.error("JsEngine loadJSFile error: $e");
+    }
   }
 
   static void dispose() {
-    _jsRuntime?.dispose();
-    _jsRuntime = null;
+    try {
+      _engine?.port.close();
+      _engine?.close();
+    } catch (e) {
+      CoreLog.error("JsEngine dispose error: $e");
+    } finally {
+      _engine = null;
+    }
   }
 }

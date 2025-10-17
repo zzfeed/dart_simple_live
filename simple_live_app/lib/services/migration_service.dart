@@ -17,8 +17,7 @@ class MigrationService {
     }
     var hiveFileList = [
       "followuser",
-      //旧版本写错成hostiry了
-      "hostiry",
+      "history",
       "followusertag",
       "localstorage",
       "danmushield",
@@ -26,23 +25,20 @@ class MigrationService {
     try {
       var newDir = await getApplicationSupportDirectory();
       var hiveFile = File(p.join(newDir.path, "followuser.hive"));
-      if (await hiveFile.exists()) {
+      if (hiveFile.existsSync()) {
         return;
       }
 
       var oldDir = await getApplicationDocumentsDirectory();
       for (var element in hiveFileList) {
         var oldFile = File(p.join(oldDir.path, "$element.hive"));
-        if (await oldFile.exists()) {
+        if (oldFile.existsSync()) {
           var fileName = "$element.hive";
-          if (element == "hostiry") {
-            fileName = "history.hive";
-          }
           await oldFile.copy(p.join(newDir.path, fileName));
           await oldFile.delete();
         }
         var lockFile = File(p.join(oldDir.path, "$element.lock"));
-        if (await lockFile.exists()) {
+        if (lockFile.existsSync()) {
           await lockFile.delete();
         }
       }
@@ -54,20 +50,24 @@ class MigrationService {
   /// 数据迁移根据版本：from 1.7.8
   static void migrateDataByVersion() {
     int curAppVer = Utils.parseVersion(Utils.packageInfo.version);
-    int curDBVer = LocalStorageService.instance
-        .getValue(LocalStorageService.kHiveDbVer, 10708);
+    int curDBVer = LocalStorageService.instance.getValue(
+      LocalStorageService.kHiveDbVer,
+      10708,
+    );
     if (curDBVer <= 10708) {
-      LocalStorageService.instance.settingsBox
-          .delete(LocalStorageService.kWebDAVLastUploadTime);
-      LocalStorageService.instance.settingsBox
-          .delete(LocalStorageService.kWebDAVLastRecoverTime);
+      LocalStorageService.instance.settingsBox.delete(
+        LocalStorageService.kWebDAVLastUploadTime,
+      );
+      LocalStorageService.instance.settingsBox.delete(
+        LocalStorageService.kWebDAVLastRecoverTime,
+      );
     }
     // follow_user 添加 tag属性
     // 从followUserTag 读取 标签
     if (curDBVer <= 10709) {
       List tagList = DBService.instance.tagBox.values.toList();
-      List<FollowUser> followList =
-          DBService.instance.followBox.values.toList();
+      List<FollowUser> followList = DBService.instance.followBox.values
+          .toList();
       for (int i = 0; i < followList.length; i++) {
         for (FollowUserTag tag in tagList) {
           if (tag.userId.contains(followList[i].id)) {
@@ -78,7 +78,9 @@ class MigrationService {
         }
       }
     }
-    LocalStorageService.instance.settingsBox
-        .put(LocalStorageService.kHiveDbVer, curAppVer);
+    LocalStorageService.instance.settingsBox.put(
+      LocalStorageService.kHiveDbVer,
+      curAppVer,
+    );
   }
 }

@@ -71,7 +71,8 @@ class OtherSettingsPage extends GetView<OtherSettingsController> {
                     child: GestureDetector(
                       onTap: () {
                         launchUrlString(
-                            "https://github.com/wang-bin/mdk-sdk/wiki/Decoders");
+                          "https://github.com/wang-bin/mdk-sdk/wiki/Decoders",
+                        );
                       },
                       child: const Text(
                         "mdk-sdk/wiki",
@@ -94,7 +95,9 @@ class OtherSettingsPage extends GetView<OtherSettingsController> {
                 Obx(
                   () => SettingsSwitch(
                     value: AppSettingsController
-                        .instance.customPlayerDecoder.value,
+                        .instance
+                        .customPlayerDecoder
+                        .value,
                     title: "自定义解码器",
                     onChanged: (e) {
                       AppSettingsController.instance.setCustomPlayerDecoder(e);
@@ -112,21 +115,26 @@ class OtherSettingsPage extends GetView<OtherSettingsController> {
                     },
                   ),
                 ),
-                Obx(() => controller.displayVideoDecoder.value ==
-                        OtherSettingsController.customDecoderKey
-                    ? Column(
-                        children: [
-                          AppStyle.divider,
-                          ListTile(
-                            title: const Text("编辑自定义解码器"),
-                            subtitle: Text(controller.customVideoDecoder.value),
-                            dense: true,
-                            trailing: const Icon(Icons.edit, size: 18),
-                            onTap: () => controller.editCustomDecoder(),
-                          ),
-                        ],
-                      )
-                    : const SizedBox.shrink()),
+                Obx(
+                  () =>
+                      controller.displayVideoDecoder.value ==
+                          OtherSettingsController.customDecoderKey
+                      ? Column(
+                          children: [
+                            AppStyle.divider,
+                            ListTile(
+                              title: const Text("编辑自定义解码器"),
+                              subtitle: Text(
+                                controller.customVideoDecoder.value,
+                              ),
+                              dense: true,
+                              trailing: const Icon(Icons.edit, size: 18),
+                              onTap: () => controller.editCustomDecoder(),
+                            ),
+                          ],
+                        )
+                      : const SizedBox.shrink(),
+                ),
                 AppStyle.divider,
                 Obx(
                   () => SettingsMenu(

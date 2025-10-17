@@ -210,7 +210,7 @@ mixin PlayerSystemMixin on PlayerMixin, PlayerStateMixin, PlayerDanmakuMixin {
   StreamSubscription<PiPStatus>? _pipSubscription;
 
   /// 初始化一些系统状态
-  void initSystem() async {
+  Future<void> initSystem() async {
     if (Platform.isAndroid || Platform.isIOS) {
       volumeController.showSystemUI = false;
     }
@@ -250,12 +250,14 @@ mixin PlayerSystemMixin on PlayerMixin, PlayerStateMixin, PlayerDanmakuMixin {
   }
 
   /// 进入全屏
-  void enterFullScreen() async {
+  Future<void> enterFullScreen() async {
     fullScreenState.value = true;
     if (Platform.isAndroid || Platform.isIOS) {
       //全屏
-      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-          overlays: []);
+      await SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.manual,
+        overlays: [],
+      );
 
       if (!isVertical.value) {
         //横屏
@@ -275,7 +277,7 @@ mixin PlayerSystemMixin on PlayerMixin, PlayerStateMixin, PlayerDanmakuMixin {
   }
 
   /// 退出全屏
-  void exitFull() async {
+  Future<void> exitFull() async {
     if (Platform.isAndroid || Platform.isIOS) {
       await SystemChrome.setEnabledSystemUIMode(
         SystemUiMode.edgeToEdge,
@@ -301,7 +303,7 @@ mixin PlayerSystemMixin on PlayerMixin, PlayerStateMixin, PlayerDanmakuMixin {
   Offset? _lastWindowPosition;
 
   ///小窗模式()
-  void enterSmallWindow() async {
+  Future<void> enterSmallWindow() async {
     if (!(Platform.isAndroid || Platform.isIOS)) {
       fullScreenState.value = true;
       smallWindowState.value = true;
@@ -333,10 +335,11 @@ mixin PlayerSystemMixin on PlayerMixin, PlayerStateMixin, PlayerDanmakuMixin {
     if (!(Platform.isAndroid || Platform.isIOS)) {
       fullScreenState.value = false;
       smallWindowState.value = false;
-      windowManager.setTitleBarStyle(TitleBarStyle.normal);
-      windowManager.setSize(_lastWindowSize!);
-      windowManager.setPosition(_lastWindowPosition!);
-      windowManager.setAlwaysOnTop(false);
+      windowManager
+        ..setTitleBarStyle(TitleBarStyle.normal)
+        ..setSize(_lastWindowSize!)
+        ..setPosition(_lastWindowPosition!)
+        ..setAlwaysOnTop(false);
       //windowManager.setAlignment(Alignment.center);
     }
   }
@@ -398,9 +401,7 @@ mixin PlayerSystemMixin on PlayerMixin, PlayerStateMixin, PlayerDanmakuMixin {
         width.value,
         height.value,
         ui.PixelFormat.rgba8888,
-        (ui.Image img) {
-          completer.complete(img);
-        },
+        completer.complete,
       );
       final ui.Image image = await completer.future;
 
@@ -558,7 +559,7 @@ mixin PlayerGestureControlMixin
   DelayedThrottle? throttle;
 
   /// 竖向手势开始
-  void onVerticalDragStart(DragStartDetails details) async {
+  Future<void> onVerticalDragStart(DragStartDetails details) async {
     if (lockControlsState.value && fullScreenState.value) {
       return;
     }
@@ -587,7 +588,7 @@ mixin PlayerGestureControlMixin
   }
 
   /// 竖向手势更新
-  void onVerticalDragUpdate(DragUpdateDetails e) async {
+  Future<void> onVerticalDragUpdate(DragUpdateDetails e) async {
     if (lockControlsState.value && fullScreenState.value) {
       return;
     }
@@ -673,7 +674,7 @@ mixin PlayerGestureControlMixin
   }
 
   /// 竖向手势完成
-  void onVerticalDragEnd(DragEndDetails details) async {
+  Future<void> onVerticalDragEnd(DragEndDetails details) async {
     if (lockControlsState.value && fullScreenState.value) {
       return;
     }
@@ -706,75 +707,102 @@ class PlayerController extends BaseController
   StreamSubscription? _escSubscription;
 
   void initStream() {
-    player.onEvent((MediaEvent event) {
-      if (event.error < 0) {
-        errorMsg.value = event.error.toString();
-        Log.d("播放器错误: ${event.error}, 详情: ${event.category}-${event.detail}");
-        mediaError(event.error.toString());
-        return;
-      }
+    int lastBufferProgress = 0;
 
-      switch (event.category) {
-        case "render.video":
-          if (event.detail == "1st_frame") {
-            Log.d("首帧已渲染");
-          }
-          break;
+    player
+      ..onEvent((MediaEvent event) {
+        if (event.error < 0) {
+          errorMsg.value = event.error.toString();
+          Log.d(
+            "播放器错误: ${event.error}, 详情: ${event.category}-${event.detail}",
+          );
+          mediaError(event.error.toString());
+          return;
+        }
 
-        case "decoder.audio":
-        case "decoder.video":
-          if (event.detail == "open" && event.error < 0) {
-            Log.d("解码器打开失败: ${event.category}, stream=${event.detail}");
-          } else if (event.error == 0) {
-            Log.d("解码器已打开: ${event.category}, name=${event.detail}");
-            if (event.category == "decoder.video") {
-              videoDecoderName = event.detail;
-            } else {
-              audioDecoderName = event.detail;
+        switch (event.category) {
+          case "render.video":
+            if (event.detail == "1st_frame") {
+              Log.d("首帧已渲染");
             }
-          }
-          break;
+            break;
 
-        case "video":
-          if (event.detail == "size") {
+          case "decoder.audio":
+          case "decoder.video":
+            if (event.detail == "open" && event.error < 0) {
+              Log.d("解码器打开失败: ${event.category}, stream=${event.detail}");
+            } else if (event.error == 0) {
+              Log.d("解码器已打开: ${event.category}, name=${event.detail}");
+              if (event.category == "decoder.video") {
+                videoDecoderName = event.detail;
+              } else {
+                audioDecoderName = event.detail;
+              }
+            }
+            break;
+
+          case "video":
+            if (event.detail != "size") break;
             Log.d("视频帧大小变化");
 
-            final info = player.mediaInfo;
-            if (info.video?.isNotEmpty ?? false) {
-              final vc = info.video!.first.codec;
-              width.value = vc.width;
-              height.value = vc.height;
-              Log.d("视频宽: ${vc.width}, 高: ${vc.height}, 帧率: ${vc.frameRate}");
+            final codec = player.mediaInfo.video?.firstOrNull?.codec;
+            if (codec == null) {
+              Log.d("未获取到视频编码信息");
+              break;
             }
-          }
-          break;
 
-        case "reader.buffering":
-          Log.d("缓冲进度: ${event.error}%");
-          break;
+            width.value = codec.width;
+            height.value = codec.height;
+            isVertical.value = height.value > width.value;
 
-        case "thread.audio":
-        case "thread.video":
-          Log.d(
-            "线程事件: ${event.category}, 状态=${event.error == 1 ? "启动" : "退出"}",
-          );
-          break;
+            Log.d(
+              "视频宽: ${codec.width}, 高: ${codec.height}, 帧率: ${codec.frameRate}",
+            );
+            break;
 
-        case "snapshot":
-          Log.d("${event.error == 0 ? "截图成功" : "截图失败"}: ${event.detail}");
-          break;
+          case "reader.buffering":
+            final progress = event.error.toInt();
+            if (progress < lastBufferProgress) lastBufferProgress = 0;
+            if (progress - lastBufferProgress >= 20 || progress == 100) {
+              lastBufferProgress = (progress ~/ 20) * 20;
+              Log.d("缓冲进度: $lastBufferProgress%");
+            }
+            break;
 
-        case "metadata":
-          Log.d("元数据已更新");
-          break;
+          case "thread.audio":
+          case "thread.video":
+            Log.d(
+              "线程事件: ${event.category}, 状态=${event.error == 1 ? "启动" : "退出"}",
+            );
+            break;
 
-        default:
-          Log.d(
-            "未知事件: ${event.category}, 详情: ${event.detail}, 错误码: ${event.error}",
-          );
-          break;
-      }
-    });
+          case "snapshot":
+            Log.d(
+              event.error == 0
+                  ? "截图成功: ${event.detail}"
+                  : "截图失败: ${event.detail}",
+            );
+            break;
+
+          case "metadata":
+            Log.d("元数据已更新");
+            break;
+
+          default:
+            Log.d(
+              "未知事件: ${event.category}, 详情: ${event.detail}, 错误码: ${event.error}",
+            );
+            break;
+        }
+      })
+      ..onStateChanged((oldState, newState) {
+        Log.d("播放状态变化: $oldState → $newState");
+        if (newState == PlaybackState.playing) {
+          WakelockPlus.enable();
+        } else {
+          WakelockPlus.disable();
+        }
+      });
 
     _escSubscription = EventBus.instance.listen(EventBus.kEscapePressed, (_) {
       exitFull();
@@ -906,7 +934,7 @@ class PlayerController extends BaseController
   }
 
   @override
-  void onClose() async {
+  Future<void> onClose() async {
     Log.w("播放器关闭");
     if (smallWindowState.value) {
       exitSmallWindow();
