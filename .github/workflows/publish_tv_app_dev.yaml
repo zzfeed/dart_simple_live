@@ -7,6 +7,7 @@ on:
             - dev
         paths:
             - 'simple_live_tv_app/**/*.dart'
+            - 'simple_live_core/**/*.dart'
 
 jobs:
     build:
@@ -149,7 +150,7 @@ jobs:
 
             - name: Create or update GitHub Release
               run: |
-                  TAG=dev
+                  TAG=nightly
                   echo "Publishing release for $TAG"
 
                   if gh release view "$TAG" --repo ${{ github.repository }} >/dev/null 2>&1; then

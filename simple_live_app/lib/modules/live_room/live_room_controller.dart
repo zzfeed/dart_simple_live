@@ -350,7 +350,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
         SmartDialog.showToast("无法读取播放清晰度");
         return;
       }
-      qualities.value = playQualities;
+      qualities.value = List.from(playQualities);
       var qualityLevel = await getQualityLevel();
       if (qualityLevel == 2) {
         //最高
@@ -364,7 +364,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
         currentQuality = middle;
       }
 
-      getPlayUrl();
+      await getPlayUrl();
     } catch (e) {
       Log.logPrint(e);
       SmartDialog.showToast("无法读取播放清晰度");
@@ -398,8 +398,8 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
       SmartDialog.showToast("无法读取播放地址");
       return;
     }
-    playUrls.value = playUrl.urls;
-    playHeaders = playUrl.headers;
+    playUrls.value = List.from(playUrl.urls);
+    playHeaders = Map.from(playUrl.headers ?? {});
     currentLineIndex = 0;
     currentLineInfo.value = "线路${currentLineIndex + 1}";
     //重置错误次数
