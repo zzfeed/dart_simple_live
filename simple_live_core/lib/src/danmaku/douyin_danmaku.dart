@@ -47,8 +47,23 @@ class DouyinDanmaku implements LiveDanmaku {
   late DouyinDanmakuArgs danmakuArgs;
   WebSocketUtils? webSocketUtils;
 
+  Map<String, String> emojiMap = {};
+
   @override
   Future start(dynamic args) async {
+    final request = await HttpClient().getUrl(
+      Uri.parse('https://www.douyin.com/aweme/v1/web/emoji/list'),
+    );
+    final response = await request.close();
+    final jsonResponse = await response.transform(utf8.decoder).join();
+    final Map<String, dynamic> data = jsonDecode(jsonResponse);
+
+    for (var emoji in data['emoji_list']) {
+      String displayName = emoji['display_name'];
+      String emojiUrl = emoji['emoji_url']['url_list'][0];
+      emojiMap[displayName] = emojiUrl;
+    }
+
     danmakuArgs = args as DouyinDanmakuArgs;
     var ts = DateTime.now().millisecondsSinceEpoch;
     var uri = Uri.parse(serverUrl).replace(
@@ -154,6 +169,7 @@ class DouyinDanmaku implements LiveDanmaku {
 
   void unPackWebcastChatMessage(List<int> payload) {
     var chatMessage = ChatMessage.fromBuffer(payload);
+    var emojiUrls = parseEmojiURL(chatMessage.content);
     onMessage?.call(
       LiveMessage(
         type: LiveMessageType.chat,
@@ -164,6 +180,7 @@ class DouyinDanmaku implements LiveDanmaku {
         //     : LiveMessageColor.numberToColor(color),
         message: chatMessage.content,
         userName: chatMessage.user.nickName,
+        imageUrls: emojiUrls,
       ),
     );
   }
@@ -241,5 +258,18 @@ class DouyinDanmaku implements LiveDanmaku {
     } finally {
       JsEngine.dispose();
     }
+  }
+
+  List<String> parseEmojiURL(String input) {
+    List<String> urls = [];
+    final regex = RegExp(r'\[[^\[\]]+\]');
+    Iterable<Match> matches = regex.allMatches(input);
+    for (var match in matches) {
+      String emoji = match.group(0)!;
+      if (emojiMap.containsKey(emoji)) {
+        urls.add(emojiMap[emoji]!);
+      }
+    }
+    return urls;
   }
 }
