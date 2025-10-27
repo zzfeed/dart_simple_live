@@ -123,11 +123,6 @@ class AppSettingsController extends GetxController {
       true,
     );
 
-    styleColor.value = LocalStorageService.instance.getValue(
-      LocalStorageService.kStyleColor,
-      0xff3498db,
-    );
-
     isDynamic.value = LocalStorageService.instance.getValue(
       LocalStorageService.kIsDynamic,
       false,

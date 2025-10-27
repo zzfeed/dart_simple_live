@@ -110,7 +110,9 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
     }
     initAutoExit();
     showDanmakuState.value = AppSettingsController.instance.danmuEnable.value;
-    followed.value = DBService.instance.getFollowExist("${site.id}_$roomId");
+    followed.value = FollowService.instance.getFollowExist(
+      "${site.id}_$roomId",
+    );
     loadData();
 
     scrollController.addListener(scrollListener);
@@ -313,7 +315,9 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
 
       addHistory();
       // 确认房间关注状态
-      followed.value = DBService.instance.getFollowExist("${site.id}_$roomId");
+      followed.value = FollowService.instance.getFollowExist(
+        "${site.id}_$roomId",
+      );
       online.value = detail.value!.online;
       liveStatus.value = detail.value!.status || detail.value!.isRecord;
       if (liveStatus.value) {

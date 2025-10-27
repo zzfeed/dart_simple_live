@@ -56,8 +56,7 @@ class HistoryService extends GetxService {
       curLiveRoomHistory = history;
       DBService.instance.addOrUpdateHistory(history);
     }
-    _oldWatchedDuration =
-        curLiveRoomHistory?.watchDuration?.toDuration() ?? Duration.zero;
+    _oldWatchedDuration = curLiveRoomHistory!.duration;
   }
 
   // updateHistory

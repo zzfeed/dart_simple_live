@@ -1,11 +1,9 @@
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'dart:async';
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:simple_live_app/app/controller/base_controller.dart';
 import 'package:simple_live_app/app/event_bus.dart';
-import 'package:simple_live_app/app/log.dart';
 import 'package:simple_live_app/app/utils.dart';
 import 'package:simple_live_app/models/db/follow_user.dart';
 import 'package:simple_live_app/models/db/follow_user_tag.dart';
@@ -123,43 +121,8 @@ class FollowUserController extends BasePageController<FollowUser> {
     filterData();
   }
 
-  Future removeTag(FollowUserTag tag) async {
-    await FollowService.instance.removeFollowUserTag(tag);
-    updateTagList();
-    Log.i('删除tag${tag.tag}');
-  }
-
-  Future<void> addTag(String tag) async {
-    await FollowService.instance.addFollowUserTag(tag);
-    updateTagList();
-  }
-
   Future<void> updateTag(FollowUserTag followUserTag) async {
     await FollowService.instance.updateFollowUserTag(followUserTag);
-  }
-
-  void updateTagName(FollowUserTag followUserTag, String newTagName) {
-    // 未操作
-    if (followUserTag.tag == newTagName) {
-      return;
-    }
-    // 避免重名
-    if (tagList.any((item) => item.tag == newTagName)) {
-      SmartDialog.showToast("标签名重复，修改失败");
-      return;
-    }
-    FollowService.instance.updateTagName(followUserTag, newTagName);
-    SmartDialog.showToast("标签名修改成功");
-    updateTagList();
-  }
-
-  void updateTagOrder(int oldIndex, int newIndex) {
-    if (newIndex > oldIndex) newIndex -= 1; // 处理索引调整
-    final item = userTagList.removeAt(oldIndex);
-    userTagList.insert(newIndex, item);
-    tagList.value = tagList.take(3).toList();
-    tagList.addAll(userTagList);
-    FollowService.instance.updateFollowTagOrder(userTagList);
   }
 
   @override
