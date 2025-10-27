@@ -109,4 +109,20 @@ class SyncClientRequest {
       throw data["message"];
     }
   }
+
+  Future<bool> syncDYAccount(SyncClient client, String cookie) async {
+    var url = "http://${client.address}:${client.port}/sync/account/douyin";
+    var data = await HttpClient.instance.postJson(
+      url,
+      data: {
+        "cookie": cookie,
+      },
+    );
+
+    if (data["status"]) {
+      return true;
+    } else {
+      throw data["message"];
+    }
+  }
 }

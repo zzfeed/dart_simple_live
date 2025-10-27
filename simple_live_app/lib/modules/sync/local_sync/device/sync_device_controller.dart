@@ -9,6 +9,7 @@ import 'package:simple_live_app/models/sync_client_info_model.dart';
 import 'package:simple_live_app/requests/sync_client_request.dart';
 import 'package:simple_live_app/services/bilibili_account_service.dart';
 import 'package:simple_live_app/services/db_service.dart';
+import 'package:simple_live_app/services/douyin_account_service.dart';
 import 'package:simple_live_app/services/sync_service.dart';
 
 class SyncDeviceController extends BaseController {
@@ -92,6 +93,27 @@ class SyncDeviceController extends BaseController {
         BiliBiliAccountService.instance.cookie,
       );
       SmartDialog.showToast("已同步哔哩哔哩账号");
+    } catch (e) {
+      SmartDialog.showToast("同步失败:$e");
+      Log.logPrint(e);
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
+
+  Future<void> syncDYAccount() async {
+    try {
+      if (!DouyinAccountService.instance.logged.value) {
+        SmartDialog.showToast("未登录抖音");
+        return;
+      }
+      SmartDialog.showLoading(msg: "同步中...");
+
+      await request.syncDYAccount(
+        client,
+        DouyinAccountService.instance.cookie,
+      );
+      SmartDialog.showToast("已同步抖音账号");
     } catch (e) {
       SmartDialog.showToast("同步失败:$e");
       Log.logPrint(e);
