@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:simple_live_core/simple_live_core.dart';
+import 'package:simple_live_core/src/common/douyin/douyin_utils.dart';
 import 'package:simple_live_core/src/common/js_engine.dart';
 import 'package:simple_live_core/src/common/web_socket_util.dart';
 
@@ -70,9 +71,9 @@ class DouyinDanmaku implements LiveDanmaku {
       scheme: "wss",
       queryParameters: {
         "app_name": "douyin_web",
-        "version_code": DouyinRequestParams.versionCodeValue,
-        "webcast_sdk_version": DouyinRequestParams.sdkVersion,
-        "update_version_code": DouyinRequestParams.sdkVersion,
+        "version_code": DouyinUtils.versionCodeValue,
+        "webcast_sdk_version": DouyinUtils.sdkVersion,
+        "update_version_code": DouyinUtils.sdkVersion,
         "compress": "gzip",
         // "internal_ext":
         //     "internal_src:dim|wss_push_room_id:${danmakuArgs.roomId}|wss_push_did:${danmakuArgs.userId}|dim_log_id:20230626152702E8F63662383A350588E1|fetch_time:1687764422114|seq:1|wss_info:0-1687764422114-0-0|wrds_kvs:WebcastRoomRankMessage-1687764036509597990_InputPanelComponentSyncData-1687736682345173033_WebcastRoomStatsMessage-1687764414427812578",
@@ -94,7 +95,7 @@ class DouyinDanmaku implements LiveDanmaku {
         "browser_language": "zh-CN",
         "browser_platform": "Win32",
         "browser_name": "Mozilla",
-        "browser_version": DouyinRequestParams.kDefaultUserAgent.replaceAll(
+        "browser_version": DouyinUtils.kDefaultUserAgent.replaceAll(
           "Mozilla/",
           "",
         ),
@@ -115,7 +116,7 @@ class DouyinDanmaku implements LiveDanmaku {
       url: url,
       backupUrl: backupUrl,
       headers: {
-        "User-Agent": DouyinRequestParams.kDefaultUserAgent,
+        "User-Agent": DouyinUtils.kDefaultUserAgent,
         "Cookie": danmakuArgs.cookie,
         "Origin": "https://live.douyin.com",
       },
@@ -230,8 +231,8 @@ class DouyinDanmaku implements LiveDanmaku {
       Map<String, dynamic> params = {
         "live_id": "1",
         "aid": "6383",
-        "version_code": DouyinRequestParams.versionCodeValue,
-        "webcast_sdk_version": DouyinRequestParams.sdkVersion,
+        "version_code": DouyinUtils.versionCodeValue,
+        "webcast_sdk_version": DouyinUtils.sdkVersion,
         "room_id": roomId,
         "sub_room_id": "",
         "sub_channel_id": "",

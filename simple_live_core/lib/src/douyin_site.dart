@@ -5,14 +5,6 @@ import 'package:simple_live_core/src/common/convert_helper.dart';
 import 'package:simple_live_core/src/common/douyin/douyin_utils.dart';
 import 'package:simple_live_core/src/common/http_client.dart';
 
-mixin DouyinRequestParams {
-  static const String kDefaultUserAgent =
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.0.0";
-  static const aidValue = "6383";
-  static const versionCodeValue = "180800";
-  static const sdkVersion = "1.0.14-beta.0";
-}
-
 class DouyinSite implements LiveSite {
   @override
   String id = "douyin";
@@ -23,16 +15,18 @@ class DouyinSite implements LiveSite {
   @override
   LiveDanmaku getDanmaku() => DouyinDanmaku();
 
-  static const String kDefaultReferer = "https://live.douyin.com";
-
-  static const String kDefaultAuthority = "live.douyin.com";
-
-  Map<String, dynamic> headers = DouyinUtils.kDefaultHeaders;
+  String cookie = "";
 
   Future<Map<String, dynamic>> getRequestHeaders() async {
     try {
-      final headers = Map<String, String>.from(DouyinUtils.kDefaultHeaders);
-      var cookies = headers['cookie'] ?? '';
+      final headers = <String, String>{
+        "Authority": DouyinUtils.kDefaultAuthority,
+        "Referer": DouyinUtils.kDefaultReferer,
+        "User-Agent": DouyinUtils.kDefaultUserAgent,
+        "cookie": cookie,
+      };
+
+      String cookies = headers['cookie'] ?? '';
 
       final extraCookies = <String>[];
 
@@ -46,9 +40,11 @@ class DouyinSite implements LiveSite {
       if (!cookies.contains('msToken')) {
         extraCookies.add('msToken=${DouyinUtils.generateMsToken()}');
       }
-      if (!cookies.contains('nonce')) {
-        extraCookies.add('nonce=${DouyinUtils.generateNonce()}');
+
+      if (!cookies.contains('__ac_nonce=')) {
+        extraCookies.add('__ac_nonce=${DouyinUtils.generateNonce()}');
       }
+
       if (!cookies.contains('odin_tt')) {
         extraCookies.add('odin_tt=${DouyinUtils.generateOdinTtid()}');
       }
@@ -57,45 +53,20 @@ class DouyinSite implements LiveSite {
         cookies = [
           ...extraCookies,
           cookies,
-        ].where((e) => e.isNotEmpty).join(';');
+        ].where((e) => e.isNotEmpty).join('; ');
       }
 
       headers['cookie'] = cookies;
+
       return headers;
     } catch (e) {
       CoreLog.error(e);
-      return Map<String, String>.from(DouyinUtils.kDefaultHeaders);
+      return {
+        "Authority": DouyinUtils.kDefaultAuthority,
+        "Referer": DouyinUtils.kDefaultReferer,
+        "User-Agent": DouyinUtils.kDefaultUserAgent,
+      };
     }
-  }
-
-  /// 通过 Cookie 获取当前登录用户信息
-  /// 成功返回 data(Map)，失败返回空 Map
-  Future<Map<String, dynamic>> getUserInfoByCookie(String cookie) async {
-    try {
-      const url = "https://live.douyin.com/webcast/user/me/";
-      final result = await HttpClient.instance.getJson(
-        url,
-        queryParameters: {
-          "aid": DouyinRequestParams.aidValue,
-        },
-        header: {
-          "user-agent": DouyinRequestParams.kDefaultUserAgent,
-          'accept': 'application/json, text/plain, */*',
-          'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8',
-          "Cookie": cookie,
-        },
-      );
-      if (result is Map<String, dynamic>) {
-        final data = result["data"];
-        if (data is Map<String, dynamic>) {
-          return data;
-        }
-      }
-      return {};
-    } catch (e) {
-      CoreLog.error(e);
-    }
-    return {};
   }
 
   @override
@@ -476,40 +447,34 @@ class DouyinSite implements LiveSite {
 
   /// 进入直播间前需要先获取cookie
   /// - [webRid] 直播间RID
-  Future<String> _getWebCookie(String webRid) async {
-    var headResp = await HttpClient.instance.head(
-      "https://live.douyin.com/$webRid",
-      header: headers,
-    );
-    var dyCookie = "";
-    headResp.headers["set-cookie"]?.forEach((element) {
-      var cookie = element.split(";")[0];
-      if (cookie.contains("ttwid")) {
-        dyCookie += "$cookie;";
-      }
-      if (cookie.contains("__ac_nonce")) {
-        dyCookie += "$cookie;";
-      }
-      if (cookie.contains("msToken")) {
-        dyCookie += "$cookie;";
-      }
-    });
-    return dyCookie;
-  }
+  // Future<String> _getWebCookie(String webRid) async {
+  //   var headResp = await HttpClient.instance.head(
+  //     "https://live.douyin.com/$webRid",
+  //     header: await getRequestHeaders(),
+  //   );
+  //   var dyCookie = "";
+  //   headResp.headers["set-cookie"]?.forEach((element) {
+  //     var cookie = element.split(";")[0];
+  //     if (cookie.contains("ttwid")) {
+  //       dyCookie += "$cookie;";
+  //     }
+  //     if (cookie.contains("__ac_nonce")) {
+  //       dyCookie += "$cookie;";
+  //     }
+  //     if (cookie.contains("msToken")) {
+  //       dyCookie += "$cookie;";
+  //     }
+  //   });
+  //   return dyCookie;
+  // }
 
   /// 通过webRid获取直播间Web信息
   /// - [webRid] 直播间RID
   Future<Map> _getRoomDataByHtml(String webRid) async {
-    var dyCookie = await _getWebCookie(webRid);
     var result = await HttpClient.instance.getText(
       "https://live.douyin.com/$webRid",
       queryParameters: {},
-      header: {
-        "Authority": DouyinUtils.kDefaultAuthority,
-        "Referer": DouyinUtils.kDefaultReferer,
-        "Cookie": dyCookie,
-        "User-Agent": DouyinUtils.kDefaultUserAgent,
-      },
+      header: await getRequestHeaders(),
     );
 
     var renderData =
@@ -705,29 +670,14 @@ class DouyinSite implements LiveSite {
       serverUrl,
       query: queryParams,
     );
+    var headers = await getRequestHeaders();
 
-    var result = await HttpClient.instance.getJson(
-      requestUrl,
-      queryParameters: {},
-      header: {
-        "Authority": 'www.douyin.com',
-        'accept': 'application/json, text/plain, */*',
-        'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8',
-        'cookie': await getRequestHeaders().then(
-          (value) => value['cookie'] ?? '',
-        ),
-        'priority': 'u=1, i',
-        'referer':
-            'https://www.douyin.com/search/${Uri.encodeComponent(keyword)}?type=live',
-        'sec-ch-ua':
-            '"Microsoft Edge";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'user-agent': DouyinRequestParams.kDefaultUserAgent,
-      },
+    headers['referer'] =
+        'https://www.douyin.com/search/${Uri.encodeComponent(keyword)}?type=live';
+
+    final result = await HttpClient.instance.getJson(
+      requestUrl.toString(),
+      header: headers,
     );
     if (result == "" || result == 'blocked') {
       throw Exception("抖音直播搜索被限制，请稍后再试");

@@ -7,6 +7,7 @@ import 'package:simple_live_app/app/constant.dart';
 import 'package:simple_live_app/app/sites.dart';
 import 'package:simple_live_app/models/account/douyin_user_info.dart';
 import 'package:simple_live_app/services/local_storage_service.dart';
+import 'package:simple_live_app/requests/http_client.dart';
 import 'package:simple_live_core/simple_live_core.dart';
 
 class DouyinAccountService extends GetxService {
@@ -32,29 +33,31 @@ class DouyinAccountService extends GetxService {
       return;
     }
     try {
-      final site = (Sites.allSites[Constant.kDouyin]!.liveSite as DouyinSite);
-      final data = await site.getUserInfoByCookie(cookie);
-      if (data.isEmpty) {
+      final result = await HttpClient.instance.getJson(
+        "https://live.douyin.com/webcast/user/me/",
+        queryParameters: {
+          "aid": "6383",
+        },
+        header: {
+          "Cookie": cookie,
+        },
+      );
+
+      if (result["status_code"] == 0) {
+        var info = DouyinUserInfoModel.fromJson(result["data"]);
+        name.value = info.nickname ?? "未登录";
+        setSite();
+      } else {
         SmartDialog.showToast("抖音登录已失效，请重新登录");
         logout();
-        return;
       }
-      var info = DouyinUserInfoModel.fromJson(data);
-      name.value = info.nickname!;
-      logged.value = true;
-      _setSite();
     } catch (e) {
       SmartDialog.showToast("获取抖音登录用户信息失败，可前往账号管理重试");
     }
   }
 
-  void _setSite() {
-    var site = (Sites.allSites[Constant.kDouyin]!.liveSite as DouyinSite);
-    if (cookie.isEmpty) {
-      site.headers.remove("cookie");
-    } else {
-      site.headers["cookie"] = cookie;
-    }
+  void setSite() {
+    (Sites.allSites[Constant.kDouyin]!.liveSite as DouyinSite).cookie = cookie;
   }
 
   void setCookie(String cookie) {
@@ -63,17 +66,19 @@ class DouyinAccountService extends GetxService {
       LocalStorageService.kDouyinCookie,
       cookie,
     );
+    logged.value = cookie.isNotEmpty;
   }
 
   Future<void> logout() async {
     cookie = "";
+    name.value = "未登录";
+    setSite();
     LocalStorageService.instance.setValue(
       LocalStorageService.kDouyinCookie,
       "",
     );
     logged.value = false;
-    name.value = "未登录";
-    _setSite();
+
     if (Platform.isAndroid || Platform.isIOS) {
       CookieManager cookieManager = CookieManager.instance();
       await cookieManager.deleteAllCookies();
