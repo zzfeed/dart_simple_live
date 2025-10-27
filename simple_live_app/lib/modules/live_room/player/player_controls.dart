@@ -33,7 +33,7 @@ Widget playerControls(BuildContext context, LiveRoomController controller) {
       Obx(
         () => Visibility(
           visible:
-              AppSettingsController.instance.playershowSuperChat.value &&
+              AppSettingsController.instance.playerShowSuperChat.value &&
               ((!Platform.isAndroid && !Platform.isIOS) ||
                   controller.fullScreenState.value),
           child: Positioned(
@@ -253,14 +253,17 @@ Widget buildFullControls(BuildContext context, LiveRoomController controller) {
                       ),
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      showDanmakuSettings(controller);
-                    },
-                    icon: SvgPicture.asset(
-                      'assets/icons/icon_danmaku_setting.svg',
-                      width: 24,
-                      height: 24,
+                  Visibility(
+                    visible: controller.showDanmakuState.value,
+                    child: IconButton(
+                      onPressed: () {
+                        controller.showDanmuSettingsSheet();
+                      },
+                      icon: SvgPicture.asset(
+                        'assets/icons/icon_danmaku_setting.svg',
+                        width: 24,
+                        height: 24,
+                      ),
                     ),
                   ),
                   Obx(() {
@@ -486,16 +489,21 @@ Widget buildControls(BuildContext context, LiveRoomController controller) {
                     ),
                   ),
                 ),
-                IconButton(
-                  onPressed: () {
-                    controller.showDanmuSettingsSheet();
-                  },
-                  icon: SvgPicture.asset(
-                    'assets/icons/icon_danmaku_setting.svg',
-                    width: 24,
-                    height: 24,
+
+                Visibility(
+                  visible: controller.showDanmakuState.value,
+                  child: IconButton(
+                    onPressed: () {
+                      controller.showDanmuSettingsSheet();
+                    },
+                    icon: SvgPicture.asset(
+                      'assets/icons/icon_danmaku_setting.svg',
+                      width: 24,
+                      height: 24,
+                    ),
                   ),
                 ),
+
                 Obx(() {
                   final showTime = controller.detail.value?.showTime;
                   if (showTime == null || showTime.isEmpty) {

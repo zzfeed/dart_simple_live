@@ -416,9 +416,9 @@ class AppSettingsController extends GetxController {
     );
   }
 
-  var playershowSuperChat = true.obs;
+  var playerShowSuperChat = true.obs;
   void setPlayerShowSuperChat(bool e) {
-    playershowSuperChat.value = e;
+    playerShowSuperChat.value = e;
     LocalStorageService.instance.setValue(
       LocalStorageService.kPlayerShowSuperChat,
       e,

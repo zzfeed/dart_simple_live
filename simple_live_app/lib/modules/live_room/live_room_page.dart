@@ -818,7 +818,7 @@ class LiveRoomPage extends GetView<LiveRoomController> {
                 () => SettingsSwitch(
                   title: "播放器中显示SC",
                   value:
-                      AppSettingsController.instance.playershowSuperChat.value,
+                      AppSettingsController.instance.playerShowSuperChat.value,
                   onChanged: (e) {
                     AppSettingsController.instance.setPlayerShowSuperChat(e);
                   },
