@@ -37,9 +37,9 @@ class DouyinSite implements LiveSite {
         }
       }
 
-      if (!cookies.contains('msToken')) {
-        extraCookies.add('msToken=${DouyinUtils.generateMsToken()}');
-      }
+      // if (!cookies.contains('msToken')) {
+      //   extraCookies.add('msToken=${DouyinUtils.generateMsToken()}');
+      // }
 
       if (!cookies.contains('__ac_nonce=')) {
         extraCookies.add('__ac_nonce=${DouyinUtils.generateNonce()}');
@@ -641,8 +641,8 @@ class DouyinSite implements LiveSite {
       "query_correct_type": "1",
       "is_filter_search": "0",
       "from_group_id": "",
-      "offset": ((page - 1) * 10).toString(),
-      "count": "10",
+      "offset": ((page - 1) * 20).toString(),
+      "count": "20",
       "pc_client_type": "1",
       "version_code": "170400",
       "version_name": "17.4.0",
@@ -671,6 +671,16 @@ class DouyinSite implements LiveSite {
       query: queryParams,
     );
     var headers = await getRequestHeaders();
+
+    final signature = DouyinUtils.generateAcSignature(
+      Uri.parse(serverUrl).path,
+      headers["cookie"][2].toString(),
+      DouyinUtils.kDefaultUserAgent,
+    );
+
+    if (!headers["cookie"]!.contains('__ac_signature')) {
+      headers["cookie"] = '${headers["cookie"]}; __ac_signature=$signature';
+    }
 
     headers['referer'] =
         'https://www.douyin.com/search/${Uri.encodeComponent(keyword)}?type=live';
