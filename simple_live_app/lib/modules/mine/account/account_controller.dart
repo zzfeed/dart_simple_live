@@ -1,5 +1,6 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:simple_live_app/app/app_style.dart';
 import 'package:simple_live_app/app/utils.dart';
@@ -8,37 +9,8 @@ import 'package:simple_live_app/services/bilibili_account_service.dart';
 import 'package:simple_live_app/services/douyin_account_service.dart';
 
 class AccountController extends GetxController {
-  Future<String?> cookieInputDialog({
-    required String title,
-    required List<String> fields,
-    void Function(Map<String, TextEditingController>)? onParse,
-  }) async {
-    final controllers = {
-      for (var f in fields) f: TextEditingController(),
-      'full': TextEditingController(),
-    };
-
-    void parseCookie(String raw) {
-      final cookie = raw.replaceAll(
-        RegExp(
-          r"["
-          ''
-          "]",
-        ),
-        '',
-      );
-      final parts = cookie.split(';');
-      for (var part in parts) {
-        final kv = part.trim().split('=');
-        if (kv.length < 2) continue;
-        final key = kv[0].trim();
-        final value = kv.sublist(1).join('=').trim();
-        if (controllers.containsKey(key)) {
-          controllers[key]!.text = value;
-        }
-      }
-      if (onParse != null) onParse(controllers);
-    }
+  Future<String?> cookieInputDialog({required String title}) async {
+    final controller = TextEditingController();
 
     InputDecoration inputDecoration(String label) {
       return InputDecoration(
@@ -59,21 +31,11 @@ class AccountController extends GetxController {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: controllers['full'],
-                decoration: inputDecoration('粘贴完整 Cookie（自动解析）'),
-                maxLines: 2,
-                onChanged: parseCookie,
+                controller: controller,
+                decoration: inputDecoration('完整 Cookie'),
+                maxLines: 5,
               ),
               AppStyle.vGap12,
-              ...fields.map(
-                (f) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: TextField(
-                    controller: controllers[f],
-                    decoration: inputDecoration(f),
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -84,17 +46,59 @@ class AccountController extends GetxController {
           ),
           ElevatedButton(
             onPressed: () {
-              final values = {
-                for (var f in fields) f: controllers[f]!.text.trim(),
-              };
-              // if (values.values.any((e) => e.isEmpty)) {
-              //   SmartDialog.showToast('请完整填写所有字段');
-              //   return;
-              // }
-              final cookie = values.entries
-                  .map((e) => '${e.key}=${e.value}')
-                  .join('; ');
-              Get.back(result: cookie);
+              final raw = controller.text.trim();
+              if (raw.isEmpty) {
+                Get.back(result: null);
+                return;
+              }
+
+              final Map<String, String> kvMap = {};
+              final parts = raw.split(';');
+              for (var part in parts) {
+                final kv = part.split('=');
+                if (kv.length >= 2) {
+                  final key = kv[0].trim();
+                  final value = kv.sublist(1).join('=').trim();
+                  kvMap[key] = value;
+                }
+              }
+
+              Get.dialog(
+                AlertDialog(
+                  title: const Text('Cookie 预览'),
+                  content: SizedBox(
+                    width: double.maxFinite,
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: kvMap.entries
+                          .map(
+                            (e) => ListTile(
+                              title: Text(e.key),
+                              subtitle: Text(e.value),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: Get.back,
+                      child: const Text('返回修改'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        final formattedCookie = kvMap.entries
+                            .map((e) => '${e.key}=${e.value}')
+                            .join('; ');
+                        Get
+                          ..back(result: formattedCookie)
+                          ..back(result: formattedCookie);
+                      },
+                      child: const Text('确认使用'),
+                    ),
+                  ],
+                ),
+              );
             },
             child: const Text('确认'),
           ),
@@ -105,7 +109,10 @@ class AccountController extends GetxController {
 
   Future<void> bilibiliTap() async {
     if (BiliBiliAccountService.instance.logged.value) {
-      var result = await Utils.showAlertDialog("确定要退出哔哩哔哩账号吗？", title: "退出登录");
+      var result = await Utils.showAlertDialog(
+        "确定要退出哔哩哔哩账号吗？",
+        title: "退出登录",
+      );
       if (result) {
         BiliBiliAccountService.instance.logout();
       }
@@ -153,18 +160,7 @@ class AccountController extends GetxController {
             trailing: const Icon(Icons.chevron_right),
             onTap: () async {
               Get.back();
-              final cookie = await cookieInputDialog(
-                title: "哔哩哔哩",
-                fields: [
-                  'SESSDATA',
-                  'bili_jct',
-                  'DedeUserID',
-                  'DedeUserID__ckMd5',
-                  'sid',
-                  'buvid3',
-                  'buvid4',
-                ],
-              );
+              final cookie = await cookieInputDialog(title: "哔哩哔哩");
               if (cookie?.isNotEmpty ?? false) {
                 BiliBiliAccountService.instance
                   ..setCookie(cookie!)
@@ -187,17 +183,7 @@ class AccountController extends GetxController {
         DouyinAccountService.instance.logout();
       }
     } else {
-      final cookie = await cookieInputDialog(
-        title: "抖音",
-        fields: [
-          'ttwid',
-          '__ac_nonce',
-          '__ac_signature',
-          'sessionid',
-          'uid_tt',
-        ],
-      );
-
+      final cookie = await cookieInputDialog(title: "抖音");
       if (cookie?.isNotEmpty ?? false) {
         DouyinAccountService.instance
           ..setCookie(cookie!)
