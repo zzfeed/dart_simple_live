@@ -455,16 +455,16 @@ Widget buildControls(BuildContext context, LiveRoomController controller) {
             ),
             child: Row(
               children: [
-                IconButton(
-                  onPressed: () {
-                    controller.refreshRoom();
-                  },
-                  icon: SvgPicture.asset(
-                    'assets/icons/icon_refresh.svg',
-                    width: 24,
-                    height: 24,
-                  ),
-                ),
+                // IconButton(
+                //   onPressed: () {
+                //     controller.refreshRoom();
+                //   },
+                //   icon: SvgPicture.asset(
+                //     'assets/icons/icon_refresh.svg',
+                //     width: 24,
+                //     height: 24,
+                //   ),
+                // ),
                 Offstage(
                   offstage: controller.showDanmakuState.value,
                   child: IconButton(
@@ -534,15 +534,37 @@ Widget buildControls(BuildContext context, LiveRoomController controller) {
                     ),
                   ),
                 ),
-                Offstage(
-                  offstage: controller.isVertical.value,
-                  child: TextButton(
-                    onPressed: () {
-                      controller.showQualitySheet();
-                    },
-                    child: Obx(
-                      () => Text(
-                        controller.currentQualityInfo.value,
+
+                Visibility(
+                  visible: controller.fullScreenState.value,
+                  child: Offstage(
+                    offstage: controller.isVertical.value,
+                    child: TextButton(
+                      onPressed: () {
+                        controller.showQualitySheet();
+                      },
+                      child: Obx(
+                        () => Text(
+                          controller.currentQualityInfo.value,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: controller.fullScreenState.value,
+                  child: Offstage(
+                    offstage: controller.isVertical.value,
+                    child: TextButton(
+                      onPressed: () {
+                        controller.showPlayUrlsSheet();
+                      },
+                      child: Text(
+                        controller.currentLineInfo.value,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 15,
@@ -551,18 +573,7 @@ Widget buildControls(BuildContext context, LiveRoomController controller) {
                     ),
                   ),
                 ),
-                Offstage(
-                  offstage: controller.isVertical.value,
-                  child: TextButton(
-                    onPressed: () {
-                      controller.showPlayUrlsSheet();
-                    },
-                    child: Text(
-                      controller.currentLineInfo.value,
-                      style: const TextStyle(color: Colors.white, fontSize: 15),
-                    ),
-                  ),
-                ),
+
                 Visibility(
                   visible: !Platform.isAndroid && !Platform.isIOS,
                   child: IconButton(
