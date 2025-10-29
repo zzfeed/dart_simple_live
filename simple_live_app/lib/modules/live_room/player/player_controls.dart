@@ -631,11 +631,13 @@ Widget buildDanmuView(BuildContext context, LiveRoomController controller) {
     createdController: controller.initDanmakuController,
     option: DanmakuOption(
       fontSize: AppSettingsController.instance.danmuSize.value,
-      area: AppSettingsController.instance.danmuArea.value,
-      duration: AppSettingsController.instance.danmuSpeed.value.toInt(),
-      opacity: AppSettingsController.instance.danmuOpacity.value,
-      showStroke: AppSettingsController.instance.danmuStrokeWidth.value > 0,
       fontWeight: AppSettingsController.instance.danmuFontWeight.value,
+      area: AppSettingsController.instance.danmuArea.value,
+      duration: AppSettingsController.instance.danmuSpeed.value,
+      opacity: AppSettingsController.instance.danmuOpacity.value,
+      strokeWidth: AppSettingsController.instance.danmuStrokeWidth.value,
+      lineHeight: AppSettingsController.instance.danmuLineHeight.value,
+      safeArea: false,
     ),
   );
 

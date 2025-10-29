@@ -87,6 +87,52 @@ class DanmuSettingsView extends GetView<AppSettingsController> {
               AppStyle.divider,
               Obx(
                 () => SettingsNumber(
+                  title: "字体大小",
+                  value: controller.danmuSize.toInt(),
+                  min: 8,
+                  max: 48,
+                  onChanged: (e) {
+                    controller.setDanmuSize(e.toDouble());
+                    updateDanmuOption(
+                      danmakuController?.option.copyWith(
+                        fontSize: e.toDouble(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              AppStyle.divider,
+              Obx(
+                () => SettingsNumber(
+                  title: "字体粗细",
+                  value: controller.danmuFontWeight.value,
+                  min: 0,
+                  max: 8,
+                  step: 1,
+                  displayValue: [
+                    "超极细",
+                    "极细",
+                    "很细",
+                    "细",
+                    "正常",
+                    "粗",
+                    "很粗",
+                    "极粗",
+                    "超极粗",
+                  ][controller.danmuFontWeight.value].toString(),
+                  onChanged: (e) {
+                    controller.setDanmuFontWeight(e);
+                    updateDanmuOption(
+                      danmakuController?.option.copyWith(
+                        fontWeight: e,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              AppStyle.divider,
+              Obx(
+                () => SettingsNumber(
                   title: "显示区域",
                   value: (controller.danmuArea.value * 100).toInt(),
                   min: 10,
@@ -97,6 +143,24 @@ class DanmuSettingsView extends GetView<AppSettingsController> {
                     controller.setDanmuArea(e / 100.0);
                     updateDanmuOption(
                       danmakuController?.option.copyWith(area: e / 100.0),
+                    );
+                  },
+                ),
+              ),
+              AppStyle.divider,
+              Obx(
+                () => SettingsNumber(
+                  title: "滚动速度",
+                  subtitle: "弹幕持续时间(秒)，越小速度越快",
+                  value: controller.danmuSpeed.toInt(),
+                  min: 4,
+                  max: 20,
+                  onChanged: (e) {
+                    controller.setDanmuSpeed(e.toDouble());
+                    updateDanmuOption(
+                      danmakuController?.option.copyWith(
+                        duration: e.toDouble(),
+                      ),
                     );
                   },
                 ),
@@ -121,68 +185,6 @@ class DanmuSettingsView extends GetView<AppSettingsController> {
               AppStyle.divider,
               Obx(
                 () => SettingsNumber(
-                  title: "字体大小",
-                  value: controller.danmuSize.toInt(),
-                  min: 8,
-                  max: 48,
-                  onChanged: (e) {
-                    controller.setDanmuSize(e.toDouble());
-                    updateDanmuOption(
-                      danmakuController?.option.copyWith(
-                        fontSize: e.toDouble(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              AppStyle.divider,
-              Obx(
-                () => SettingsNumber(
-                  title: "字体粗细",
-                  value: controller.danmuFontWeight.value,
-                  min: 0,
-                  max: 8,
-                  step: 1,
-                  displayValue: [
-                    "极细",
-                    "很细",
-                    "细",
-                    "正常",
-                    "小粗",
-                    "偏粗",
-                    "粗",
-                    "很粗",
-                    "极粗",
-                  ][controller.danmuFontWeight.value].toString(),
-                  onChanged: (e) {
-                    controller.setDanmuFontWeight(e);
-                    updateDanmuOption(
-                      danmakuController?.option.copyWith(
-                        fontWeight: e,
-                      ),
-                    );
-                  },
-                ),
-              ),
-              AppStyle.divider,
-              Obx(
-                () => SettingsNumber(
-                  title: "滚动速度",
-                  subtitle: "弹幕持续时间(秒)，越小速度越快",
-                  value: controller.danmuSpeed.toInt(),
-                  min: 4,
-                  max: 20,
-                  onChanged: (e) {
-                    controller.setDanmuSpeed(e.toDouble());
-                    updateDanmuOption(
-                      danmakuController?.option.copyWith(duration: e),
-                    );
-                  },
-                ),
-              ),
-              AppStyle.divider,
-              Obx(
-                () => SettingsNumber(
                   title: "字体描边",
                   value: controller.danmuStrokeWidth.toInt(),
                   min: 0,
@@ -190,7 +192,26 @@ class DanmuSettingsView extends GetView<AppSettingsController> {
                   onChanged: (e) {
                     controller.setDanmuStrokeWidth(e.toDouble());
                     updateDanmuOption(
-                      danmakuController?.option.copyWith(showStroke: e >= 1),
+                      danmakuController?.option.copyWith(
+                        strokeWidth: e.toDouble(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              AppStyle.divider,
+              Obx(
+                () => SettingsNumber(
+                  title: "弹幕行高",
+                  value: controller.danmuLineHeight.toInt(),
+                  min: 0,
+                  max: 10,
+                  onChanged: (e) {
+                    controller.setDanmuLineHeight(e.toDouble());
+                    updateDanmuOption(
+                      danmakuController?.option.copyWith(
+                        lineHeight: e.toDouble(),
+                      ),
                     );
                   },
                 ),
