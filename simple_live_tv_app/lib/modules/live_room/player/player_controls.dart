@@ -225,12 +225,13 @@ Widget buildDanmuView(VideoState videoState, LiveRoomController controller) {
     key: controller.globalDanmuKey,
     createdController: controller.initDanmakuController,
     option: DanmakuOption(
-      fontSize: AppSettingsController.instance.danmuSize.value.sp,
-      area: AppSettingsController.instance.danmuArea.value,
-      duration: AppSettingsController.instance.danmuSpeed.value.toInt(),
-      opacity: AppSettingsController.instance.danmuOpacity.value,
-      showStroke: AppSettingsController.instance.danmuStrokeWidth.value > 0,
+      fontSize: AppSettingsController.instance.danmuSize.value,
       fontWeight: AppSettingsController.instance.danmuFontWeight.value,
+      area: AppSettingsController.instance.danmuArea.value,
+      duration: AppSettingsController.instance.danmuSpeed.value,
+      opacity: AppSettingsController.instance.danmuOpacity.value,
+      strokeWidth: AppSettingsController.instance.danmuStrokeWidth.value,
+      safeArea: false,
     ),
   );
   return Positioned.fill(
@@ -614,7 +615,7 @@ void showPlayerSettings(LiveRoomController controller) {
                     AppSettingsController.instance.setDanmuStrokeWidth(e);
                     controller.updateDanmuOption(
                       controller.danmakuController?.option.copyWith(
-                        showStroke: true,
+                        strokeWidth: (e as double).w,
                       ),
                     );
                   },
