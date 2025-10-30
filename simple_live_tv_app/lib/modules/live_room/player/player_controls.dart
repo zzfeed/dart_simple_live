@@ -225,12 +225,12 @@ Widget buildDanmuView(VideoState videoState, LiveRoomController controller) {
     key: controller.globalDanmuKey,
     createdController: controller.initDanmakuController,
     option: DanmakuOption(
-      fontSize: AppSettingsController.instance.danmuSize.value,
+      fontSize: AppSettingsController.instance.danmuSize.value.w,
       fontWeight: AppSettingsController.instance.danmuFontWeight.value,
-      area: AppSettingsController.instance.danmuArea.value,
+      area: AppSettingsController.instance.danmuArea.value.w,
       duration: AppSettingsController.instance.danmuSpeed.value,
       opacity: AppSettingsController.instance.danmuOpacity.value,
-      strokeWidth: AppSettingsController.instance.danmuStrokeWidth.value,
+      strokeWidth: AppSettingsController.instance.danmuStrokeWidth.value.w,
       safeArea: false,
     ),
   );
