@@ -66,11 +66,11 @@
 ## 💻 环境
 
 ```bash
-[√] Flutter (Channel stable, 3.35.6, on Microsoft Windows 10, locale zh-CN)
-[√] Flutter (Channel stable, 3.35.6, on macOS 15.6.1 24G90 darwin-arm64, locale zh-Hans-CN)
+[√] Flutter (Channel stable, 3.35.7, on Microsoft Windows 10, locale zh-CN)
+[√] Flutter (Channel stable, 3.35.7, on macOS 14.8.1 23J30 darwin-x64, locale zh-Hans-CN)
 [√] Android toolchain - develop for Android devices (SDK 36.0.0)
-[√] Xcode - develop for iOS and macOS (Xcode 16.4)
-[√] Chrome - develop for the web
+[√] Xcode - develop for iOS and macOS (Xcode 16.1)
+[√] Chrome - develop for the webs
 [√] Windows Version (11 专业版 64 位, 23H2, 2009)
 [√] Visual Studio - develop Windows apps (Community 2022 17.14.12)
 [√] Android Studio (2022.3)
