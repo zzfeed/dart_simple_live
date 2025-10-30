@@ -1,7 +1,7 @@
 name: simple_live_tv_app
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.8.0911+180911
+version: 1.8.1030+181030
 
 environment:
     sdk: '>=3.9.0 <4.0.0'
