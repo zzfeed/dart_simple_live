@@ -125,7 +125,7 @@ class PlaySettingsPage extends GetView<AppSettingsController> {
                 Obx(
                   () => SettingsSwitch(
                     title: "播放器中显示SC",
-                    value: controller.playershowSuperChat.value,
+                    value: controller.playerShowSuperChat.value,
                     onChanged: (e) {
                       controller.setPlayerShowSuperChat(e);
                     },

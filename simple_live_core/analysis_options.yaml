@@ -10,7 +10,8 @@
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
-    exclude: lib/src/danmaku/proto/**
+    exclude:
+        - lib/src/danmaku/proto/**
 
 formatter:
     trailing_commas: preserve

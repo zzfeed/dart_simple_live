@@ -1,18 +1,9 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:simple_live_core/simple_live_core.dart';
 import 'package:simple_live_core/src/common/convert_helper.dart';
 import 'package:simple_live_core/src/common/douyin/douyin_utils.dart';
 import 'package:simple_live_core/src/common/http_client.dart';
-
-mixin DouyinRequestParams {
-  static const String kDefaultUserAgent =
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.0.0";
-  static const aidValue = "6383";
-  static const versionCodeValue = "180800";
-  static const sdkVersion = "1.0.14-beta.0";
-}
 
 class DouyinSite implements LiveSite {
   @override
@@ -24,68 +15,58 @@ class DouyinSite implements LiveSite {
   @override
   LiveDanmaku getDanmaku() => DouyinDanmaku();
 
-  static const String kDefaultReferer = "https://live.douyin.com";
-
-  static const String kDefaultAuthority = "live.douyin.com";
-
-  Map<String, dynamic> headers = {
-    "Authority": kDefaultAuthority,
-    "Referer": kDefaultReferer,
-    "User-Agent": DouyinRequestParams.kDefaultUserAgent,
-  };
+  String cookie = "";
 
   Future<Map<String, dynamic>> getRequestHeaders() async {
     try {
-      final existCookies = headers['cookie'] ?? '';
-      if (existCookies.contains('ttwid')) {
-        return headers;
-      }
-      var head = await HttpClient.instance.head(
-        "https://live.douyin.com",
-        header: headers,
-      );
-      head.headers["set-cookie"]?.forEach((element) {
-        var cookie = element.split(";")[0];
-        if (cookie.contains("ttwid")) {
-          final newCookie = '$cookie; $existCookies';
-          headers['cookie'] = newCookie;
-        }
-      });
-      return headers;
-    } catch (e) {
-      CoreLog.error(e);
-      return headers;
-    }
-  }
+      final headers = <String, String>{
+        "Authority": DouyinUtils.kDefaultAuthority,
+        "Referer": DouyinUtils.kDefaultReferer,
+        "User-Agent": DouyinUtils.kDefaultUserAgent,
+        "cookie": cookie,
+      };
 
-  /// 通过 Cookie 获取当前登录用户信息
-  /// 成功返回 data(Map)，失败返回空 Map
-  Future<Map<String, dynamic>> getUserInfoByCookie(String cookie) async {
-    try {
-      const url = "https://live.douyin.com/webcast/user/me/";
-      final result = await HttpClient.instance.getJson(
-        url,
-        queryParameters: {
-          "aid": DouyinRequestParams.aidValue,
-        },
-        header: {
-          "user-agent": DouyinRequestParams.kDefaultUserAgent,
-          'accept': 'application/json, text/plain, */*',
-          'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8',
-          "Cookie": cookie,
-        },
-      );
-      if (result is Map<String, dynamic>) {
-        final data = result["data"];
-        if (data is Map<String, dynamic>) {
-          return data;
+      String cookies = headers['cookie'] ?? '';
+
+      final extraCookies = <String>[];
+
+      if (!cookies.contains('ttwid')) {
+        final ttwid = await DouyinUtils.getTtwid();
+        if (ttwid != null && ttwid.isNotEmpty) {
+          extraCookies.add('ttwid=$ttwid');
         }
       }
-      return {};
+
+      // if (!cookies.contains('msToken')) {
+      //   extraCookies.add('msToken=${DouyinUtils.generateMsToken()}');
+      // }
+
+      if (!cookies.contains('__ac_nonce=')) {
+        extraCookies.add('__ac_nonce=${DouyinUtils.generateNonce()}');
+      }
+
+      if (!cookies.contains('odin_tt')) {
+        extraCookies.add('odin_tt=${DouyinUtils.generateOdinTtid()}');
+      }
+
+      if (extraCookies.isNotEmpty) {
+        cookies = [
+          ...extraCookies,
+          cookies,
+        ].where((e) => e.isNotEmpty).join('; ');
+      }
+
+      headers['cookie'] = cookies;
+
+      return headers;
     } catch (e) {
       CoreLog.error(e);
+      return {
+        "Authority": DouyinUtils.kDefaultAuthority,
+        "Referer": DouyinUtils.kDefaultReferer,
+        "User-Agent": DouyinUtils.kDefaultUserAgent,
+      };
     }
-    return {};
   }
 
   @override
@@ -175,20 +156,13 @@ class DouyinSite implements LiveSite {
       "req_from": '2',
     };
 
-    var msToken = ABogus.getMSToken();
-    queryParams["msToken"] = msToken;
-
-    var chromeFp = BrowserFingerprintGenerator.generateFingerprint("Edge");
-    var abogus = await ABogus(
-      userAgent: DouyinRequestParams.kDefaultUserAgent,
-      fp: chromeFp,
-    ).generateAbogus(Uri(queryParameters: queryParams).query);
-
-    queryParams["a_bogus"] = abogus;
+    var targetUrl = await DouyinUtils.buildRequestUrl(
+      serverUrl,
+      query: queryParams,
+    );
 
     var result = await HttpClient.instance.getJson(
-      serverUrl,
-      queryParameters: queryParams,
+      targetUrl,
       header: await getRequestHeaders(),
     );
 
@@ -239,20 +213,13 @@ class DouyinSite implements LiveSite {
       "req_from": '2',
     };
 
-    var msToken = ABogus.getMSToken();
-    queryParams["msToken"] = msToken;
-
-    var chromeFp = BrowserFingerprintGenerator.generateFingerprint("Edge");
-    var abogus = await ABogus(
-      userAgent: DouyinRequestParams.kDefaultUserAgent,
-      fp: chromeFp,
-    ).generateAbogus(Uri(queryParameters: queryParams).query);
-
-    queryParams["a_bogus"] = abogus;
+    var targetUrl = await DouyinUtils.buildRequestUrl(
+      serverUrl,
+      query: queryParams,
+    );
 
     var result = await HttpClient.instance.getJson(
-      serverUrl,
-      queryParameters: queryParams,
+      targetUrl,
       header: await getRequestHeaders(),
     );
 
@@ -307,7 +274,7 @@ class DouyinSite implements LiveSite {
     // 读取用户唯一ID，用于弹幕连接
     // 似乎这个参数不是必须的，先随机生成一个
     //var userUniqueId = await _getUserUniqueId(webRid);
-    var userUniqueId = generateRandomNumber(12).toString();
+    var userUniqueId = DouyinUtils.randomString(12);
 
     var room = roomData["data"]["room"];
     var owner = room["owner"];
@@ -385,7 +352,7 @@ class DouyinSite implements LiveSite {
     // 读取用户唯一ID，用于弹幕连接
     // 似乎这个参数不是必须的，先随机生成一个
     //var userUniqueId = await _getUserUniqueId(webRid);
-    var userUniqueId = generateRandomNumber(12).toString();
+    var userUniqueId = DouyinUtils.randomString(12);
 
     var owner = roomData["owner"];
 
@@ -474,46 +441,40 @@ class DouyinSite implements LiveSite {
       var webInfo = await _getRoomDataByHtml(webRid);
       return webInfo["userStore"]["odin"]["user_unique_id"].toString();
     } catch (e) {
-      return generateRandomNumber(12).toString();
+      return DouyinUtils.randomString(12);
     }
   }
 
   /// 进入直播间前需要先获取cookie
   /// - [webRid] 直播间RID
-  Future<String> _getWebCookie(String webRid) async {
-    var headResp = await HttpClient.instance.head(
-      "https://live.douyin.com/$webRid",
-      header: headers,
-    );
-    var dyCookie = "";
-    headResp.headers["set-cookie"]?.forEach((element) {
-      var cookie = element.split(";")[0];
-      if (cookie.contains("ttwid")) {
-        dyCookie += "$cookie;";
-      }
-      if (cookie.contains("__ac_nonce")) {
-        dyCookie += "$cookie;";
-      }
-      if (cookie.contains("msToken")) {
-        dyCookie += "$cookie;";
-      }
-    });
-    return dyCookie;
-  }
+  // Future<String> _getWebCookie(String webRid) async {
+  //   var headResp = await HttpClient.instance.head(
+  //     "https://live.douyin.com/$webRid",
+  //     header: await getRequestHeaders(),
+  //   );
+  //   var dyCookie = "";
+  //   headResp.headers["set-cookie"]?.forEach((element) {
+  //     var cookie = element.split(";")[0];
+  //     if (cookie.contains("ttwid")) {
+  //       dyCookie += "$cookie;";
+  //     }
+  //     if (cookie.contains("__ac_nonce")) {
+  //       dyCookie += "$cookie;";
+  //     }
+  //     if (cookie.contains("msToken")) {
+  //       dyCookie += "$cookie;";
+  //     }
+  //   });
+  //   return dyCookie;
+  // }
 
   /// 通过webRid获取直播间Web信息
   /// - [webRid] 直播间RID
   Future<Map> _getRoomDataByHtml(String webRid) async {
-    var dyCookie = await _getWebCookie(webRid);
     var result = await HttpClient.instance.getText(
       "https://live.douyin.com/$webRid",
       queryParameters: {},
-      header: {
-        "Authority": kDefaultAuthority,
-        "Referer": kDefaultReferer,
-        "Cookie": dyCookie,
-        "User-Agent": DouyinRequestParams.kDefaultUserAgent,
-      },
+      header: await getRequestHeaders(),
     );
 
     var renderData =
@@ -555,21 +516,13 @@ class DouyinSite implements LiveSite {
       "browser_version": "125.0.0.0",
     };
 
-    String chromeFp = BrowserFingerprintGenerator.generateFingerprint("Edge");
-
-    var msToken = ABogus.getMSToken();
-    queryParams["msToken"] = msToken;
-
-    var abogus = await ABogus(
-      userAgent: DouyinRequestParams.kDefaultUserAgent,
-      fp: chromeFp,
-    ).generateAbogus(Uri(queryParameters: queryParams).query);
-
-    queryParams["a_bogus"] = abogus;
+    var targetUrl = await DouyinUtils.buildRequestUrl(
+      serverUrl,
+      query: queryParams,
+    );
 
     var result = await HttpClient.instance.getJson(
-      serverUrl,
-      queryParameters: queryParams,
+      targetUrl,
       header: await getRequestHeaders(),
     );
     return result["data"];
@@ -677,8 +630,7 @@ class DouyinSite implements LiveSite {
     String keyword, {
     int page = 1,
   }) async {
-    String serverHost = "www.douyin.com";
-    String serverPath = "/aweme/v1/web/live/search/";
+    String serverUrl = "https://www.douyin.com/aweme/v1/web/live/search/";
     var queryParams = {
       "device_platform": "webapp",
       "aid": "6383",
@@ -689,8 +641,8 @@ class DouyinSite implements LiveSite {
       "query_correct_type": "1",
       "is_filter_search": "0",
       "from_group_id": "",
-      "offset": ((page - 1) * 10).toString(),
-      "count": "10",
+      "offset": ((page - 1) * 20).toString(),
+      "count": "20",
       "pc_client_type": "1",
       "version_code": "170400",
       "version_name": "17.4.0",
@@ -714,58 +666,28 @@ class DouyinSite implements LiveSite {
       "round_trip_time": "100",
       "webid": "7382872326016435738",
     };
-
-    String chromeFp = BrowserFingerprintGenerator.generateFingerprint("Edge");
-
-    var msToken = ABogus.getMSToken();
-    queryParams["msToken"] = msToken;
-
-    var abogus =
-        await ABogus(
-          userAgent: DouyinRequestParams.kDefaultUserAgent,
-          fp: chromeFp,
-        ).generateAbogus(
-          Uri(queryParameters: queryParams).query,
-        );
-    queryParams["a_bogus"] = abogus;
-
-    var requestUrl = Uri.https(serverHost, serverPath, queryParams).toString();
-
-    var headResp = await HttpClient.instance.head(
-      'https://live.douyin.com',
-      header: headers,
+    var requestUrl = await DouyinUtils.buildRequestUrl(
+      serverUrl,
+      query: queryParams,
     );
-    var dyCookie = "";
-    headResp.headers["set-cookie"]?.forEach((element) {
-      var cookie = element.split(";")[0];
-      if (cookie.contains("ttwid")) {
-        dyCookie += "$cookie;";
-      }
-      if (cookie.contains("__ac_nonce")) {
-        dyCookie += "$cookie;";
-      }
-    });
+    var headers = await getRequestHeaders();
 
-    var result = await HttpClient.instance.getJson(
-      requestUrl,
-      queryParameters: {},
-      header: {
-        "Authority": 'www.douyin.com',
-        'accept': 'application/json, text/plain, */*',
-        'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8',
-        'cookie': dyCookie,
-        'priority': 'u=1, i',
-        'referer':
-            'https://www.douyin.com/search/${Uri.encodeComponent(keyword)}?type=live',
-        'sec-ch-ua':
-            '"Microsoft Edge";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'user-agent': DouyinRequestParams.kDefaultUserAgent,
-      },
+    final signature = DouyinUtils.generateAcSignature(
+      Uri.parse(serverUrl).path,
+      headers["cookie"][2].toString(),
+      DouyinUtils.kDefaultUserAgent,
+    );
+
+    if (!headers["cookie"]!.contains('__ac_signature')) {
+      headers["cookie"] = '${headers["cookie"]}; __ac_signature=$signature';
+    }
+
+    headers['referer'] =
+        'https://www.douyin.com/search/${Uri.encodeComponent(keyword)}?type=live';
+
+    final result = await HttpClient.instance.getJson(
+      requestUrl.toString(),
+      header: headers,
     );
     if (result == "" || result == 'blocked') {
       throw Exception("抖音直播搜索被限制，请稍后再试");
@@ -805,48 +727,5 @@ class DouyinSite implements LiveSite {
     required String roomId,
   }) {
     return Future.value(<LiveSuperChatMessage>[]);
-  }
-
-  //生成指定长度的16进制随机字符串
-  String generateRandomString(int length) {
-    var random = Random.secure();
-    var values = List<int>.generate(length, (i) => random.nextInt(16));
-    StringBuffer stringBuffer = StringBuffer();
-    for (var item in values) {
-      stringBuffer.write(item.toRadixString(16));
-    }
-    return stringBuffer.toString();
-  }
-
-  // 生成随机的数字
-  int generateRandomNumber(int length) {
-    var random = Random.secure();
-    var values = List<int>.generate(length, (i) => random.nextInt(10));
-    StringBuffer stringBuffer = StringBuffer();
-    for (var item in values) {
-      stringBuffer.write(item);
-    }
-    return int.tryParse(stringBuffer.toString()) ??
-        Random().nextInt(1000000000);
-  }
-
-  /// 读取A-Bogus签名后的URL
-  /// - [url] 原始URL
-  /// - 返回签名后的URL
-  ///
-  /// 服务端代码：https://github.com/dengmin/a-bogus，请自行部署后使用
-  Future<String> getAbogusUrl(String url) async {
-    try {
-      var signResult = await HttpClient.instance.postJson(
-        "https://dy.nsapps.cn/abogus",
-        queryParameters: {},
-        header: {"Content-Type": "application/json"},
-        data: {"url": url, "userAgent": DouyinRequestParams.kDefaultUserAgent},
-      );
-      return signResult["data"]["url"];
-    } catch (e) {
-      CoreLog.error(e);
-      return url;
-    }
   }
 }

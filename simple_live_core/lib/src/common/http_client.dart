@@ -62,6 +62,43 @@ class HttpClient {
   /// * [url] 请求链接
   /// * [queryParameters] 请求参数
   /// * [cancel] 任务取消Token
+  Future<Headers> getHead(
+    String url, {
+    Map<String, dynamic>? queryParameters,
+    Map<String, dynamic>? header,
+    CancelToken? cancel,
+  }) async {
+    try {
+      queryParameters ??= {};
+      header ??= {};
+
+      var result = await dio.get(
+        url,
+        queryParameters: queryParameters,
+        options: Options(
+          responseType: ResponseType.plain,
+          headers: header,
+        ),
+        cancelToken: cancel,
+      );
+
+      return result.headers;
+    } catch (e) {
+      if (e is DioException && e.type == DioExceptionType.badResponse) {
+        throw CoreError(
+          e.message ?? "",
+          statusCode: e.response?.statusCode ?? 0,
+        );
+      } else {
+        throw CoreError("发送GET请求失败");
+      }
+    }
+  }
+
+  /// Get请求，返回Map
+  /// * [url] 请求链接
+  /// * [queryParameters] 请求参数
+  /// * [cancel] 任务取消Token
   Future<dynamic> getJson(
     String url, {
     Map<String, dynamic>? queryParameters,

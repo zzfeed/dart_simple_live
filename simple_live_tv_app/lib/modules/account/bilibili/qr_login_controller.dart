@@ -94,6 +94,8 @@ class BiliBiliQRLoginController extends GetxController {
         qrStatus.value = QRStatus.expired;
         qrcodeKey = "";
         timer?.cancel();
+        Log.logPrint("二维码已失效，重新加载");
+        loadQRCode();
       } else if (code == 86090) {
         qrStatus.value = QRStatus.scanned;
       }

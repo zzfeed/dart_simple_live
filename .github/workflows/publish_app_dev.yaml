@@ -189,11 +189,22 @@ jobs:
             - name: Restore packages
               run: cd simple_live_app && flutter pub get
 
-            - name: Install fastforge
-              run: dart pub global activate fastforge
+            - name: Install fast-forge and Inno Setup
+              run: |
+                  git clone https://github.com/SlotSun/fastforge.git
+                  cd fastforge
+                  dart pub global activate melos
+                  melos run activate
+                  choco install innosetup
+
+            - name: Add Chinese language file for Inno Setup
+              run: |
+                  cd simple_live_app
+                  Copy-Item "windows/packaging/exe/ChineseSimplified.isl" "C:\Program Files (x86)\Inno Setup 6\Languages\ChineseSimplified.isl"
+              shell: powershell
 
             - name: Build Windows
-              run: cd simple_live_app && fastforge package --platform windows --targets msix,zip --skip-clean
+              run: cd simple_live_app && fastforge package --platform windows --targets msix,zip,exe --skip-clean
 
             - name: Rename
               run: |
@@ -239,7 +250,7 @@ jobs:
 
             - name: Create or update GitHub Release
               run: |
-                  TAG=dev
+                  TAG=nightly
                   echo "Publishing release for $TAG"
 
                   if gh release view "$TAG" --repo ${{ github.repository }} >/dev/null 2>&1; then

@@ -53,6 +53,7 @@ class SettingsController extends BaseController
   var updateFollowThreadFocusNode = AppFocusNode();
 
   var bilibiliFocusNode = AppFocusNode();
+  var douyinFocusNode = AppFocusNode();
   var versionFocusNode = AppFocusNode();
   Future<void> bilibiliTap() async {
     if (BiliBiliAccountService.instance.logged.value) {

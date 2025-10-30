@@ -110,7 +110,9 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
     }
     initAutoExit();
     showDanmakuState.value = AppSettingsController.instance.danmuEnable.value;
-    followed.value = DBService.instance.getFollowExist("${site.id}_$roomId");
+    followed.value = FollowService.instance.getFollowExist(
+      "${site.id}_$roomId",
+    );
     loadData();
 
     scrollController.addListener(scrollListener);
@@ -238,6 +240,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
       danmakuController?.addDanmaku(
         DanmakuContentItem(
           msg.message,
+          imagesUrl: msg.imageUrls,
           color: Color.fromARGB(255, msg.color.r, msg.color.g, msg.color.b),
           selfSend: false,
         ),
@@ -313,7 +316,9 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
 
       addHistory();
       // 确认房间关注状态
-      followed.value = DBService.instance.getFollowExist("${site.id}_$roomId");
+      followed.value = FollowService.instance.getFollowExist(
+        "${site.id}_$roomId",
+      );
       online.value = detail.value!.online;
       liveStatus.value = detail.value!.status || detail.value!.isRecord;
       if (liveStatus.value) {
@@ -350,7 +355,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
         SmartDialog.showToast("无法读取播放清晰度");
         return;
       }
-      qualities.value = playQualities;
+      qualities.value = List.from(playQualities);
       var qualityLevel = await getQualityLevel();
       if (qualityLevel == 2) {
         //最高
@@ -364,7 +369,7 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
         currentQuality = middle;
       }
 
-      getPlayUrl();
+      await getPlayUrl();
     } catch (e) {
       Log.logPrint(e);
       SmartDialog.showToast("无法读取播放清晰度");
@@ -398,8 +403,8 @@ class LiveRoomController extends PlayerController with WidgetsBindingObserver {
       SmartDialog.showToast("无法读取播放地址");
       return;
     }
-    playUrls.value = playUrl.urls;
-    playHeaders = playUrl.headers;
+    playUrls.value = List.from(playUrl.urls);
+    playHeaders = Map.from(playUrl.headers ?? {});
     currentLineIndex = 0;
     currentLineInfo.value = "线路${currentLineIndex + 1}";
     //重置错误次数

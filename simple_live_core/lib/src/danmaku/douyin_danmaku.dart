@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:simple_live_core/simple_live_core.dart';
+import 'package:simple_live_core/src/common/douyin/douyin_utils.dart';
 import 'package:simple_live_core/src/common/js_engine.dart';
 import 'package:simple_live_core/src/common/web_socket_util.dart';
 
@@ -47,17 +48,32 @@ class DouyinDanmaku implements LiveDanmaku {
   late DouyinDanmakuArgs danmakuArgs;
   WebSocketUtils? webSocketUtils;
 
+  Map<String, String> emojiMap = {};
+
   @override
   Future start(dynamic args) async {
+    final request = await HttpClient().getUrl(
+      Uri.parse('https://www.douyin.com/aweme/v1/web/emoji/list'),
+    );
+    final response = await request.close();
+    final jsonResponse = await response.transform(utf8.decoder).join();
+    final Map<String, dynamic> data = jsonDecode(jsonResponse);
+
+    for (var emoji in data['emoji_list']) {
+      String displayName = emoji['display_name'];
+      String emojiUrl = emoji['emoji_url']['url_list'][0];
+      emojiMap[displayName] = emojiUrl;
+    }
+
     danmakuArgs = args as DouyinDanmakuArgs;
     var ts = DateTime.now().millisecondsSinceEpoch;
     var uri = Uri.parse(serverUrl).replace(
       scheme: "wss",
       queryParameters: {
         "app_name": "douyin_web",
-        "version_code": DouyinRequestParams.versionCodeValue,
-        "webcast_sdk_version": DouyinRequestParams.sdkVersion,
-        "update_version_code": DouyinRequestParams.sdkVersion,
+        "version_code": DouyinUtils.versionCodeValue,
+        "webcast_sdk_version": DouyinUtils.sdkVersion,
+        "update_version_code": DouyinUtils.sdkVersion,
         "compress": "gzip",
         // "internal_ext":
         //     "internal_src:dim|wss_push_room_id:${danmakuArgs.roomId}|wss_push_did:${danmakuArgs.userId}|dim_log_id:20230626152702E8F63662383A350588E1|fetch_time:1687764422114|seq:1|wss_info:0-1687764422114-0-0|wrds_kvs:WebcastRoomRankMessage-1687764036509597990_InputPanelComponentSyncData-1687736682345173033_WebcastRoomStatsMessage-1687764414427812578",
@@ -79,7 +95,7 @@ class DouyinDanmaku implements LiveDanmaku {
         "browser_language": "zh-CN",
         "browser_platform": "Win32",
         "browser_name": "Mozilla",
-        "browser_version": DouyinRequestParams.kDefaultUserAgent.replaceAll(
+        "browser_version": DouyinUtils.kDefaultUserAgent.replaceAll(
           "Mozilla/",
           "",
         ),
@@ -100,7 +116,7 @@ class DouyinDanmaku implements LiveDanmaku {
       url: url,
       backupUrl: backupUrl,
       headers: {
-        "User-Agent": DouyinRequestParams.kDefaultUserAgent,
+        "User-Agent": DouyinUtils.kDefaultUserAgent,
         "Cookie": danmakuArgs.cookie,
         "Origin": "https://live.douyin.com",
       },
@@ -154,6 +170,7 @@ class DouyinDanmaku implements LiveDanmaku {
 
   void unPackWebcastChatMessage(List<int> payload) {
     var chatMessage = ChatMessage.fromBuffer(payload);
+    var emojiUrls = parseEmojiURL(chatMessage.content);
     onMessage?.call(
       LiveMessage(
         type: LiveMessageType.chat,
@@ -164,6 +181,7 @@ class DouyinDanmaku implements LiveDanmaku {
         //     : LiveMessageColor.numberToColor(color),
         message: chatMessage.content,
         userName: chatMessage.user.nickName,
+        imageUrls: emojiUrls,
       ),
     );
   }
@@ -213,8 +231,8 @@ class DouyinDanmaku implements LiveDanmaku {
       Map<String, dynamic> params = {
         "live_id": "1",
         "aid": "6383",
-        "version_code": DouyinRequestParams.versionCodeValue,
-        "webcast_sdk_version": DouyinRequestParams.sdkVersion,
+        "version_code": DouyinUtils.versionCodeValue,
+        "webcast_sdk_version": DouyinUtils.sdkVersion,
         "room_id": roomId,
         "sub_room_id": "",
         "sub_channel_id": "",
@@ -241,5 +259,18 @@ class DouyinDanmaku implements LiveDanmaku {
     } finally {
       JsEngine.dispose();
     }
+  }
+
+  List<String> parseEmojiURL(String input) {
+    List<String> urls = [];
+    final regex = RegExp(r'\[[^\[\]]+\]');
+    Iterable<Match> matches = regex.allMatches(input);
+    for (var match in matches) {
+      String emoji = match.group(0)!;
+      if (emojiMap.containsKey(emoji)) {
+        urls.add(emojiMap[emoji]!);
+      }
+    }
+    return urls;
   }
 }

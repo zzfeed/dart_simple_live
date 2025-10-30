@@ -14,6 +14,7 @@ import 'package:simple_live_tv_app/models/db/follow_user.dart';
 import 'package:simple_live_tv_app/models/db/history.dart';
 import 'package:simple_live_tv_app/services/bilibili_account_service.dart';
 import 'package:simple_live_tv_app/services/db_service.dart';
+import 'package:simple_live_tv_app/services/douyin_account_service.dart';
 import 'package:udp/udp.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
@@ -148,7 +149,8 @@ class SyncService extends GetxService {
         ..post('/sync/follow', _syncFollowUserRequest)
         ..post('/sync/history', _syncHistoryRequest)
         ..post('/sync/blocked_word', _syncBlockedWordRequest)
-        ..post('/sync/account/bilibili', _syncBiliAccountRequest);
+        ..post('/sync/account/bilibili', _syncBiliAccountRequest)
+        ..post('/sync/account/douyin', _syncDouyinAccountRequest);
 
       var server = await shelf_io.serve(
         serverRouter.call,
@@ -302,6 +304,30 @@ class SyncService extends GetxService {
       BiliBiliAccountService.instance.setCookie(cookie);
       BiliBiliAccountService.instance.loadUserInfo();
       SmartDialog.showToast('已同步哔哩哔哩账号');
+      return toJsonResponse({
+        'status': true,
+        'message': 'success',
+      });
+    } catch (e) {
+      return toJsonResponse({
+        'status': false,
+        'message': e.toString(),
+      });
+    }
+  }
+
+  /// 同步抖音账号
+  Future<shelf.Response> _syncDouyinAccountRequest(
+    shelf.Request request,
+  ) async {
+    try {
+      var body = await request.readAsString();
+      Log.d('_syncDouyinAccountRequest: $body');
+      final jsonBody = json.decode(body);
+      final cookie = jsonBody['cookie'];
+      DouyinAccountService.instance.setCookie(cookie);
+      DouyinAccountService.instance.loadUserInfo();
+      SmartDialog.showToast('已同步抖音账号');
       return toJsonResponse({
         'status': true,
         'message': 'success',

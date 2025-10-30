@@ -107,6 +107,9 @@ mixin PlayerStateMixin on PlayerMixin {
   /// 是否为竖屏直播间
   var isVertical = false.obs;
 
+  /// 是否自动全屏
+  bool autoFullScreen = false;
+
   /// 视频尺寸
   final Rx<int> width = 0.obs;
   final Rx<int> height = 0.obs;
@@ -223,7 +226,7 @@ mixin PlayerSystemMixin on PlayerMixin, PlayerStateMixin, PlayerDanmakuMixin {
 
     // 进入全屏模式
     if (AppSettingsController.instance.autoFullScreen.value) {
-      enterFullScreen();
+      autoFullScreen = true;
     }
   }
 
@@ -758,6 +761,10 @@ class PlayerController extends BaseController
             Log.d(
               "视频宽: ${codec.width}, 高: ${codec.height}, 帧率: ${codec.frameRate}",
             );
+
+            if (autoFullScreen) {
+              enterFullScreen();
+            }
             break;
 
           case "reader.buffering":
@@ -834,7 +841,7 @@ class PlayerController extends BaseController
               '视频解码器: ${videoDecoderName.isNotEmpty ? videoDecoderName : "未知"}\n'
               '音频解码器: ${audioDecoderName.isNotEmpty ? audioDecoderName : "未知"}',
             ),
-            onTap: () {
+            onLongPress: () {
               Clipboard.setData(
                 ClipboardData(
                   text:
@@ -849,7 +856,7 @@ class PlayerController extends BaseController
             subtitle: Text(
               '${width.value}x${height.value} ${mediaInfo.video?[0].codec.frameRate}FPS',
             ),
-            onTap: () {
+            onLongPress: () {
               Clipboard.setData(
                 ClipboardData(
                   text:
@@ -866,7 +873,7 @@ class PlayerController extends BaseController
               '格式: ${mediaInfo.format}\n'
               '流数量: ${mediaInfo.streams}',
             ),
-            onTap: () {
+            onLongPress: () {
               Clipboard.setData(
                 ClipboardData(
                   text:
@@ -883,7 +890,7 @@ class PlayerController extends BaseController
                 subtitle: Text(
                   v.toString(),
                 ),
-                onTap: () {
+                onLongPress: () {
                   Clipboard.setData(
                     ClipboardData(
                       text: "视频轨道 #${v.index}\n${v.toString()}",
@@ -900,7 +907,7 @@ class PlayerController extends BaseController
                 subtitle: Text(
                   a.toString(),
                 ),
-                onTap: () {
+                onLongPress: () {
                   Clipboard.setData(
                     ClipboardData(
                       text: "音频轨道 #${a.index}\n${a.toString()}",
@@ -919,7 +926,7 @@ class PlayerController extends BaseController
                     .map((e) => "${e.key}: ${e.value}")
                     .join("\n"),
               ),
-              onTap: () {
+              onLongPress: () {
                 Clipboard.setData(
                   ClipboardData(
                     text:

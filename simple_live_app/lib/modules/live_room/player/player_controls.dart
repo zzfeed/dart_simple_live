@@ -33,7 +33,7 @@ Widget playerControls(BuildContext context, LiveRoomController controller) {
       Obx(
         () => Visibility(
           visible:
-              AppSettingsController.instance.playershowSuperChat.value &&
+              AppSettingsController.instance.playerShowSuperChat.value &&
               ((!Platform.isAndroid && !Platform.isIOS) ||
                   controller.fullScreenState.value),
           child: Positioned(
@@ -253,14 +253,17 @@ Widget buildFullControls(BuildContext context, LiveRoomController controller) {
                       ),
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      showDanmakuSettings(controller);
-                    },
-                    icon: SvgPicture.asset(
-                      'assets/icons/icon_danmaku_setting.svg',
-                      width: 24,
-                      height: 24,
+                  Visibility(
+                    visible: controller.showDanmakuState.value,
+                    child: IconButton(
+                      onPressed: () {
+                        controller.showDanmuSettingsSheet();
+                      },
+                      icon: SvgPicture.asset(
+                        'assets/icons/icon_danmaku_setting.svg',
+                        width: 24,
+                        height: 24,
+                      ),
                     ),
                   ),
                   Obx(() {
@@ -452,16 +455,16 @@ Widget buildControls(BuildContext context, LiveRoomController controller) {
             ),
             child: Row(
               children: [
-                IconButton(
-                  onPressed: () {
-                    controller.refreshRoom();
-                  },
-                  icon: SvgPicture.asset(
-                    'assets/icons/icon_refresh.svg',
-                    width: 24,
-                    height: 24,
-                  ),
-                ),
+                // IconButton(
+                //   onPressed: () {
+                //     controller.refreshRoom();
+                //   },
+                //   icon: SvgPicture.asset(
+                //     'assets/icons/icon_refresh.svg',
+                //     width: 24,
+                //     height: 24,
+                //   ),
+                // ),
                 Offstage(
                   offstage: controller.showDanmakuState.value,
                   child: IconButton(
@@ -486,16 +489,21 @@ Widget buildControls(BuildContext context, LiveRoomController controller) {
                     ),
                   ),
                 ),
-                IconButton(
-                  onPressed: () {
-                    controller.showDanmuSettingsSheet();
-                  },
-                  icon: SvgPicture.asset(
-                    'assets/icons/icon_danmaku_setting.svg',
-                    width: 24,
-                    height: 24,
+
+                Visibility(
+                  visible: controller.showDanmakuState.value,
+                  child: IconButton(
+                    onPressed: () {
+                      controller.showDanmuSettingsSheet();
+                    },
+                    icon: SvgPicture.asset(
+                      'assets/icons/icon_danmaku_setting.svg',
+                      width: 24,
+                      height: 24,
+                    ),
                   ),
                 ),
+
                 Obx(() {
                   final showTime = controller.detail.value?.showTime;
                   if (showTime == null || showTime.isEmpty) {
@@ -526,15 +534,37 @@ Widget buildControls(BuildContext context, LiveRoomController controller) {
                     ),
                   ),
                 ),
-                Offstage(
-                  offstage: controller.isVertical.value,
-                  child: TextButton(
-                    onPressed: () {
-                      controller.showQualitySheet();
-                    },
-                    child: Obx(
-                      () => Text(
-                        controller.currentQualityInfo.value,
+
+                Visibility(
+                  visible: controller.fullScreenState.value,
+                  child: Offstage(
+                    offstage: controller.isVertical.value,
+                    child: TextButton(
+                      onPressed: () {
+                        controller.showQualitySheet();
+                      },
+                      child: Obx(
+                        () => Text(
+                          controller.currentQualityInfo.value,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: controller.fullScreenState.value,
+                  child: Offstage(
+                    offstage: controller.isVertical.value,
+                    child: TextButton(
+                      onPressed: () {
+                        controller.showPlayUrlsSheet();
+                      },
+                      child: Text(
+                        controller.currentLineInfo.value,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 15,
@@ -543,18 +573,7 @@ Widget buildControls(BuildContext context, LiveRoomController controller) {
                     ),
                   ),
                 ),
-                Offstage(
-                  offstage: controller.isVertical.value,
-                  child: TextButton(
-                    onPressed: () {
-                      controller.showPlayUrlsSheet();
-                    },
-                    child: Text(
-                      controller.currentLineInfo.value,
-                      style: const TextStyle(color: Colors.white, fontSize: 15),
-                    ),
-                  ),
-                ),
+
                 Visibility(
                   visible: !Platform.isAndroid && !Platform.isIOS,
                   child: IconButton(
@@ -612,11 +631,13 @@ Widget buildDanmuView(BuildContext context, LiveRoomController controller) {
     createdController: controller.initDanmakuController,
     option: DanmakuOption(
       fontSize: AppSettingsController.instance.danmuSize.value,
-      area: AppSettingsController.instance.danmuArea.value,
-      duration: AppSettingsController.instance.danmuSpeed.value.toInt(),
-      opacity: AppSettingsController.instance.danmuOpacity.value,
-      showStroke: AppSettingsController.instance.danmuStrokeWidth.value > 0,
       fontWeight: AppSettingsController.instance.danmuFontWeight.value,
+      area: AppSettingsController.instance.danmuArea.value,
+      duration: AppSettingsController.instance.danmuSpeed.value,
+      opacity: AppSettingsController.instance.danmuOpacity.value,
+      strokeWidth: AppSettingsController.instance.danmuStrokeWidth.value,
+      lineHeight: AppSettingsController.instance.danmuLineHeight.value,
+      safeArea: false,
     ),
   );
 

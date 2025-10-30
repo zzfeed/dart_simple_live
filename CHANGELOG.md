@@ -1,6 +1,28 @@
 # Changelog
 
 <details>
+<summary>v1.8.1030</summary>
+
+### 功能
+
+-   添加弹幕图片支持
+-   添加抖音账号支持
+-   修复抖音分类，搜索等功能
+-   关注刷新优化 by [@SlotSun](https://github.com/SlotSun)
+-   关注、标签功能 UI 调整 by [@SlotSun](https://github.com/SlotSun)
+-   生成 AcSignature
+    修复二维码失效时自动重载
+
+### 修复
+
+-   自动全屏 [#10](https://github.com/GH4NG/dart_simple_live/issues/10)
+-   修复抖音播放清晰度切换问题
+-   恢复后台后弹幕消失
+-   唤醒锁功能 [#3](https://github.com/GH4NG/dart_simple_live/issues/3)
+
+</details>
+
+<details>
 <summary>v1.8.0911</summary>
 
 ### 功能

@@ -308,7 +308,7 @@ class AppSettingsController extends GetxController {
     LocalStorageService.instance.setValue(LocalStorageService.kDanmuSpeed, e);
   }
 
-  var danmuArea = 0.8.obs;
+  var danmuArea = 1.0.obs;
   void setDanmuArea(double e) {
     danmuArea.value = e;
     LocalStorageService.instance.setValue(LocalStorageService.kDanmuArea, e);
@@ -335,7 +335,16 @@ class AppSettingsController extends GetxController {
     );
   }
 
-  var danmuFontWeight = FontWeight.normal.index.obs;
+  var danmuLineHeight = 2.0.obs;
+  void setDanmuLineHeight(double e) {
+    danmuLineHeight.value = e;
+    LocalStorageService.instance.setValue(
+      LocalStorageService.kDanmuLineHeight,
+      e,
+    );
+  }
+
+  var danmuFontWeight = 4.obs;
   void setDanmuFontWeight(int e) {
     danmuFontWeight.value = e;
     LocalStorageService.instance.setValue(
@@ -416,9 +425,9 @@ class AppSettingsController extends GetxController {
     );
   }
 
-  var playershowSuperChat = true.obs;
+  var playerShowSuperChat = true.obs;
   void setPlayerShowSuperChat(bool e) {
-    playershowSuperChat.value = e;
+    playerShowSuperChat.value = e;
     LocalStorageService.instance.setValue(
       LocalStorageService.kPlayerShowSuperChat,
       e,
