@@ -107,6 +107,9 @@ mixin PlayerStateMixin on PlayerMixin {
   /// 是否为竖屏直播间
   var isVertical = false.obs;
 
+  /// 是否自动全屏
+  bool autoFullScreen = false;
+
   /// 视频尺寸
   final Rx<int> width = 0.obs;
   final Rx<int> height = 0.obs;
@@ -223,7 +226,7 @@ mixin PlayerSystemMixin on PlayerMixin, PlayerStateMixin, PlayerDanmakuMixin {
 
     // 进入全屏模式
     if (AppSettingsController.instance.autoFullScreen.value) {
-      enterFullScreen();
+      autoFullScreen = true;
     }
   }
 
@@ -758,6 +761,10 @@ class PlayerController extends BaseController
             Log.d(
               "视频宽: ${codec.width}, 高: ${codec.height}, 帧率: ${codec.frameRate}",
             );
+
+            if (autoFullScreen) {
+              enterFullScreen();
+            }
             break;
 
           case "reader.buffering":
