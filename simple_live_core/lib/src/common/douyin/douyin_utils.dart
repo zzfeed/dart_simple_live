@@ -174,8 +174,7 @@ class DouyinUtils {
     final result = abogus.generateAbogus(queryString);
 
     final finalParams = result[0];
-    final abogusValue = result[1];
 
-    return '${uri.origin}${uri.path}?$finalParams&abogus=$abogusValue';
+    return '${uri.origin}${uri.path}?$finalParams';
   }
 }
