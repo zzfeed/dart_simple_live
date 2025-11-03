@@ -689,6 +689,12 @@ class DouyinSite implements LiveSite {
       requestUrl.toString(),
       header: headers,
     );
+    if (result["search_nil_info"] != null) {
+      throw Exception("抖音直播搜索被限制，需要验证滑块验证码");
+    }
+    if (result["status_code"] != 0) {
+      throw Exception(result["status_msg"].toString());
+    }
     if (result == "" || result == 'blocked') {
       throw Exception("抖音直播搜索被限制，请稍后再试");
     }
