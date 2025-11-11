@@ -15,7 +15,7 @@ jobs:
             matrix:
                 platform: [android, ios, macos, linux]
             fail-fast: false
-        runs-on: ${{ matrix.platform == 'linux' && 'ubuntu-22.04' || 'macos-latest' }}
+        runs-on: ${{ matrix.platform == 'linux' && 'ubuntu-22.04' || 'macos-15' }}
         continue-on-error: true
 
         steps:
@@ -76,7 +76,7 @@ jobs:
               if: matrix.platform == 'ios' || matrix.platform == 'macos'
               uses: maxim-lobanov/setup-xcode@v1
               with:
-                  xcode-version: latest-stable
+                  xcode-version: '16.4'
 
             - name: Install appdmg
               if: matrix.platform == 'macos'
