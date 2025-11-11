@@ -20,9 +20,9 @@ class DouyinSite implements LiveSite {
   Future<Map<String, dynamic>> getRequestHeaders() async {
     try {
       final headers = <String, String>{
-        "Authority": DouyinUtils.kDefaultAuthority,
-        "Referer": DouyinUtils.kDefaultReferer,
-        "User-Agent": DouyinUtils.kDefaultUserAgent,
+        "authority": DouyinUtils.kDefaultAuthority,
+        "referer": DouyinUtils.kDefaultReferer,
+        "user-agent": DouyinUtils.kDefaultUserAgent,
         "cookie": cookie,
       };
 
@@ -631,6 +631,7 @@ class DouyinSite implements LiveSite {
     int page = 1,
   }) async {
     String serverUrl = "https://www.douyin.com/aweme/v1/web/live/search/";
+    const count = 20;
     var queryParams = {
       "device_platform": "webapp",
       "aid": "6383",
@@ -641,8 +642,8 @@ class DouyinSite implements LiveSite {
       "query_correct_type": "1",
       "is_filter_search": "0",
       "from_group_id": "",
-      "offset": ((page - 1) * 20).toString(),
-      "count": "20",
+      "offset": ((page - 1) * count).toString(),
+      "count": "$count",
       "pc_client_type": "1",
       "version_code": "170400",
       "version_name": "17.4.0",
@@ -666,15 +667,12 @@ class DouyinSite implements LiveSite {
       "round_trip_time": "100",
       "webid": "7382872326016435738",
     };
-    var requestUrl = await DouyinUtils.buildRequestUrl(
-      serverUrl,
-      query: queryParams,
-    );
-    var headers = await getRequestHeaders();
+    var requestUrl = Uri.parse(serverUrl).replace(queryParameters: queryParams);
+    var headers = Map<String, String>.from(await getRequestHeaders());
 
     final signature = DouyinUtils.generateAcSignature(
       Uri.parse(serverUrl).path,
-      headers["cookie"][2].toString(),
+      headers["cookie"]![2].toString(),
       DouyinUtils.kDefaultUserAgent,
     );
 
@@ -682,21 +680,35 @@ class DouyinSite implements LiveSite {
       headers["cookie"] = '${headers["cookie"]}; __ac_signature=$signature';
     }
 
-    headers['referer'] =
-        'https://www.douyin.com/search/${Uri.encodeComponent(keyword)}?type=live';
+    headers.addAll({
+      'authority': 'www.douyin.com',
+      'accept': 'application/json, text/plain, */*',
+      'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8',
+      'priority': 'u=1, i',
+      'sec-ch-ua':
+          '"Microsoft Edge";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': '"Windows"',
+      'sec-fetch-dest': 'empty',
+      'sec-fetch-mode': 'cors',
+      'sec-fetch-site': 'same-origin',
+      'referer':
+          'https://www.douyin.com/search/${Uri.encodeComponent(keyword)}?type=live',
+    });
 
     final result = await HttpClient.instance.getJson(
       requestUrl.toString(),
       header: headers,
     );
+
+    if (result == null || result == "" || result == 'blocked') {
+      throw Exception("抖音直播搜索被限制，请稍后再试");
+    }
     if (result["search_nil_info"] != null) {
       throw Exception("抖音直播搜索被限制，需要验证滑块验证码");
     }
     if (result["status_code"] != 0) {
       throw Exception(result["status_msg"].toString());
-    }
-    if (result == "" || result == 'blocked') {
-      throw Exception("抖音直播搜索被限制，请稍后再试");
     }
     var items = <LiveRoomItem>[];
     for (var item in result["data"] ?? []) {
