@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:simple_live_core/simple_live_core.dart';
+import 'package:simple_live_core/src/common/constant.dart';
 import 'package:simple_live_core/src/common/douyin/douyin_utils.dart';
 import 'package:simple_live_core/src/common/js_engine.dart';
 import 'package:simple_live_core/src/common/web_socket_util.dart';
@@ -48,22 +49,22 @@ class DouyinDanmaku implements LiveDanmaku {
   late DouyinDanmakuArgs danmakuArgs;
   WebSocketUtils? webSocketUtils;
 
-  Map<String, String> emojiMap = {};
+  Map<String, String> emojiMap = Constants.dyEmojis;
 
   @override
   Future start(dynamic args) async {
-    final request = await HttpClient().getUrl(
-      Uri.parse('https://www.douyin.com/aweme/v1/web/emoji/list'),
-    );
-    final response = await request.close();
-    final jsonResponse = await response.transform(utf8.decoder).join();
-    final Map<String, dynamic> data = jsonDecode(jsonResponse);
+    // final request = await HttpClient().getUrl(
+    //   Uri.parse('https://www.douyin.com/aweme/v1/web/emoji/list'),
+    // );
+    // final response = await request.close();
+    // final jsonResponse = await response.transform(utf8.decoder).join();
+    // final Map<String, dynamic> data = jsonDecode(jsonResponse);
 
-    for (var emoji in data['emoji_list']) {
-      String displayName = emoji['display_name'];
-      String emojiUrl = emoji['emoji_url']['url_list'][0];
-      emojiMap[displayName] = emojiUrl;
-    }
+    // for (var emoji in data['emoji_list']) {
+    //   String displayName = emoji['display_name'];
+    //   String emojiUrl = emoji['emoji_url']['url_list'][0];
+    //   emojiMap[displayName] = emojiUrl;
+    // }
 
     danmakuArgs = args as DouyinDanmakuArgs;
     var ts = DateTime.now().millisecondsSinceEpoch;
